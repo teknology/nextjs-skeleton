@@ -1,1 +1,1 @@
-export { signInGoogle, signOut } from './authentication';
+export { signInGoogle, signOut, signInFacebook } from './authentication';

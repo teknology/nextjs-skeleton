@@ -2,7 +2,7 @@ import { Button } from '@nextui-org/react'
 import * as actions from '@/actions'
 import { Icon } from '@iconify/react'
 
-export async function GoogleSignIn () {
+export async function FacebookSignIn () {
   return (
     <form action={actions.signInGoogle}>
       <Button
