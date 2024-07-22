@@ -3,13 +3,19 @@
 import React from 'react'
 import { Button, Input, Checkbox, Link, Divider } from '@nextui-org/react'
 import { Icon } from '@iconify/react'
+import { useActionState } from 'react'
+import { signInPassword } from '@/actions/authentication'
 
-//import { AcmeIcon } from './acme'
+import { AcmeIcon } from '@/app/components/icons'
 
 export default function Component () {
   const [isVisible, setIsVisible] = React.useState(false)
 
   const toggleVisibility = () => setIsVisible(!isVisible)
+  const [errorMessage, formAction, isPending] = useActionState(
+    signInPassword,
+    undefined
+  )
 
   return (
     <div className='flex h-full  w-full flex-col items-center justify-center'>
@@ -21,6 +27,7 @@ export default function Component () {
       </div>
       <div className='mt-2 flex w-full max-w-sm flex-col gap-4 rounded-large bg-content1 px-8 py-6 shadow-small'>
         <form
+          action={formAction}
           className='flex flex-col gap-3'
           onSubmit={e => e.preventDefault()}
         >
@@ -64,6 +71,18 @@ export default function Component () {
           <Button color='primary' type='submit'>
             Log In
           </Button>
+          <div
+            className='flex h-8 items-end space-x-1'
+            aria-live='polite'
+            aria-atomic='true'
+          >
+            {errorMessage && (
+              <>
+                <Icon icon='akar-icons:circle-x' className='text-red-500' />
+                <p className='text-sm text-red-500'>{errorMessage}</p>
+              </>
+            )}
+          </div>
         </form>
         <div className='flex items-center gap-4'>
           <Divider className='flex-1' />
