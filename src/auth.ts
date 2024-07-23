@@ -32,7 +32,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (parsedCredentials.success) {
           const { email, password } = parsedCredentials.data;
           const user = await getUserByEmail(email);
-          if (!user) return null;
+          if (!user) {
+            // No user found, so this is their first attempt to login
+            // meaning this is also the place you could do registration
+            throw new Error("User not found.")
+          }
           const passwordsMatch = await comparePasswords(password, user.password);
  
           if (passwordsMatch) return user;

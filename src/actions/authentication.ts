@@ -2,6 +2,10 @@
 
 import * as auth from '@/auth';
 import { AuthError } from 'next-auth';
+import { registerSchema } from '@/utils/schemas';
+import email from 'next-auth/providers/email';
+import { db } from '@/db';
+import { User } from '@prisma/client';
 
 
 export async function signInGoogle() {
@@ -27,9 +31,61 @@ export async function signInPassword(
             throw error;
           }
 }
+interface RegisterFormState {
+  errors: {
+      email?: string[];
+      password?: string[];
+      _form?: string[];
+  }
+}
+
+export async function signUp(formState: RegisterFormState,
+  formData: FormData
+): Promise<RegisterFormState> {
+  const email = formData.get('email');
+  const password = formData.get('password');
+  const result = registerSchema.safeParse({ email, password });
+
+  if (!result.success) {
+    return {
+        errors: result.error.flatten().fieldErrors
+    }
+  }
+  const user = await db.user.findFirst({
+      where: {
+          email: email 
+      }
+  });
+  if (user) {
+      return {
+          errors: {
+              email: ['Email already in use']
+          }
+      }
+  }
+  let newUser: User;
+  try {
+      newUser = await db.user.create({
+          data: {
+              email: email as string,
+              password: password as string
+          }
+      });
+  } catch (error) {
+      return {
+          errors: {
+              _form: ['Something went wrong']
+          }
+      }
+  }
+
+}
 export async function signInFacebook() {
     return await auth.signIn("facebook");
 }
+
+
+
 export async function signOut() {
     return await auth.signOut();
 }
