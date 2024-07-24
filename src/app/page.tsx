@@ -13,7 +13,7 @@ export default function Home () {
     errors: {}
   })
   return (
-    <form>
+    <form action={actions.test}>
       <Input type='email' name='email' placeholder='Email' />
       <Input type='password' name='password' placeholder='Password' />
       <Button type='submit'>Sign In</Button>

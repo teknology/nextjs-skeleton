@@ -53,7 +53,7 @@ export async function signUp(formState: RegisterFormState,
   }
   const user = await db.user.findFirst({
       where: {
-          email: email 
+          email: email as string 
       }
   });
   if (user) {
@@ -64,13 +64,20 @@ export async function signUp(formState: RegisterFormState,
       }
   }
   let newUser: User;
+
   try {
-      newUser = await db.user.create({
+     newUser = await db.user.create({
           data: {
+            
               email: email as string,
               password: password as string
           }
       });
+
+      return {
+          errors: {}
+      }
+
   } catch (error) {
       return {
           errors: {
@@ -88,4 +95,17 @@ export async function signInFacebook() {
 
 export async function signOut() {
     return await auth.signOut();
+}
+
+
+export async function resetPassword(email: string) {
+
+}
+
+export async function test(formState: RegisterFormState,
+  formData: FormData): Promise<RegisterFormState>  {
+
+    console.log(formData.get('email'));
+  
+    
 }
