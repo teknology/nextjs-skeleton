@@ -10,11 +10,10 @@ import { error } from 'console'
 export default function Home () {
   //const session = await auth()
 
-  const [formState, action] = useFormState(actions.test, {
+  const [formState, action] = useFormState(actions.signUpPassword, {
     errors: {}
   })
 
-  console.log(formState.errors)
   return (
     <div className='container mx-auto space-y-1'>
       <form action={action}>
