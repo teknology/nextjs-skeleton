@@ -1,12 +1,11 @@
 'use server'
 
-import * as auth from '@/auth';
+import  * as auth from '@/auth';
 import { AuthError } from 'next-auth';
-import { registerSchema } from '@/utils/schemas';
 import email from 'next-auth/providers/email';
 import { db } from '@/db';
 import { User } from '@prisma/client';
-
+import { registrationSchema } from '@/utils/schemas';
 
 export async function signInGoogle() {
     return await auth.signIn("google");
@@ -44,7 +43,7 @@ export async function signUp(formState: RegisterFormState,
 ): Promise<RegisterFormState> {
   const email = formData.get('email');
   const password = formData.get('password');
-  const result = registerSchema.safeParse({ email, password });
+  const result = registrationSchema.safeParse({ email, password });
 
   if (!result.success) {
     return {
@@ -102,10 +101,69 @@ export async function resetPassword(email: string) {
 
 }
 
-export async function test(formState: RegisterFormState,
-  formData: FormData): Promise<RegisterFormState>  {
 
-    console.log(formData.get('email'));
-  
+interface RegisterUserFormState {
+  errors: {
+      email?: string[];
+      password?: string[];
+      _form?: string[];
+  }
+
+}
+
+export async function test(formState: RegisterUserFormState,
+  formData: FormData): Promise<RegisterUserFormState>  {
+
+    const result = registrationSchema.safeParse({
+        email: formData.get('email'),
+        password: formData.get('password'),
+        confirmPassword: formData.get('confirmPassword')
+    });
+    
+      if (!result.success) {
+       // console.log(result.error.flatten().fieldErrors);
+        return {
+            errors: result.error.flatten().fieldErrors
+        }
+    }
+    const user = await db.user.findFirst({
+      where: {
+          email: formData.get("email") as string 
+      }
+  });
+  if (user) {
+      return {
+          errors: {
+              email: ['Email already in use']
+          }
+      }
+  }
+
+  let newUser: User;
+  try {
+    //TODO: Check if slug already exists
+    newUser = await db.user.create({
+        data: {
+          email:formData.get("email") as string,
+          password: formData.get("password") as string
+        }
+    })
+
+} catch (err: unknown) {
+    if (err instanceof Error) {
+        return {
+            errors: {
+                _form: [err.message]
+            },
+        };
+    } else {
+        return {
+            errors: {
+                _form: ['An unknown error occurred']
+            }
+        }
+    }
+
+}
     
 }
