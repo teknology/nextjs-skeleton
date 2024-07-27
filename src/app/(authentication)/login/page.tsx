@@ -3,7 +3,7 @@
 import React from 'react'
 import { Button, Input, Checkbox, Link, Divider } from '@nextui-org/react'
 import { Icon } from '@iconify/react'
-import { useActionState } from 'react'
+import { useFormState } from 'react-dom'
 import { signInPassword } from '@/actions/authentication'
 
 import { AcmeIcon } from '@/app/components/icons'
@@ -12,7 +12,7 @@ export default function Component () {
   const [isVisible, setIsVisible] = React.useState(false)
 
   const toggleVisibility = () => setIsVisible(!isVisible)
-  const [errorMessage, formAction, isPending] = useActionState(
+  const [errorMessage, formAction, isPending] = useFormState(
     signInPassword,
     undefined
   )

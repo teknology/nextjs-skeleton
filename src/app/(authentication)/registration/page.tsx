@@ -1,5 +1,11 @@
 'use client'
-
+import Image from 'next/image'
+import { GoogleSignIn } from '@/app/components/google-sign-in'
+import { auth } from '@/auth'
+import * as actions from '@/actions'
+import { useFormState } from 'react-dom'
+import { error } from 'console'
+import FormButton from '@/app/components/common/form-button'
 import React from 'react'
 import { Button, Input, Checkbox, Link } from '@nextui-org/react'
 import { Icon } from '@iconify/react'
@@ -24,15 +30,6 @@ export default function Component () {
           className='flex flex-col gap-4'
           onSubmit={e => e.preventDefault()}
         >
-          <Input
-            isRequired
-            label='Username'
-            labelPlacement='outside'
-            name='username'
-            placeholder='Enter your username'
-            type='text'
-            variant='bordered'
-          />
           <Input
             isRequired
             label='Email'
@@ -100,9 +97,9 @@ export default function Component () {
               Privacy Policy
             </Link>
           </Checkbox>
-          <Button color='primary' type='submit'>
+          <FormButton color='primary' type='submit'>
             Sign Up
-          </Button>
+          </FormButton>
         </form>
         <p className='text-center text-small'>
           <Link href='#' size='sm'>
