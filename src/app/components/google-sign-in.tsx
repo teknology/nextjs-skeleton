@@ -6,6 +6,7 @@ export async function GoogleSignIn () {
   return (
     <form action={actions.signInGoogle}>
       <Button
+        className='w-full'
         startContent={<Icon icon='flat-color-icons:google' width={24} />}
         variant='bordered'
         type='submit'

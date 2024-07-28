@@ -7,6 +7,7 @@ import { useFormState } from 'react-dom'
 import { signInPassword } from '@/actions/authentication'
 
 import { AcmeIcon } from '@/app/components/icons'
+import { GoogleSignIn } from '@/app/components/google-sign-in'
 
 export default function Component () {
   const [isVisible, setIsVisible] = React.useState(false)
@@ -90,24 +91,11 @@ export default function Component () {
           <Divider className='flex-1' />
         </div>
         <div className='flex flex-col gap-2'>
-          <Button
-            startContent={<Icon icon='flat-color-icons:google' width={24} />}
-            variant='bordered'
-          >
-            Continue with Google
-          </Button>
-          <Button
-            startContent={
-              <Icon className='text-default-500' icon='fe:github' width={24} />
-            }
-            variant='bordered'
-          >
-            Continue with Github
-          </Button>
+          <GoogleSignIn />
         </div>
         <p className='text-center text-small'>
           Need to create an account?&nbsp;
-          <Link href='#' size='sm'>
+          <Link href='/registration' size='sm'>
             Sign Up
           </Link>
         </p>

@@ -1,13 +1,9 @@
 'use client'
-import Image from 'next/image'
-import { GoogleSignIn } from '@/app/components/google-sign-in'
-import { auth } from '@/auth'
 import * as actions from '@/actions'
 import { useFormState } from 'react-dom'
-import { error } from 'console'
 import FormButton from '@/app/components/common/form-button'
 import React from 'react'
-import { Button, Input, Checkbox, Link } from '@nextui-org/react'
+import { Input, Checkbox, Link } from '@nextui-org/react'
 import { Icon } from '@iconify/react'
 
 export default function Component () {
@@ -16,6 +12,9 @@ export default function Component () {
 
   const toggleVisibility = () => setIsVisible(!isVisible)
   const toggleConfirmVisibility = () => setIsConfirmVisible(!isConfirmVisible)
+  const [formState, action] = useFormState(actions.signUpPassword, {
+    errors: {}
+  })
 
   return (
     <div className='flex h-full w-full items-center justify-center'>
@@ -26,10 +25,7 @@ export default function Component () {
             👋
           </span>
         </p>
-        <form
-          className='flex flex-col gap-4'
-          onSubmit={e => e.preventDefault()}
-        >
+        <form className='flex flex-col gap-4' action={action}>
           <Input
             isRequired
             label='Email'
@@ -38,9 +34,18 @@ export default function Component () {
             placeholder='Enter your email'
             type='email'
             variant='bordered'
+            isInvalid={!!formState.errors?.email}
+            errorMessage={formState.errors.email?.join(', ')}
           />
           <Input
             isRequired
+            label='Password'
+            labelPlacement='outside'
+            name='password'
+            placeholder='Enter your password'
+            variant='bordered'
+            isInvalid={!!formState.errors?.password}
+            errorMessage={formState.errors.password?.join(', ')}
             endContent={
               <button type='button' onClick={toggleVisibility}>
                 {isVisible ? (
@@ -56,18 +61,20 @@ export default function Component () {
                 )}
               </button>
             }
-            label='Password'
-            labelPlacement='outside'
-            name='password'
-            placeholder='Enter your password'
             type={isVisible ? 'text' : 'password'}
-            variant='bordered'
           />
           <Input
             isRequired
+            label='Confirm Password'
+            labelPlacement='outside'
+            name='confirmPassword'
+            placeholder='Confirm your password'
+            variant='bordered'
+            isInvalid={!!formState.errors?.confirmPassword}
+            errorMessage={formState.errors.confirmPassword?.join(', ')}
             endContent={
               <button type='button' onClick={toggleConfirmVisibility}>
-                {isConfirmVisible ? (
+                {isVisible ? (
                   <Icon
                     className='pointer-events-none text-2xl text-default-400'
                     icon='solar:eye-closed-linear'
@@ -80,14 +87,9 @@ export default function Component () {
                 )}
               </button>
             }
-            label='Confirm Password'
-            labelPlacement='outside'
-            name='confirmPassword'
-            placeholder='Confirm your password'
-            type={isConfirmVisible ? 'text' : 'password'}
-            variant='bordered'
+            type={isVisible ? 'text' : 'password'}
           />
-          <Checkbox isRequired className='py-4' size='sm'>
+          <Checkbox isRequired name='agreeTerms' className='py-4' size='sm'>
             I agree with the&nbsp;
             <Link href='#' size='sm'>
               Terms
@@ -97,12 +99,15 @@ export default function Component () {
               Privacy Policy
             </Link>
           </Checkbox>
-          <FormButton color='primary' type='submit'>
-            Sign Up
-          </FormButton>
+          <FormButton>Sign Up</FormButton>
+          {formState.errors._form ? (
+            <div className='p-2 bg-red-200 border rounded border-red-400'>
+              {formState.errors?._form?.join(', ')}
+            </div>
+          ) : null}
         </form>
         <p className='text-center text-small'>
-          <Link href='#' size='sm'>
+          <Link href='/login' size='sm'>
             Already have an account? Log In
           </Link>
         </p>

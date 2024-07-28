@@ -13,7 +13,9 @@ import { getUserByEmail } from "./db/queries/users"
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(db),
   providers: [
-    Google,
+    Google({
+      allowDangerousEmailAccountLinking: true,
+    }),
     Facebook,
     Credentials({
       // You can specify which fields should be submitted, by adding keys to the `credentials` object.
@@ -62,5 +64,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         */
       },
     }),
-  ]
+  ],
+
 })

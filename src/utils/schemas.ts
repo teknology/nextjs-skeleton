@@ -9,7 +9,9 @@ const passwordSchema = z
 export const registrationSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: passwordSchema,
-  confirmPassword: passwordSchema
+  confirmPassword: passwordSchema,
+  //TODO: Add agreeTerms check box validation
+  // agreeTerms: z.boolean().refine(data => data === true, { message: 'You must agree to the terms' })
 }).refine(data => data.password === data.confirmPassword, {
   message: 'Passwords do not match',
   path: ['confirmPassword']

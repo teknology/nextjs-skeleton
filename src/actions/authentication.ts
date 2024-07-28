@@ -6,9 +6,9 @@ import { db } from '@/db';
 import { User } from '@prisma/client';
 import { registrationSchema } from '@/utils/schemas';
 import { saltAndHashPassword } from '@/utils/auth';
-
+const loginRedirect = '/dashboard';
 export async function signInGoogle() {
-    return await auth.signIn("google");
+    return await auth.signIn("google", { redirectTo: loginRedirect });
 }
 
 // Credentials Signin
@@ -36,9 +36,10 @@ interface RegisterUserFormState {
         email?: string[];
         password?: string[];
         confirmPassword?: string[];
+        //TODO: Add agreeTerms check box validation  
+        //   agreeTerms?: string[];
         _form?: string[];
     }
-
 }
 export async function signUpPassword(formState: RegisterUserFormState,
     formData: FormData): Promise<RegisterUserFormState> {
@@ -46,7 +47,9 @@ export async function signUpPassword(formState: RegisterUserFormState,
     const result = registrationSchema.safeParse({
         email: formData.get('email'),
         password: formData.get('password'),
-        confirmPassword: formData.get('confirmPassword')
+        confirmPassword: formData.get('confirmPassword'),
+        //TODO: Add agreeTerms check box validation
+        // agreeTerms: formData.get('agreeTerms')
     });
 
     if (!result.success) {
@@ -101,7 +104,7 @@ export async function signUpPassword(formState: RegisterUserFormState,
 
 }
 export async function signInFacebook() {
-    return await auth.signIn("facebook");
+    return await auth.signIn("facebook", { redirectTo: loginRedirect });
 }
 
 
