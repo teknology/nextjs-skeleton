@@ -16,7 +16,7 @@ import {
 } from '@nextui-org/react'
 import { Icon } from '@iconify/react'
 
-import NotificationItem from '@/app/components/common/myaccount/notification-item'
+import NotificationItem from '@/app/components/myaccount/notification-item'
 
 type Notification = {
   id: string
