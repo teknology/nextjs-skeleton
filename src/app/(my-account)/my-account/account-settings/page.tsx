@@ -34,7 +34,6 @@ import {
 import { Icon } from '@iconify/react'
 import * as actions from '@/actions'
 import { AcmeIcon } from '@/app/components/icons'
-import NotificationsCard from '@/app/components/common/myaccount/notification-card'
 import { useSession } from 'next-auth/react'
 
 interface Props {

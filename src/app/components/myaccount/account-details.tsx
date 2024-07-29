@@ -17,7 +17,7 @@ import {
 } from '@nextui-org/react'
 import { Icon } from '@iconify/react'
 
-import countries from '@/app/components/common/myaccount/countries'
+import countries from '@/app/components/myaccount/countries'
 
 export default function AccountDetails (props: CardProps) {
   return (
