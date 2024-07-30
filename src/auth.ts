@@ -12,6 +12,7 @@ import { getUserByEmail } from "./db/queries/users"
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(db),
+  session: { strategy: "jwt" },
   providers: [
     Google({
       allowDangerousEmailAccountLinking: true,
@@ -65,6 +66,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  pages: {
+    signIn: "/login",
+  },
+  callbacks: {
+    authorized: async ({ auth }) => {
+      // Logged in users are authenticated, otherwise redirect to login page
+      return !!auth
+    },
+  },
 
 
 })
