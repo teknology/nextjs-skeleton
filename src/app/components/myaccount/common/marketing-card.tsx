@@ -42,7 +42,9 @@ export default function MarketingCard (props: CardProps) {
           />
           <div className='flex flex-col'>
             <p className='text-tiny text-white/60'>Breathing App</p>
-            <p className='text-tiny text-white/60'>Get a good night's sleep.</p>
+            <p className='text-tiny text-white/60'>
+              Get a good night&apos;s sleep.
+            </p>
           </div>
         </div>
         <Button radius='full' size='sm'>
