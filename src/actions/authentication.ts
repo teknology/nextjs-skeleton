@@ -6,7 +6,9 @@ import { db } from '@/db';
 import { User } from '@prisma/client';
 import { registrationSchema } from '@/utils/schemas';
 import { saltAndHashPassword } from '@/utils/auth';
-const loginRedirect = '/dashboard';
+
+
+const loginRedirect = '/my-account';
 export async function signInGoogle() {
     return await auth.signIn("google", { redirectTo: loginRedirect });
 }

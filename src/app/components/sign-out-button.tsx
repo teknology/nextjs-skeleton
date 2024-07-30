@@ -1,6 +1,6 @@
 import * as actions from '@/actions'
 
-export async function SignOut () {
+export default async function SignOutButton () {
   return (
     <form action={actions.signOut}>
       <button type='submit'>Sign Out</button>

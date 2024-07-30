@@ -1,14 +1,12 @@
 'use client'
 import Image from 'next/image'
-import { GoogleSignIn } from './components/google-sign-in'
-import { auth } from '@/auth'
 import * as actions from '@/actions'
 import { useFormState } from 'react-dom'
 import { Button, Input } from '@nextui-org/react'
 import { error } from 'console'
-import FormButton from './components/common/form-button'
+import FormButton from '@/app/components/common/form-button'
 
-export default function Home () {
+export default function Home() {
   //const session = await auth()
 
   const [formState, action] = useFormState(actions.signUpPassword, {

@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { act } from 'react'
 import {
   Navbar,
   NavbarBrand,
@@ -29,15 +29,20 @@ import {
   Breadcrumbs,
   BreadcrumbItem,
   Input,
-  Badge
+  Badge,
+  user
 } from '@nextui-org/react'
 import { Icon } from '@iconify/react'
 import * as actions from '@/actions'
 import { AcmeIcon } from '@/app/components/icons'
 import NotificationsCard from '@/app/components/myaccount/notification-card'
 import { useSession } from 'next-auth/react'
-export default function MyAccountNavbar () {
+export default function MyAccountNavbar() {
   const session = useSession()
+
+
+
+
   console.log(session)
   const handleAction = (key: string) => {
     switch (key) {
@@ -52,7 +57,7 @@ export default function MyAccountNavbar () {
         break
       case 'logout':
         // Add your logout logic here
-        console.log('User logged out')
+        actions.signOut()
         break
       default:
         console.log('Unknown action')
@@ -196,9 +201,10 @@ export default function MyAccountNavbar () {
                   placement='bottom-right'
                   shape='circle'
                 >
+
                   <Avatar
                     size='sm'
-                    src='https://i.pravatar.cc/150?u=a04258114e29526708c'
+                    src={session.data?.user?.image || ''}
                   />
                 </Badge>
               </button>
@@ -210,7 +216,7 @@ export default function MyAccountNavbar () {
             >
               <DropdownItem key='profile' className='h-14 gap-2'>
                 <p className='font-semibold'>Signed in as</p>
-                <p className='font-semibold'>johndoe@example.com</p>
+                <p className='font-semibold'>{session.data?.user?.email}</p>
               </DropdownItem>
               <DropdownItem key='account_settings'>
                 Account Settings
