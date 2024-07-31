@@ -218,14 +218,10 @@ export default function MyAccountNavbar() {
                 <p className='font-semibold'>Signed in as</p>
                 <p className='font-semibold'>{session.data?.user?.email}</p>
               </DropdownItem>
-              <DropdownItem key='account_settings'>
-                Account Settings
+              <DropdownItem key='settings'>
+                Settings
               </DropdownItem>
-              <DropdownItem key='security_settings'>
-                Security Settings
-              </DropdownItem>
-
-              <DropdownItem key='team_settings'>Team Settings</DropdownItem>
+              <DropdownItem key='my_team'>My Team</DropdownItem>
               <DropdownItem key='billing'>Billing</DropdownItem>
               <DropdownItem key='help_and_feedback'>
                 Help & Feedback
