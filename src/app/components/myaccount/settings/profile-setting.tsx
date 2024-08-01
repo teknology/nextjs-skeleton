@@ -4,9 +4,10 @@ import * as React from "react";
 import { Card, CardBody } from "@nextui-org/card";
 import { Avatar } from "@nextui-org/avatar";
 import { Icon } from "@iconify/react";
-import { Button, Badge, Input, Spacer, Textarea } from "@nextui-org/react";
+import { Button, Badge, Input, Spacer, Textarea, SelectItem, Select } from "@nextui-org/react";
 
 import { cn } from "@/utils/cn";
+import { country_codes } from "@/utils/data/country-codes";
 
 interface ProfileSettingCardProps {
   className?: string;
@@ -58,27 +59,46 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
         </Card>
       </div>
       <Spacer y={4} />
+      {/* First Name & Last Name */}
+      <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+        <div className="w-full md:w-1/2">
+          <Input label="First Name" className="mt-2" placeholder="e.g Kate" />
+        </div>
+        <div className="w-full md:w-1/2">
+          <Input label="Last Name" className="mt-2" placeholder="e.g Moore" />
+        </div>
+      </div>
       {/* Title */}
       <div>
-        <p className="text-base font-medium text-default-700">Title</p>
-        <p className="mt-1 text-sm font-normal text-default-400">Set your current role.</p>
-        <Input className="mt-2" placeholder="e.g Customer Support" />
+        <Input label="Title" className="mt-2" placeholder="e.g C.E.O / Founder / President" />
       </div>
       <Spacer y={2} />
-      {/* Location */}
-      <div>
-        <p className="text-base font-medium text-default-700">Location</p>
-        <p className="mt-1 text-sm font-normal text-default-400">Set your current location.</p>
-        <Input className="mt-2" placeholder="e.g Buenos Aires, Argentina" />
+      {/* Email & Phone Number */}
+      <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+        <div className="w-full md:w-1/2">
+          <Input label="Email" className="mt-2" placeholder="email@mydomain.com " />
+        </div>
+        <div className="w-full md:w-1/4">
+          <Select
+            items={country_codes}
+            label="Country Code"
+            placeholder="Select a country code"
+            className="max-w-13 mt-2"
+          >
+            {(country_code) => (
+              <SelectItem key={country_code.code}>{country_code.country}</SelectItem>
+            )}
+          </Select>
+        </div>
+        <div className="w-full md:w-1/2">
+          <Input label="Phone Number" className="mt-2" placeholder="5555555555" />
+        </div>
       </div>
       <Spacer y={4} />
       {/* Biography */}
       <div>
-        <p className="text-base font-medium text-default-700">Biography</p>
-        <p className="mt-1 text-sm font-normal text-default-400">
-          Specify your present whereabouts.
-        </p>
         <Textarea
+          label="Biography"
           className="mt-2"
           classNames={{
             input: cn("min-h-[115px]"),
@@ -86,7 +106,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
           placeholder="e.g., 'Kate Moore - Acme.com Support Specialist. Passionate about solving tech issues, loves hiking and volunteering."
         />
       </div>
-      <Button className="mt-4 bg-default-foreground text-background" size="sm">
+      <Button className="mt-4 bg-default-foreground text-background" size="md">
         Update Profile
       </Button>
     </div>

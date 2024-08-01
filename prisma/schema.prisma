@@ -9,9 +9,12 @@ generator client {
 
 model User {
     id            String          @id @default(cuid())
-    name          String?
+    first_name    String?
+    last_name     String?
     email         String          @unique
     emailVerified DateTime?
+    countryCode   String? // Optional country code field
+    phoneNumber   Int? // Optional phone number field
     image         String?
     role          UserRole[]
     password      String?
