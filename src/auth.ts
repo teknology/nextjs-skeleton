@@ -5,9 +5,9 @@ import Credentials from "next-auth/providers/credentials"
 import Github from "next-auth/providers/github"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { db } from "@/db"
-import { comparePasswords, saltAndHashPassword } from "./utils/auth"
+import { comparePasswords } from "./utils/auth"
 import { z } from 'zod';
-import { getUserByEmail } from "./db/queries/users"
+import { getUserByEmail } from "./db/queries/user"
 
 
 export const { handlers, signIn, signOut, auth } = NextAuth({

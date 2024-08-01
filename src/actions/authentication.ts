@@ -6,6 +6,7 @@ import { db } from '@/db';
 import { User } from '@prisma/client';
 import { registrationSchema } from '@/utils/schemas';
 import { saltAndHashPassword } from '@/utils/auth';
+import { createUser, getUserByEmail } from '@/db/queries/user';
 
 
 const loginRedirect = '/my-account';
@@ -60,11 +61,9 @@ export async function signUpPassword(formState: RegisterUserFormState,
             errors: result.error.flatten().fieldErrors
         }
     }
-    const user = await db.user.findFirst({
-        where: {
-            email: formData.get("email") as string
-        }
-    });
+
+    const user = await getUserByEmail(formData.get('email') as string);
+
     if (user) {
         return {
             errors: {
@@ -73,16 +72,10 @@ export async function signUpPassword(formState: RegisterUserFormState,
         }
     }
 
-    let newUser: User;
-    const hashedPassword = await saltAndHashPassword(formData.get("password") as string);
+
     try {
         //TODO: Check if slug already exists
-        newUser = await db.user.create({
-            data: {
-                email: formData.get("email") as string,
-                password: hashedPassword
-            }
-        })
+        createUser(formData.get('email') as string, formData.get('password') as string);
 
     } catch (err: unknown) {
         if (err instanceof Error) {
@@ -120,3 +113,7 @@ export async function resetPassword(email: string) {
 
 
 }
+function findUserByEmail(arg0: string) {
+    throw new Error('Function not implemented.');
+}
+

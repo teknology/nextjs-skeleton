@@ -1,5 +1,6 @@
 import type { User } from '@prisma/client';
 import { db } from '@/db';
+import { saltAndHashPassword } from '@/utils/auth';
 
 export type { User };
 
@@ -40,10 +41,18 @@ export async function getUserById(id: string): Promise<User | null> {
  * @returns The newly created user.
  */
 export async function createUser(email: string, password: string): Promise<User> {
-  return db.user.create({
-    data: {
-      email: email as string,
-      password: password as string,
-    },
-  });
+  const hashedPassword = await saltAndHashPassword(password);
+
+  try {
+    return db.user.create({
+      data: {
+        email: email,
+        password: hashedPassword
+      }
+    })
+  }
+  catch (error) {
+    console.error('Failed to create user:', error);
+    throw new Error('Failed to create user.');
+  }
 }
