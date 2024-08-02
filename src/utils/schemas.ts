@@ -6,6 +6,16 @@ const passwordSchema = z
   .regex(/[0-9]/, { message: 'Password must contain at least one number' })
   .regex(/[^a-zA-Z0-9]/, { message: 'Password must contain at least one non-alphanumeric character' });
 
+const firstNameSchema = z.string().min(2, { message: 'First name must be at least 2 characters long' });
+const lastNameSchema = z.string().min(2, { message: 'Last name must be at least 2 characters long' });
+const emailSchema = z.string().email('Invalid email address');
+const titleSchema = z.string().min(2, { message: 'Title must be at least 2 characters long' });
+const phoneNumberSchema = z.number().min(10, { message: 'Phone number must be at least 10 characters long' });
+const biographySchema = z.string().min(10, { message: 'Biography must be at least 10 characters long' });
+const countryCodeSchema = z.string().min(1, { message: "Please select an option." })
+
+
+//Registration Schema
 export const registrationSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: passwordSchema,
@@ -16,3 +26,15 @@ export const registrationSchema = z.object({
   message: 'Passwords do not match',
   path: ['confirmPassword']
 });
+
+
+export const profileSchema = z.object({
+  firstName: firstNameSchema,
+  lastName: lastNameSchema,
+  email: emailSchema,
+  title: titleSchema,
+  countryCode: countryCodeSchema,
+  phoneNumber: phoneNumberSchema,
+  biography: biographySchema
+});
+
