@@ -78,7 +78,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
         <div className="w-full md:w-1/2">
           <Input label="Email" className="mt-2" placeholder="email@mydomain.com " />
         </div>
-        <div className="w-full md:w-1/4">
+        <div className="w-full md:w-1/3">
           <Select
             items={country_codes}
             label="Country Code"
@@ -86,7 +86,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
             className="max-w-13 mt-2"
           >
             {(country_code) => (
-              <SelectItem key={country_code.code}>{country_code.country}</SelectItem>
+              <SelectItem key={country_code.code}>{`${country_code.country} (${country_code.code})`}</SelectItem>
             )}
           </Select>
         </div>
