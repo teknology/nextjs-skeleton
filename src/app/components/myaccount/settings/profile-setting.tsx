@@ -1,13 +1,11 @@
 "use client";
 
 import * as React from "react";
-import { Card, CardBody } from "@nextui-org/card";
-import { Avatar } from "@nextui-org/avatar";
-import { Icon } from "@iconify/react";
 import { Button, Badge, Input, Spacer, Textarea, SelectItem, Select } from "@nextui-org/react";
 
 import { cn } from "@/utils/cn";
 import { country_codes } from "@/utils/data/country-codes";
+import UserWidget from "./profile/user-widget";
 
 interface ProfileSettingCardProps {
   className?: string;
@@ -22,41 +20,13 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
         <p className="mt-1 text-sm font-normal text-default-400">
           This displays your public profile on the site.
         </p>
-        <Card className="mt-4 bg-default-100" shadow="none">
-          <CardBody>
-            <div className="flex items-center gap-4">
-              <Badge
-                disableOutline
-                classNames={{
-                  badge: "w-5 h-5",
-                }}
-                content={
-                  <Button
-                    isIconOnly
-                    className="h-5 w-5 min-w-5 bg-background p-0 text-default-500"
-                    radius="full"
-                    size="sm"
-                    variant="bordered"
-                  >
-                    <Icon className="h-[9px] w-[9px]" icon="solar:pen-linear" />
-                  </Button>
-                }
-                placement="bottom-right"
-                shape="circle"
-              >
-                <Avatar
-                  className="h-16 w-16"
-                  src="https://nextuipro.nyc3.cdn.digitaloceanspaces.com/components-images/avatars/e1b8ec120710c09589a12c0004f85825.jpg"
-                />
-              </Badge>
-              <div>
-                <p className="text-sm font-medium text-default-600">Kate Moore</p>
-                <p className="text-xs text-default-400">Customer Support</p>
-                <p className="mt-1 text-xs text-default-400">kate.moore@acme.com</p>
-              </div>
-            </div>
-          </CardBody>
-        </Card>
+        <UserWidget
+          avatarSrc="https://nextuipro.nyc3.cdn.digitaloceanspaces.com/components-images/avatars/e1b8ec120710c09589a12c0004f85825.jpg"
+          firstName="Kate"
+          lastName="Moore"
+          email="kate.moore@acme.com"
+          isVerified={true}
+        />
       </div>
       <Spacer y={4} />
       {/* First Name & Last Name */}
