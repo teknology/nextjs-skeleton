@@ -8,6 +8,7 @@ import { db } from "@/db"
 import { comparePasswords } from "./utils/auth"
 import { z } from 'zod';
 import { getUserByEmail } from "./db/queries/user"
+import { redirect } from "next/dist/server/api-utils"
 
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -26,43 +27,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: {},
       },
       authorize: async (credentials) => {
+
+
+
+        if (!credentials.email) {
+
+          throw new Error("Email missing")
+        }
         let user = null
-        const parsedCredentials = z
-          .object({ email: z.string().email(), password: z.string().min(6) })
-          .safeParse(credentials);
 
 
-        if (parsedCredentials.success) {
-          const { email, password } = parsedCredentials.data;
+        if (credentials) {
+          const email = credentials.email as string;
+          const password = credentials.password as string;
           const user = await getUserByEmail(email);
           if (!user) {
             // No user found, so this is their first attempt to login
             // meaning this is also the place you could do registration
             throw new Error("User not found.")
           }
-          const passwordsMatch = await comparePasswords(password, user.password as string);
+          const passwordsMatch = await comparePasswords(password as string, user.password as string);
 
           if (passwordsMatch) return user;
-        }
 
-        return null;
-
-        /*
-        // logic to salt and hash password
-        const pwHash = saltAndHashPassword(credentials.password)
- 
-        // logic to verify if user exists
-        user = await getUserFromDb(credentials.email, pwHash)
- 
-        if (!user) {
-          // No user found, so this is their first attempt to login
-          // meaning this is also the place you could do registration
-          throw new Error("User not found.")
+          console.log(user);
         }
- 
-        // return user object with the their profile data
-        return user
-        */
+        return user;
       },
     }),
   ],
@@ -73,6 +63,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     authorized: async ({ auth }) => {
       // Logged in users are authenticated, otherwise redirect to login page
       return !!auth
+    },
+
+    jwt({ token, user }) {
+      try {
+        if (user) {
+          token.id = user.id
+        }
+      }
+      catch (error) {
+        console.log(error)
+      }
+      return token
+    },
+    session({ session, token }: any) {
+      session.user.id = token.id
+      return session
     },
   },
 

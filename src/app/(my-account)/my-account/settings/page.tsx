@@ -11,7 +11,6 @@ import {
 import { Icon } from '@iconify/react'
 import * as actions from '@/actions'
 import { AcmeIcon } from '@/app/components/icons'
-import { useSession } from 'next-auth/react'
 import ProfileSetting from '@/app/components/myaccount/settings/profile-setting'
 import AppearanceSetting from '@/app/components/myaccount/settings/appearance-setting'
 import AccountSetting from '@/app/components/myaccount/settings/account-setting'
@@ -24,8 +23,9 @@ interface Props {
 
 export default function Settings() {
   const { isOpen, onOpenChange } = useDisclosure();
-  const session = useSession()
-  console.log(session)
+  //const profileData = actions.getProfile()
+
+  //console.log(profileData)
   const handleAction = (key: string) => {
     switch (key) {
       case 'settings':

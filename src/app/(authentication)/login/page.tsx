@@ -4,20 +4,28 @@ import React from 'react'
 import { Button, Input, Checkbox, Link, Divider } from '@nextui-org/react'
 import { Icon } from '@iconify/react'
 import { useFormState } from 'react-dom'
-import { signInPassword } from '@/actions/authentication'
+import * as actions from '@/actions';
 
 import { AcmeIcon } from '@/app/components/icons'
 import { GoogleSignIn } from '@/app/components/google-sign-in'
+import FormButton from '@/app/components/common/form-button'
+import { useRouter } from 'next/router'
+import { redirect } from 'next/navigation'
 
-export default function Component () {
+export default function Component() {
   const [isVisible, setIsVisible] = React.useState(false)
 
   const toggleVisibility = () => setIsVisible(!isVisible)
-  const [errorMessage, formAction, isPending] = useFormState(
-    signInPassword,
-    undefined
-  )
+  const [formState, action] = useFormState(actions.signInPassword, {
+    errors: {}
+  });
 
+  if (formState.errors?._form?.includes('NEXT_REDIRECT')) {
+
+    //TODO: Find a more elegant way to handle redirecting to the account page after Authjs login.
+    redirect('/my-account');
+
+  }
   return (
     <div className='flex h-full  w-full flex-col items-center justify-center'>
       <div className='flex flex-col items-center pb-6'>
@@ -28,9 +36,9 @@ export default function Component () {
       </div>
       <div className='mt-2 flex w-full max-w-sm flex-col gap-4 rounded-large bg-content1 px-8 py-6 shadow-small'>
         <form
-          action={formAction}
+          action={action}
           className='flex flex-col gap-3'
-          onSubmit={e => e.preventDefault()}
+        // onSubmit={e => e.preventDefault()}
         >
           <Input
             label='Email Address'
@@ -38,6 +46,8 @@ export default function Component () {
             placeholder='Enter your email'
             type='email'
             variant='bordered'
+            isInvalid={!!formState.errors?.email}
+            errorMessage={formState.errors.email?.join(', ')}
           />
           <Input
             endContent={
@@ -60,6 +70,8 @@ export default function Component () {
             placeholder='Enter your password'
             type={isVisible ? 'text' : 'password'}
             variant='bordered'
+            isInvalid={!!formState.errors?.password}
+            errorMessage={formState.errors.password?.join(',')}
           />
           <div className='flex items-center justify-between px-1 py-2'>
             <Checkbox name='remember' size='sm'>
@@ -69,20 +81,19 @@ export default function Component () {
               Forgot password?
             </Link>
           </div>
-          <Button color='primary' type='submit'>
+          <FormButton>
             Log In
-          </Button>
+          </FormButton>
           <div
             className='flex h-8 items-end space-x-1'
             aria-live='polite'
             aria-atomic='true'
           >
-            {errorMessage && (
-              <>
-                <Icon icon='akar-icons:circle-x' className='text-red-500' />
-                <p className='text-sm text-red-500'>{errorMessage}</p>
-              </>
-            )}
+            {formState.errors._form ? (
+              <div className='p-2 bg-red-200 border rounded border-red-400'>
+                {formState.errors?._form?.join(', ')}
+              </div>
+            ) : null}
           </div>
         </form>
         <div className='flex items-center gap-4'>

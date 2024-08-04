@@ -9,18 +9,31 @@ export type { User };
  * @param email The email address of the user.
  * @returns The user with the given email address, or null if no user was found.
  */
-export async function getUserByEmail(email: string): Promise<User | null> {
+export function getUserByEmail(email: string) {
+
+  //console.log(email);
+  //return null;
+  const result = null;
+
+
   try {
-    return await db.user.findUnique({
+    const result = db.user.findUnique({
       where: { email },
     });
+    console.log(result);
+    return result;
+
   }
   catch (error) {
+
 
     console.error('Failed to fetch user:', error);
     throw new Error('Failed to fetch user.');
   }
 
+
+
+  return result;
 }
 
 /**
@@ -56,3 +69,5 @@ export async function createUser(email: string, password: string): Promise<User>
     throw new Error('Failed to create user.');
   }
 }
+
+

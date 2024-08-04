@@ -4,9 +4,12 @@ import * as auth from '@/auth';
 import { AuthError } from 'next-auth';
 import { db } from '@/db';
 import { User } from '@prisma/client';
-import { registrationSchema } from '@/utils/schemas';
+import { loginSchema, registrationSchema } from '@/utils/schemas';
 import { saltAndHashPassword } from '@/utils/auth';
 import { createUser, getUserByEmail } from '@/db/queries/user';
+import email from 'next-auth/providers/email';
+import { SignInPasswordFormState } from '@/utils/types';
+import { permanentRedirect, redirect } from 'next/navigation';
 
 
 const loginRedirect = '/my-account';
@@ -14,25 +17,60 @@ export async function signInGoogle() {
     return await auth.signIn("google", { redirectTo: loginRedirect });
 }
 
+
 // Credentials Signin
 export async function signInPassword(
-    prevState: string | undefined,
-    formData: FormData,) {
+    formState: SignInPasswordFormState,
+    formData: FormData
+): Promise<SignInPasswordFormState> {
+
+    const result = await loginSchema.safeParse({
+        email: formData.get('email'),
+        password: formData.get('password')
+    });
+
+    if (!result.success) {
+        return {
+            errors: result.error.flatten().fieldErrors
+        }
+    }
 
     try {
-        await auth.signIn('credentials', formData);
+        console.log(formData.get('email'));
+        const result = await auth.signIn('credentials', {
+            redirectTo: loginRedirect,
+            email: formData.get('email') as string,
+            password: formData.get('password') as string,
+
+        });
+
     } catch (error) {
-        if (error instanceof AuthError) {
-            switch (error.type) {
-                case 'CredentialsSignin':
-                    return 'Invalid credentials.';
-                default:
-                    return 'Something went wrong.';
+        if (error instanceof Error) {
+            console.log(error.message);
+            return {
+                errors: {
+                    _form: [error.message]
+                },
+            };
+
+        } else {
+            return {
+                errors: {
+                    _form: ['An unknown error occurred']
+                }
             }
         }
-        throw error;
     }
+
+
+    return {
+        errors: {}
+    }
+
+
+
 }
+
 
 interface RegisterUserFormState {
     errors: {
