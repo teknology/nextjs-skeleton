@@ -221,7 +221,6 @@ export default function MyAccountNavbar() {
               <DropdownItem key='settings'>
                 Settings
               </DropdownItem>
-              <DropdownItem key='my_team'>My Team</DropdownItem>
               <DropdownItem key='billing'>Billing</DropdownItem>
               <DropdownItem key='help_and_feedback'>
                 Help & Feedback
