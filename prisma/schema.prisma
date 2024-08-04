@@ -9,12 +9,9 @@ generator client {
 
 model User {
     id            String          @id @default(cuid())
-    first_name    String?
-    last_name     String?
+    name          String?
     email         String          @unique
     emailVerified DateTime?
-    countryCode   String? // Optional country code field
-    phoneNumber   Int? // Optional phone number field
     image         String?
     role          UserRole[]
     password      String?
@@ -25,6 +22,19 @@ model User {
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    Profile Profile[]
+}
+
+model Profile {
+    id          Int     @id @default(autoincrement())
+    lastName    String?
+    title       String?
+    biography   String?
+    countryCode String? // Optional country code field
+    phoneNumber Int? // Optional phone number field
+    userId      String? @unique
+    user        User?   @relation(fields: [userId], references: [id])
 }
 
 model Role {
