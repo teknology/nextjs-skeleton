@@ -1,16 +1,9 @@
 'use server'
 
 import * as auth from '@/auth';
-import { AuthError } from 'next-auth';
-import { db } from '@/db';
-import { User } from '@prisma/client';
 import { loginSchema, registrationSchema } from '@/utils/schemas';
-import { saltAndHashPassword } from '@/utils/auth';
 import { createUser, getUserByEmail } from '@/db/queries/user';
-import email from 'next-auth/providers/email';
-import { SignInPasswordFormState } from '@/utils/types';
-import { permanentRedirect, redirect } from 'next/navigation';
-
+import { SignInPasswordFormState } from '@/utils/types/types';
 
 const loginRedirect = '/my-account';
 export async function signInGoogle() {
