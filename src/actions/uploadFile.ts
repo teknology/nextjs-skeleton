@@ -1,30 +1,38 @@
 'use server';
 
-import { NextResponse } from 'next/server';
-import { promises as fs } from 'fs';
-import path from 'path';
-
-export async function processFile(file: File) {
-  const uploadDir = path.join(process.cwd(), '/uploads');
-  const buffer = await file.arrayBuffer();
-  const filePath = path.join(uploadDir, file.name);
-
-  console.log(`Uploading file to ${filePath}`);
-  /*
-  try {
-    await fs.writeFile(filePath, Buffer.from(buffer));
-    console.log(`File uploaded successfully to ${filePath}`);
-  } catch (error) {
-    console.error('Error writing file:', error);
+interface ProcessFilerFormState {
+  errors: {
+    //   agreeTerms?: string[];
+    _form?: string[];
   }
-*/
-  return NextResponse.json({ success: true, filePath });
+}
+export async function processFile(
+  formState: ProcessFilerFormState,
+  formData: FormData
+): Promise<ProcessFilerFormState> {
+
+  const file = formData.get('file') as File;
+  console.log(file);
+
+  return {
+    errors: {}
+  }
+
 }
 
-export async function onFilesAccepted(files: File[]) {
+export async function saveDocumentInteraction(formData: FormData) {
+  const file = formData.get('file') as File;
+  //const userId = formData.get('userId') as string;
+  const documentHash = formData.get('documentHash') as string;
 
-  console.log('onFileAccepted', files);
-  for (const file of files) {
-    await processFile(file); // Call the server action to process each file
-  }
+  await saveFile(file, documentHash);
+
+}
+
+import fs from 'fs';
+
+async function saveFile(file: File, documentHash: string) {
+  const data = await file.arrayBuffer();
+  await fs.promises.appendFile(`./public/${documentHash}.pdf`, Buffer.from(data));
+  return;
 }

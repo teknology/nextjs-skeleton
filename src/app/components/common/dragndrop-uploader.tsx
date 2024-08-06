@@ -3,6 +3,9 @@ import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { Button, Progress } from '@nextui-org/react';
 import { TrashCanIcon } from '../icons';
+import * as actions from '@/actions';
+import { useFormState } from 'react-dom'
+import FormButton from './form-button';
 
 interface DropzoneProps {
     onFilesAccepted: (files: File[]) => void;
@@ -23,7 +26,7 @@ export default function DragNDropUploader({ onFilesAccepted }: DropzoneProps) {
             }));
             setFiles(previewFiles);
             //  onFilesAccepted(acceptedFiles);
-            handleFileUpload(previewFiles);
+            // handleFileUpload(previewFiles);
         },
         [onFilesAccepted]
     );
@@ -34,12 +37,25 @@ export default function DragNDropUploader({ onFilesAccepted }: DropzoneProps) {
         for (const file of files) {
             const formData = new FormData();
             formData.append('file', file);
+            actions.processFile(formState, formData);
 
-            // Simulate upload progress for demonstration purposes
-            // console.log(formData);
-            uploadedSize += file.size;
-            const progress = Math.round((uploadedSize / totalSize) * 100);
-            setUploadProgress(progress);
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error('File upload failed');
+                }
+
+                // Simulate upload progress for demonstration purposes
+                uploadedSize += file.size;
+                const progress = Math.round((uploadedSize / totalSize) * 100);
+                setUploadProgress(progress);
+            } catch (error) {
+                console.error('Error uploading file:', error);
+            }
         }
         setUploadProgress(100);
     };
@@ -87,32 +103,40 @@ export default function DragNDropUploader({ onFilesAccepted }: DropzoneProps) {
         };
     }, [files]);
 
+
+
+    console.log(FormData)
+
     return (
         <section className="container">
-            <form>
+            <form
+                action={ }
                 <div
-                    {...getRootProps({
-                        className: `dropzone p-6 min-h-64 border-2 border-dashed rounded-md ${isDragActive ? 'border-blue-500' : 'border-gray-300'}`,
-                        'aria-label': isDragActive ? 'Dropzone active, drop the files here' : 'File upload dropzone'
-                    })}
-                >
-                    <input aria-label="File upload input" {...getInputProps()} />
-                    <p className="text-center text-gray-500">
-                        {isDragActive
-                            ? "Drop the files here ..."
-                            : "Drag 'n' drop some files here, or click to select files"}
-                    </p>
+                {...getRootProps({
+                    className: `dropzone p-6 min-h-64 border-2 border-dashed rounded-md ${isDragActive ? 'border-blue-500' : 'border-gray-300'}`,
+                    'aria-label': isDragActive ? 'Dropzone active, drop the files here' : 'File upload dropzone'
+                })}
+            >
+                <input aria-label="File upload input" {...getInputProps()} />
+                <p className="text-center text-gray-500">
+                    {isDragActive
+                        ? "Drop the files here ..."
+                        : "Drag 'n' drop some files here, or click to select files"}
+                </p>
+            </div>
+            {uploadProgress !== null && (
+                <div className="mt-4">
+                    <Progress value={uploadProgress} size="sm" color="primary" />
                 </div>
-                {uploadProgress !== null && (
-                    <div className="mt-4">
-                        <Progress value={uploadProgress} size="sm" color="primary" />
-                    </div>
-                )}
+            )}
 
-                <aside style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', marginTop: 16 }}>
-                    {thumbs}
-                </aside>
-            </form>
-        </section>
+            <aside style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', marginTop: 16 }}>
+                {thumbs}
+            </aside>
+            <FormButton>
+                Save
+            </FormButton>
+        </form>
+        </section >
     );
 }
