@@ -9,7 +9,7 @@ export type { User };
  * @param email The email address of the user.
  * @returns The user with the given email address, or null if no user was found.
  */
-export function getUserByEmail(email: string) {
+export async function getUserByEmail(email: string) {
 
   //console.log(email);
   //return null;
@@ -17,7 +17,7 @@ export function getUserByEmail(email: string) {
 
 
   try {
-    const result = db.user.findUnique({
+    const result = await db.user.findUnique({
       where: { email },
     });
     console.log(result);
@@ -42,7 +42,7 @@ export function getUserByEmail(email: string) {
  * @returns The user with the given ID, or null if no user was found.
  */
 export async function getUserById(id: string): Promise<User | null> {
-  return db.user.findUnique({
+  return await db.user.findUnique({
     where: { id },
   });
 }
@@ -57,7 +57,7 @@ export async function createUser(email: string, password: string): Promise<User>
   const hashedPassword = await saltAndHashPassword(password);
 
   try {
-    return db.user.create({
+    return await db.user.create({
       data: {
         email: email,
         password: hashedPassword

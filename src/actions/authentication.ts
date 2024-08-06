@@ -17,11 +17,27 @@ export async function signInPassword(
     formData: FormData
 ): Promise<SignInPasswordFormState> {
 
+    const email = formData.get('email') as string;
+    const password = formData.get('password') as string;
     const result = await loginSchema.safeParse({
-        email: formData.get('email'),
-        password: formData.get('password')
+        email: email,
+        password: password
     });
-
+    const user = await getUserByEmail(email);
+    if (!user) {
+        return {
+            errors: {
+                email: ['User not found']
+            }
+        }
+    }
+    if (!user.password) {
+        return {
+            errors: {
+                password: ['Password not set']
+            }
+        }
+    }
     if (!result.success) {
         return {
             errors: result.error.flatten().fieldErrors
@@ -29,7 +45,7 @@ export async function signInPassword(
     }
 
     try {
-        console.log(formData.get('email'));
+        // console.log(formData.get('email'));
         const result = await auth.signIn('credentials', {
             redirectTo: loginRedirect,
             email: formData.get('email') as string,
@@ -39,7 +55,7 @@ export async function signInPassword(
 
     } catch (error) {
         if (error instanceof Error) {
-            console.log(error.message);
+            //  console.log(error.message);
             return {
                 errors: {
                     _form: [error.message]
@@ -143,8 +159,5 @@ export async function signOut() {
 export async function resetPassword(email: string) {
 
 
-}
-function findUserByEmail(arg0: string) {
-    throw new Error('Function not implemented.');
 }
 

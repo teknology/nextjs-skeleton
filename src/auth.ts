@@ -28,31 +28,55 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       authorize: async (credentials) => {
 
-
-
         if (!credentials.email) {
 
           throw new Error("Email missing")
         }
+        if (!credentials.password) {
+          throw new Error("Password missing")
+        }
         let user = null
 
 
-        if (credentials) {
+        if (credentials.email && credentials.password) {
           const email = credentials.email as string;
           const password = credentials.password as string;
           const user = await getUserByEmail(email);
+
           if (!user) {
             // No user found, so this is their first attempt to login
             // meaning this is also the place you could do registration
             throw new Error("User not found.")
           }
-          const passwordsMatch = await comparePasswords(password as string, user.password as string);
+          if (!user.password) {
+            // Add code to check if Password is null. If it is, then redirect to the password reset page
+            throw new Error("Password is null.")
+          }
 
-          if (passwordsMatch) return user;
+          // Add code to check if Password is null. If it is, then redirect to the password reset page
+          try {
+            const passwordsMatch = await comparePasswords(password as string, user.password as string);
 
-          console.log(user);
+            console.log(passwordsMatch);
+
+            if (passwordsMatch) return user;
+            // console.log(user);
+            // return user;
+
+          }
+          catch (error) {
+            console.error('Failed to compare passwords:', error);
+            //  throw new Error('Failed to compare passwords.');
+
+            return error;
+          }
+
+
+
+
+
         }
-        return user;
+
       },
     }),
   ],

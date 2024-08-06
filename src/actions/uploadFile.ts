@@ -1,20 +1,22 @@
 'use server';
 
-interface ProcessFilerFormState {
+interface ProcessFileFormState {
+  message?: string;
   errors: {
     //   agreeTerms?: string[];
     _form?: string[];
   }
 }
 export async function processFile(
-  formState: ProcessFilerFormState,
   formData: FormData
-): Promise<ProcessFilerFormState> {
+): Promise<ProcessFileFormState> {
 
   const file = formData.get('file') as File;
   console.log(file);
 
+
   return {
+    message: 'File uploaded successfully',
     errors: {}
   }
 
