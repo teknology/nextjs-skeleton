@@ -1,14 +1,14 @@
 
 'use server'
 import { getUserProfile } from '@/db/queries/profile';
-import { Profile } from '@/utils/types';
+import { Profile } from '@/utils/types/types';
 import { auth } from '@/auth';
 
 export async function getProfile() {
     const session = await auth();
     const userId = session?.user?.id
 
-    console.log(session)
+    // console.log(session)
 
     try {
 

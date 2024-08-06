@@ -5,6 +5,7 @@ import GlobalChip from "@/app/components/common/global-chip";
 import { CheckIcon } from "@/app/components/icons";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Badge, useDisclosure, Checkbox, Input, Link } from "@nextui-org/react";
 import DragNDropUploader from "@/app/components/common/dragndrop-uploader";
+import * as actions from "@/actions/"; // Import your server-side processing function
 
 // Define the interface for props
 interface UserWidgetProps {
@@ -24,13 +25,16 @@ export default function UserWidget({
 }: UserWidgetProps) {
     const { isOpen, onOpen, onClose } = useDisclosure();
 
+    const onFilesAccepted = (files: File[]) => {
+        console.log('file accepted triggered');
+    };
+
 
     return (
         <Card className="mt-4 bg-default-100" shadow="none">
             <CardBody>
                 <div className="flex items-center gap-4">
                     <Badge
-                        disableOutline
                         classNames={{
                             badge: "w-5 h-5",
                         }}
@@ -54,6 +58,7 @@ export default function UserWidget({
 
                     </Badge>
                     <Modal backdrop="blur"
+                        size='5xl'
                         isOpen={isOpen}
                         onClose={onClose}>
                         <ModalContent>
@@ -61,7 +66,7 @@ export default function UserWidget({
                                 <>
                                     <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
                                     <ModalBody>
-                                        <DragNDropUploader />
+                                        <DragNDropUploader onFilesAccepted={onFilesAccepted} />
                                     </ModalBody>
                                     <ModalFooter>
                                         <Button color="danger" variant="light" onPress={onClose}>
@@ -80,7 +85,7 @@ export default function UserWidget({
                             {`${firstName} ${lastName}`}
                         </p>
                         <p className="text-xs text-default-400">Customer Support</p>
-                        <p className="mt-1 text-xs text-default-400 flex items-center">
+                        <div className="mt-1 text-xs text-default-400 flex items-center">
                             {email}
                             {isVerified && (
                                 <GlobalChip>
@@ -88,7 +93,7 @@ export default function UserWidget({
                                     Verified
                                 </GlobalChip>
                             )}
-                        </p>
+                        </div>
                     </div>
                 </div>
             </CardBody>

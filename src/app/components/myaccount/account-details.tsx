@@ -19,14 +19,13 @@ import { Icon } from '@iconify/react'
 
 import countries from '@/app/components/myaccount/countries'
 
-export default function AccountDetails (props: CardProps) {
+export default function AccountDetails(props: CardProps) {
   return (
     <Card className='max-w-xl p-2' {...props}>
       <CardHeader className='flex flex-col items-start px-4 pb-0 pt-4'>
         <p className='text-large'>Account Details</p>
         <div className='flex gap-4 py-4'>
           <Badge
-            disableOutline
             classNames={{
               badge: 'w-5 h-5'
             }}

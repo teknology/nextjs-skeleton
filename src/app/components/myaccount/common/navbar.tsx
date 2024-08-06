@@ -43,7 +43,7 @@ export default function MyAccountNavbar() {
 
 
 
-  console.log(session)
+  //console.log(session)
   const handleAction = (key: string) => {
     switch (key) {
       case 'team_settings':
