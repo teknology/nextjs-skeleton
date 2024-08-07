@@ -2,12 +2,12 @@
 
 import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Button, Progress, Image } from '@nextui-org/react';
+import { Button, Divider, Progress } from '@nextui-org/react';
 import { TrashCanIcon } from '../icons';
 import * as actions from '@/actions';
 import FormButton from './form-button';
 import { useSession } from 'next-auth/react';
-
+import Image from 'next/image'
 interface DropzoneProps {
     onFilesAccepted: (files: File[]) => void;
 }
@@ -20,8 +20,8 @@ export default function DragNDropUploader({ onFilesAccepted }: DropzoneProps) {
     const { data: session } = useSession();
     const [files, setFiles] = useState<PreviewFile[]>([]);
     const [uploadProgress, setUploadProgress] = useState<number | null>(null);
-
-    console.log('session:', session);
+    //
+    //    console.log('session:', session);
 
     const onDrop = useCallback(
         (acceptedFiles: File[]) => {
@@ -36,31 +36,25 @@ export default function DragNDropUploader({ onFilesAccepted }: DropzoneProps) {
         [onFilesAccepted] // Add onFilesAccepted as a dependency
     );
 
-    const processFile = async (files: File[]) => {
+    const processFile = (files: File[]) => {
         setUploadProgress(0);
         const totalSize = files.reduce((acc, file) => acc + file.size, 0);
         let uploadedSize = 0;
 
         try {
-            setFormState('uploading...');
             for (const file of files) {
                 const formData = new FormData();
                 formData.append('file', file);
                 formData.append('documentHash', 'documentHash');
-                if (session?.user) {
-                    //  formData.append('userId', session.user.id);
-                }
-                setFormState('saving...');
+                formData.append('userId', session?.user?.id as string);
 
-                await actions.processFile(formData);
+                actions.processFile(formData);
                 uploadedSize += file.size;
                 setUploadProgress(Math.min((uploadedSize / totalSize) * 100, 100));
             }
             setUploadProgress(100);
-            setFormState('complete');
         } catch (error) {
             console.error('Error uploading files:', error);
-            setFormState('error');
         }
     };
 
@@ -75,6 +69,7 @@ export default function DragNDropUploader({ onFilesAccepted }: DropzoneProps) {
     });
 
     const thumbs = files.map((file) => (
+
         <div
             key={file.name}
             className="relative inline-flex rounded border border-gray-300 mb-2 mr-2 w-[200px] h-[200px] box-border overflow-hidden"
@@ -90,8 +85,8 @@ export default function DragNDropUploader({ onFilesAccepted }: DropzoneProps) {
                 <TrashCanIcon />
             </Button>
             <Image
-                isBlurred
                 width={240}
+                height={240}
                 src={file.preview}
                 alt={file.name}
                 className="object-cover w-full h-full"
@@ -108,18 +103,13 @@ export default function DragNDropUploader({ onFilesAccepted }: DropzoneProps) {
 
     return (
         <section className="container">
-            <form
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    processFile(files);
-                }}
-                {...getRootProps({
-                    className: `dropzone p-6 min-h-64 border-2 border-dashed rounded-md ${isDragActive ? 'border-blue-500' : 'border-gray-300'
-                        }`,
-                    'aria-label': isDragActive
-                        ? 'Dropzone active, drop the files here'
-                        : 'File upload dropzone',
-                })}
+            <div {...getRootProps({
+                className: `dropzone p-6 min-h-64 border-2 border-dashed rounded-md ${isDragActive ? 'border-blue-500' : 'border-gray-300'
+                    }`,
+                'aria-label': isDragActive
+                    ? 'Dropzone active, drop the files here'
+                    : 'File upload dropzone',
+            })}
             >
                 <div className="text-center">
                     <input aria-label="File upload input" {...getInputProps()} />
@@ -134,6 +124,10 @@ export default function DragNDropUploader({ onFilesAccepted }: DropzoneProps) {
                         <Progress value={uploadProgress} size="sm" color="primary" />
                     </div>
                 )}
+
+
+            </div>
+            <div>
                 <aside
                     style={{
                         display: 'flex',
@@ -142,14 +136,13 @@ export default function DragNDropUploader({ onFilesAccepted }: DropzoneProps) {
                         marginTop: 16,
                     }}
                 >
+                    <Divider className="my-4" />
                     {thumbs}
                 </aside>
-                <FormButton>Save</FormButton>
-            </form>
+            </div>
         </section>
-    );
+
+    )
+
 }
 
-function setFormState(state: string) {
-    console.log('Form state:', state);
-}

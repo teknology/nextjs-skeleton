@@ -34,7 +34,7 @@ export async function signInPassword(
     if (!user.password) {
         return {
             errors: {
-                password: ['Password not set']
+                password: ['Password not set. Please reset your password']
             }
         }
     }
