@@ -64,7 +64,7 @@ export default function UserWidget({
                         <ModalContent>
                             {(onClose) => (
                                 <>
-                                    <ModalHeader className="flex flex-col gap-1">Modal Title</ModalHeader>
+                                    <ModalHeader className="flex flex-col gap-1">Upload Your Profile Image</ModalHeader>
                                     <ModalBody>
                                         <DragNDropUploader onFilesAccepted={onFilesAccepted} />
                                     </ModalBody>
