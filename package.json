@@ -15,7 +15,7 @@
     "@nextui-org/react": "^2.4.6",
     "@prisma/client": "^5.17.0",
     "@react-email/components": "^0.0.22",
-    "bcrypt": "^5.1.1",
+    "@types/bcryptjs": "^2.4.6",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
     "formidable": "^3.5.1",

@@ -136,32 +136,30 @@ export default function DragNDropUploader({ onFilesAccepted }: DropzoneProps) {
     });
 
     const thumbs = files.map((file) => (
-        <div>
-
-            <div
-                key={file.name}
-                className="relative inline-flex rounded border border-gray-300 mb-2 mr-2 w-[200px] h-[200px] box-border overflow-hidden"
+        <div
+            key={file.name}
+            className="relative inline-flex rounded border border-gray-300 mb-2 mr-2 w-[200px] h-[200px] box-border overflow-hidden"
+        >
+            <Button
+                isIconOnly
+                color="warning"
+                variant="faded"
+                aria-label="Remove image"
+                className="absolute top-1 right-1 z-10"
+                onClick={() => setFiles(files.filter((f) => f.name !== file.name))}
             >
-                <Button
-                    isIconOnly
-                    color="warning"
-                    variant="faded"
-                    aria-label="Remove image"
-                    className="absolute top-1 right-1 z-10"
-                    onClick={() => setFiles(files.filter((f) => f.name !== file.name))}
-                >
-                    <TrashCanIcon />
-                </Button>
-                <Image
-                    width={240}
-                    height={240}
-                    src={file.preview}
-                    alt={file.name}
-                    className="object-cover w-full h-full"
-                    onLoad={() => URL.revokeObjectURL(file.preview)}
-                />
-            </div>
+                <TrashCanIcon />
+            </Button>
+            <Image
+                width={240}
+                height={240}
+                src={file.preview}
+                alt={file.name}
+                className="object-cover w-full h-full"
+                onLoad={() => URL.revokeObjectURL(file.preview)}
+            />
         </div>
+
     ));
 
     useEffect(() => {
@@ -223,7 +221,7 @@ export default function DragNDropUploader({ onFilesAccepted }: DropzoneProps) {
                     {thumbs}
                 </aside>
             </div>
-            <Button startContent={<SaveIcon />} color='primary' type='submit' isLoading={pending}>
+            <Button startContent={<SaveIcon height={40} width={40} />} color='primary' onClick={() => processFile(files)} isLoading={pending}>
                 Save
             </Button>
         </section>
