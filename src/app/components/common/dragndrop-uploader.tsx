@@ -5,10 +5,8 @@ import { useDropzone, FileRejection } from 'react-dropzone';
 import { Button, Card, CardBody, Divider, Progress } from '@nextui-org/react';
 import { SaveIcon, TrashCanIcon } from '../icons';
 import * as actions from '@/actions';
-import FormButton from './form-button';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { set } from 'zod';
 
 interface DropzoneProps {
     onFilesAccepted: (files: File[]) => void;
@@ -19,21 +17,22 @@ interface PreviewFile extends File {
     preview: string;
 }
 
-export default function DragNDropUploader({ onFilesAccepted }: DropzoneProps) {
+type DropState = {
+    errors: {
+        _form: string[];  // Changed to a simple array of strings
+    };
+};
+
+export default function DragNDropUploader({ onFilesAccepted, onFilesRejected }: DropzoneProps) {
     const { data: session } = useSession();
-    const [formDrop, setDropState] = useState({ errors: {} });
+    const [formDrop, setDropState] = useState<DropState>({ errors: { _form: [] } });
     const [files, setFiles] = useState<PreviewFile[]>([]);
     const [uploadProgress, setUploadProgress] = useState<number | null>(null);
     const [pending, setPending] = useState<boolean>(false);
 
-
-
     const onDropFilesAccepted = useCallback(
         (acceptedFiles: File[]) => {
-            setDropState((prevState) => ({
-                ...prevState,
-                errors: {},
-            }));
+            setDropState({ errors: { _form: [] } });
             const previewFiles = acceptedFiles.map((file) =>
                 Object.assign(file, {
                     preview: URL.createObjectURL(file),
@@ -47,49 +46,32 @@ export default function DragNDropUploader({ onFilesAccepted }: DropzoneProps) {
 
     const onDropFilesRejected = useCallback(
         (rejectedFiles: FileRejection[]) => {
-            setDropState((prevState) => ({
-                ...prevState,
-                errors: {},
-            }));
-
             const errorMessages = rejectedFiles.reduce((acc, fileRejection) => {
-                acc[fileRejection.file.name] = fileRejection.errors.map((error) => error.message).join(', ');
+                acc.push(fileRejection.errors.map((error) => error.message).join(', '));
                 return acc;
-            }, {} as { [key: string]: string });
+            }, [] as string[]);
 
-            setDropState((prevState) => ({
-                ...prevState,
-                errors: errorMessages,
-            }));
-            console.log(errorMessages)
+            setDropState({ errors: { _form: errorMessages } });
+            if (onFilesRejected) {
+                onFilesRejected(rejectedFiles.map((r) => r.file));
+            }
+            console.log(errorMessages);
         },
-        []
+        [onFilesRejected]
     );
 
     const processFile = async (files: File[]) => {
-
         if (!session?.user?.id) {
-            setDropState((prevState) => ({
-                ...prevState,
-                errors: {
-                    upload: 'User ID not found',
-                },
-            }));
+            setDropState({ errors: { _form: ['User ID not found'] } });
             return;
         }
-        if (files.length === 0) {
 
-            setDropState((prevState) => ({
-                ...prevState,
-                errors: {
-                    upload: 'No files to upload',
-                },
-            }));
+        if (files.length === 0) {
+            setDropState({ errors: { _form: ['No files to upload'] } });
             return;
         }
 
         setPending(true);
-
         setUploadProgress(0);
         const totalSize = files.reduce((acc, file) => acc + file.size, 0);
         let uploadedSize = 0;
@@ -98,10 +80,10 @@ export default function DragNDropUploader({ onFilesAccepted }: DropzoneProps) {
             for (const file of files) {
                 const formData = new FormData();
                 formData.append('file', file);
-                formData.append('documentHash', 'documentHash');
-                formData.append('userId', session?.user?.id as string);
+                formData.append('documentHash', 'documentHash'); // Ensure this is correct
+                formData.append('userid', session.user.id);
 
-                await actions.processFile(formData);
+                await actions.processFile(formDrop, formData);
                 uploadedSize += file.size;
                 setUploadProgress(Math.min((uploadedSize / totalSize) * 100, 100));
             }
@@ -109,24 +91,15 @@ export default function DragNDropUploader({ onFilesAccepted }: DropzoneProps) {
             setPending(false);
         } catch (error) {
             console.error('Error uploading files:', error);
-
-            // Adding error to setDropState
-            setDropState((prevState) => ({
-                ...prevState,
-                errors: {
-                    ...prevState.errors,
-                    upload: (error as Error).message || 'An error occurred during file upload',
-                },
-            }));
+            setDropState({ errors: { _form: [(error as Error).message || 'An error occurred during file upload'] } });
         }
     };
-
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         noClick: true,
         maxFiles: 1,
         maxSize: 307200,
-        minSize: 30,  //TODO: Test to see if this is necessary
+        minSize: 30,
         onDropAccepted: onDropFilesAccepted,
         onDropRejected: onDropFilesRejected,
         accept: {
@@ -159,7 +132,6 @@ export default function DragNDropUploader({ onFilesAccepted }: DropzoneProps) {
                 onLoad={() => URL.revokeObjectURL(file.preview)}
             />
         </div>
-
     ));
 
     useEffect(() => {
@@ -170,20 +142,20 @@ export default function DragNDropUploader({ onFilesAccepted }: DropzoneProps) {
 
     return (
         <section className="container">
-            <div {...getRootProps({
-                className: `dropzone p-6 min-h-64 border-2 border-dashed rounded-md ${isDragActive ? 'border-blue-500' : 'border-gray-300'
-                    }`,
-                'aria-label': isDragActive
-                    ? 'Dropzone active, drop the files here'
-                    : 'File upload dropzone',
-            })}
+            <div
+                {...getRootProps({
+                    className: `dropzone p-6 min-h-64 border-2 border-dashed rounded-md ${isDragActive ? 'border-blue-500' : 'border-gray-300'}`,
+                    'aria-label': isDragActive
+                        ? 'Dropzone active, drop the files here'
+                        : 'File upload dropzone',
+                })}
             >
                 <div className="text-center">
                     <input aria-label="File upload input" {...getInputProps()} />
                     <p className="text-center text-gray-500">
                         {isDragActive
                             ? 'Drop your image here ...'
-                            : "Drag 'n' drop some your image here, or click to select files"}
+                            : "Drag 'n' drop some images here, or click to select files"}
                     </p>
                 </div>
                 {uploadProgress !== null && (
@@ -192,16 +164,14 @@ export default function DragNDropUploader({ onFilesAccepted }: DropzoneProps) {
                     </div>
                 )}
             </div>
-            {Object.keys(formDrop.errors).length > 0 && (
-                <Card className='bg-red-200 border-2 border-rose-600 mt-3'>
+            {formDrop.errors._form.length > 0 && (
+                <Card className="bg-red-200 border-2 border-rose-600 mt-3">
                     <CardBody>
                         <div className="mt-4 text-red-600">
                             <strong>Errors:</strong>
                             <ul>
-                                {Object.entries(formDrop.errors).map(([fileName, error], index) => (
-                                    <li key={index}>
-                                        <strong>{fileName}</strong>: {error as React.ReactNode}
-                                    </li>
+                                {formDrop.errors._form.map((error, index) => (
+                                    <li key={index}>{error}</li>
                                 ))}
                             </ul>
                         </div>
@@ -221,9 +191,11 @@ export default function DragNDropUploader({ onFilesAccepted }: DropzoneProps) {
                     {thumbs}
                 </aside>
             </div>
-            <Button startContent={<SaveIcon height={40} width={40} />} color='primary' onClick={() => processFile(files)} isLoading={pending}>
-                Save
-            </Button>
+            <div className="flex justify-end">
+                <Button startContent={<SaveIcon />} color="primary" onClick={() => processFile(files)} isLoading={pending}>
+                    Save
+                </Button>
+            </div>
         </section>
     );
 }

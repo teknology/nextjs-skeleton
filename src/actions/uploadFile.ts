@@ -1,69 +1,99 @@
 'use server';
 
 import path from 'path';
-import fs from 'fs';
+import fs, { mkdir } from 'fs';
 
 interface ProcessFileFormState {
-  message?: string;
   errors: {
-    file?: string;
-    userid?: string;
-    //   agreeTerms?: string[];
     _form?: string[];
   }
 }
 export async function processFile(
+  formDrop: ProcessFileFormState,
   formData: FormData
 ): Promise<ProcessFileFormState> {
 
   const file = formData.get('file') as File;
-  console.log(file);
 
+
+  const arrayBuffer = await file.arrayBuffer();
   const userid = formData.get('userid') as string;
+  const buffer = new Uint8Array(arrayBuffer);
 
-  if (!file || !userid) {
+
+  console.log(userid);
+  if (!file) {
     return {
       errors: {
-        file: !file ? 'File is required' : undefined,
-        userid: !userid ? 'User ID is required' : undefined,
+        _form: ['File is missing']
       }
-    };
+    }
+  };
+  if (!userid || userid === '') {
+    return {
+      errors: {
+        _form: ['User ID is missing']
+      }
+    }
+  }
+  // Define the directory path
+  const uploadDir = path.join(process.cwd(), 'public', 'uploads', userid, 'profile');
+  const fullPath = path.join(uploadDir, file.name);
+  const fileExists = fs.existsSync(fullPath);
+  if (fileExists) {
+    return {
+      errors: {
+        _form: ['File already exists. You may have uploaded this file already.']
+      }
+    }
   }
 
-  const directoryPath = path.join(__dirname, 'public', 'images', userid);
+
+  if (!fs.existsSync(uploadDir)) {
+    // Create the directory if it doesn't exist
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+
+
+  const result = await fs.promises.writeFile(fullPath, buffer);
+
+  console.log(result);
+  return {
+    errors: {
+      _form: []
+    }
+  };
+
+
+  fs.writeFile(`${uploadDir}/${file.name}`, buffer, (err) => {
+    console.log('writing file');
+    if (err) {
+      return {
+        errors: {
+          _form: ['Error writing file']
+        }
+      }
+    }
+  });
+
+
+
+
+
 
   // Create directory if it doesn't exist
-  if (!fs.existsSync(directoryPath)) {
+  /*if (!fs.existsSync(directoryPath)) {
     fs.mkdirSync(directoryPath, { recursive: true });
   }
+    */
 
-  const filePath = path.join(directoryPath, file.name);
 
-  // Save the file to the specified directory
-  const fileBuffer = Buffer.from(await file.arrayBuffer());
-  fs.writeFileSync(filePath, fileBuffer);
+
+
 
   return {
-    message: 'File uploaded successfully',
-    errors: {}
-  }
-
+    errors: {
+      _form: []
+    }
+  };
 }
-/*
-export async function saveDocumentInteraction(formData: FormData) {
-  const file = formData.get('file') as File;
-  //const userId = formData.get('userId') as string;
-  const documentHash = formData.get('documentHash') as string;
-
-  await saveFile(file, documentHash);
-
-}
-
-
-
-async function saveFile(file: File, documentHash: string) {
-  const data = await file.arrayBuffer();
-  await fs.promises.appendFile(`./public/${documentHash}.pdf`, Buffer.from(data));
-  return;
-}
-  */
