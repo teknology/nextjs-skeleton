@@ -37,30 +37,30 @@ import * as actions from '@/actions'
 import { AcmeIcon } from '@/app/components/icons'
 import NotificationsCard from '@/app/components/myaccount/notification-card'
 import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 export default function MyAccountNavbar() {
   const session = useSession()
 
-
-
-
   //console.log(session)
+  const router = useRouter();
+
   const handleAction = (key: string) => {
     switch (key) {
-      case 'team_settings':
-        console.log('Team settings')
-        break
-      case 'billing':
-        console.log(key)
-        break
+      case 'settings':
+        router.push('/my-account/settings');
+        break;
+      case 'account':
+        router.push('/my-account');
+        break;
       case 'help_and_feedback':
-        console.log(key)
-        break
+        console.log(key);
+        break;
       case 'logout':
         // Add your logout logic here
-        actions.signOut()
-        break
+        actions.signOut();
+        break;
       default:
-        console.log('Unknown action')
+        console.log('Unknown action');
     }
   }
   return (
@@ -218,6 +218,9 @@ export default function MyAccountNavbar() {
                 <p className='font-semibold'>Signed in as</p>
                 <p className='font-semibold'>{session.data?.user?.email}</p>
               </DropdownItem>
+              <DropdownItem key='account'>
+                My Account
+              </DropdownItem>
               <DropdownItem key='settings'>
                 Settings
               </DropdownItem>
@@ -235,29 +238,35 @@ export default function MyAccountNavbar() {
 
       {/* Mobile Menu */}
       <NavbarMenu>
+        <span> Signed in as {session.data?.user?.email} </span>
         <NavbarMenuItem>
           <Link className='w-full' color='foreground' href='#'>
             Account Home
           </Link>
         </NavbarMenuItem>
-        <NavbarMenuItem isActive>
-          <Link aria-current='page' className='w-full' color='primary' href='#'>
-            Deployments
+        <NavbarMenuItem>
+          <Link className='w-full' color='primary' href='#'>
+            Websites
           </Link>
         </NavbarMenuItem>
         <NavbarMenuItem>
-          <Link className='w-full' color='foreground' href='#'>
-            Analytics
-          </Link>
-        </NavbarMenuItem>
-        <NavbarMenuItem>
-          <Link className='w-full' color='foreground' href='#'>
+          <Link className='w-full' color='primary' href='#'>
             Team
           </Link>
         </NavbarMenuItem>
         <NavbarMenuItem>
           <Link className='w-full' color='foreground' href='#'>
             Settings
+          </Link>
+        </NavbarMenuItem>
+        <NavbarMenuItem>
+          <Link className='w-full' color='foreground' href='#'>
+            Help & Feedback
+          </Link>
+        </NavbarMenuItem>
+        <NavbarMenuItem>
+          <Link className='w-full' color='foreground' href='#'>
+            Logout
           </Link>
         </NavbarMenuItem>
       </NavbarMenu>
