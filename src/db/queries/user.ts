@@ -70,4 +70,18 @@ export async function createUser(email: string, password: string): Promise<User>
   }
 }
 
+export async function updateUserEmail(id: string, email: string): Promise<User> {
+  try {
+    return await db.user.update({
+      where: { id },
+      data: {
+        email: email,
+      }
+    })
+  }
+  catch (error) {
+    console.error('Failed to update user:', error);
+    throw new Error('Failed to update user.');
+  } //I added this line
 
+}
