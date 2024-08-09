@@ -31,7 +31,7 @@ export async function signInPassword(
             }
         }
     }
-    if (!user.password) {
+    if (!user.password || user.password === '' || user.password === null) {
         return {
             errors: {
                 password: ['Password not set. Please reset your password']
@@ -50,6 +50,7 @@ export async function signInPassword(
             redirectTo: loginRedirect,
             email: formData.get('email') as string,
             password: formData.get('password') as string,
+            user: user
 
         });
 

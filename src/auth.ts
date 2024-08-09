@@ -1,3 +1,4 @@
+
 import NextAuth from "next-auth"
 import Google from "next-auth/providers/google"
 import Facebook from "next-auth/providers/facebook"
@@ -7,9 +8,13 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { db } from "@/db"
 import { comparePasswords } from "./utils/auth"
 import { z } from 'zod';
-import { getUserByEmail } from "./db/queries/user"
+import { getUserByEmail, User } from "./db/queries/user"
 import { redirect } from "next/dist/server/api-utils"
 
+interface UserCredentials {
+  email: string;
+  password: string | null;
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(db),
@@ -25,8 +30,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       credentials: {
         email: {},
         password: {},
+
       },
-      authorize: async (credentials) => {
+      authorize: async (credentials): Promise<UserCredentials | null> => {
+        let user = null
 
         if (!credentials.email) {
 
@@ -35,29 +42,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!credentials.password) {
           throw new Error("Password missing")
         }
-        let user = null
-
 
         if (credentials.email && credentials.password) {
           const email = credentials.email as string;
           const password = credentials.password as string;
           const user = await getUserByEmail(email);
 
-          if (!user) {
-            // No user found, so this is their first attempt to login
-            // meaning this is also the place you could do registration
-            throw new Error("User not found.")
-          }
-          if (!user.password) {
-            // Add code to check if Password is null. If it is, then redirect to the password reset page
-            throw new Error("Password is null.")
-          }
+          // console.log(user);
+          console.log('user password', user?.password);
+
 
           // Add code to check if Password is null. If it is, then redirect to the password reset page
           try {
-            const passwordsMatch = await comparePasswords(password as string, user.password as string);
+            const passwordsMatch = await comparePasswords(password as string, user?.password as string);
 
-            console.log(passwordsMatch);
+            //  console.log(passwordsMatch);
 
             if (passwordsMatch) return user;
             // console.log(user);
@@ -68,15 +67,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             console.error('Failed to compare passwords:', error);
             //  throw new Error('Failed to compare passwords.');
 
-            return error;
+            return null; // Fix: Return null instead of error
           }
-
-
-
-
-
         }
-
+        return null;
       },
     }),
   ],

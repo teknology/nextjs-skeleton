@@ -6,7 +6,7 @@ import React from 'react'
 import { Input, Checkbox, Link } from '@nextui-org/react'
 import { Icon } from '@iconify/react'
 
-export default function Component () {
+export default function Registration() {
   const [isVisible, setIsVisible] = React.useState(false)
   const [isConfirmVisible, setIsConfirmVisible] = React.useState(false)
 

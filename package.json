@@ -6,13 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "maildev": "email dev"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.4.1",
     "@mapbox/node-pre-gyp": "^1.0.11",
     "@nextui-org/react": "^2.4.6",
     "@prisma/client": "^5.17.0",
+    "@react-email/components": "^0.0.22",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
@@ -20,9 +22,11 @@
     "framer-motion": "^11.3.8",
     "next": "14.2.5",
     "next-auth": "^5.0.0-beta.19",
+    "nodemailer": "^6.9.14",
     "react": "^18",
     "react-dom": "^18",
     "react-dropzone": "^14.2.3",
+    "react-email": "2.1.6",
     "react-scripts": "^4.0.0",
     "tailwind-merge": "^2.4.0",
     "usehooks-ts": "^3.1.0",
