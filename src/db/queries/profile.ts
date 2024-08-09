@@ -1,20 +1,28 @@
 'use server'
 import { db } from '@/db';
 import { auth } from '@/auth';
+import type { User, Profile } from '@prisma/client';
 
-export async function getUserProfile(userId: string) {
+export type { User };
+export type { Profile };
 
+
+
+
+export async function getProfileByUserId(userId: string): Promise<Profile | null> {
     const session = await auth();
     try {
-        return await db.profile.findUnique({
-            where: { userId: session?.user?.id },
+        const profile = await db.profile.findUnique({
+            where: {
+                userId: session?.user?.id,
+            },
+
         });
 
-
-
-    }
-    catch (error) {
+        return profile;
+    } catch (error) {
         console.error('Failed to fetch user:', error);
         throw new Error('Failed to fetch user.');
     }
 }
+
