@@ -1,6 +1,6 @@
 
 'use server'
-import { getUserProfile } from '@/db/queries/profile';
+import { getProfileByUserId } from '@/db/queries/profile';
 import { Profile } from '@/utils/types/types';
 import { auth } from '@/auth';
 
@@ -13,7 +13,7 @@ export async function getProfile() {
     try {
 
         if (userId) {
-            return await getUserProfile(userId);
+            return await getProfileByUserId(userId);
         } else {
             throw new Error('User ID is undefined.');
         }

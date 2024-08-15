@@ -11,7 +11,6 @@ export type { User };
  */
 export async function getUserByEmail(email: string) {
 
-  //console.log(email);
   //return null;
   const result = null;
 
@@ -20,7 +19,7 @@ export async function getUserByEmail(email: string) {
     const result = await db.user.findUnique({
       where: { email },
     });
-    console.log(result);
+    //console.log(result);
     return result;
 
   }
@@ -84,4 +83,19 @@ export async function updateUserEmail(id: string, email: string): Promise<User> 
     throw new Error('Failed to update user.');
   } //I added this line
 
+}
+
+export async function updateUserAvatar(id: string, avatar: string): Promise<User> {
+  try {
+    return await db.user.update({
+      where: { id },
+      data: {
+        image: avatar,
+      }
+    })
+  }
+  catch (error) {
+    console.error('Failed to update user:', error);
+    throw new Error('Failed to update user.');
+  }
 }

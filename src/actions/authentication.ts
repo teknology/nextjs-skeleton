@@ -4,7 +4,6 @@ import * as auth from '@/auth';
 import { loginSchema, registrationSchema } from '@/utils/schemas';
 import { createUser, getUserByEmail } from '@/db/queries/user';
 import { SignInPasswordFormState } from '@/utils/types/types';
-
 const loginRedirect = '/my-account';
 export async function signInGoogle() {
     return await auth.signIn("google", { redirectTo: loginRedirect });
@@ -162,3 +161,8 @@ export async function resetPassword(email: string) {
 
 }
 
+export async function refreshSession() {
+
+
+
+}

@@ -49,7 +49,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const user = await getUserByEmail(email);
 
           // console.log(user);
-          console.log('user password', user?.password);
+          // console.log('user password', user?.password);
 
 
           // Add code to check if Password is null. If it is, then redirect to the password reset page
@@ -83,7 +83,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return !!auth
     },
 
-    jwt({ token, user }) {
+    jwt({ token, trigger, session, user }) {
+      if (trigger === "update" && session?.image) {
+        // Note, that `session` can be any arbitrary object, remember to validate it!
+
+        token.image = session.image
+      }
       try {
         if (user) {
           token.id = user.id

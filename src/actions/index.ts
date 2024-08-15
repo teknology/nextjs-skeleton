@@ -1,3 +1,3 @@
-export { signInGoogle, signOut, signInFacebook, signUpPassword, signInPassword } from './authentication';
+export { signInGoogle, signOut, signInFacebook, signUpPassword, signInPassword, refreshSession } from './authentication';
 export { getProfile } from './profile';
-export { processFile } from './uploadFile';
+export { processFile } from './file-management';

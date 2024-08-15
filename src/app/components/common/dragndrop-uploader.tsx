@@ -5,8 +5,9 @@ import { useDropzone, FileRejection } from 'react-dropzone';
 import { Button, Card, CardBody, Divider, Progress } from '@nextui-org/react';
 import { SaveIcon, TrashCanIcon } from '../icons';
 import * as actions from '@/actions';
-import { useSession } from 'next-auth/react';
+import { getSession, useSession } from 'next-auth/react';
 import Image from 'next/image';
+import { get } from 'http';
 
 interface DropzoneProps {
     onFilesAccepted: (files: File[]) => void;
@@ -24,7 +25,7 @@ type DropState = {
 };
 
 export default function DragNDropUploader({ onFilesAccepted, onFilesRejected }: DropzoneProps) {
-    const { data: session } = useSession();
+    const { data: session, status, update } = useSession()
     const [formDrop, setDropState] = useState<DropState>({ errors: { _form: [] } });
     const [files, setFiles] = useState<PreviewFile[]>([]);
     const [uploadProgress, setUploadProgress] = useState<number | null>(null);
@@ -55,43 +56,57 @@ export default function DragNDropUploader({ onFilesAccepted, onFilesRejected }: 
             if (onFilesRejected) {
                 onFilesRejected(rejectedFiles.map((r) => r.file));
             }
-            console.log(errorMessages);
+            // console.log(errorMessages);
         },
         [onFilesRejected]
     );
 
     const processFile = async (files: File[]) => {
-        if (!session?.user?.id) {
-            setDropState({ errors: { _form: ['User ID not found'] } });
-            return;
-        }
+        if (status === "authenticated") {
 
-        if (files.length === 0) {
-            setDropState({ errors: { _form: ['No files to upload'] } });
-            return;
-        }
-
-        setPending(true);
-        setUploadProgress(0);
-        const totalSize = files.reduce((acc, file) => acc + file.size, 0);
-        let uploadedSize = 0;
-
-        try {
-            for (const file of files) {
-                const formData = new FormData();
-                formData.append('file', file);
-                formData.append('documentHash', 'documentHash'); // Ensure this is correct
-                formData.append('userid', session.user.id);
-
-                await actions.processFile(formDrop, formData);
-                uploadedSize += file.size;
-                setUploadProgress(Math.min((uploadedSize / totalSize) * 100, 100));
+            if (!session?.user?.id) {
+                setDropState({ errors: { _form: ['User ID not found'] } });
+                return;
             }
-            setUploadProgress(100);
-            setPending(false);
-        } catch (error) {
-            console.error('Error uploading files:', error);
-            setDropState({ errors: { _form: [(error as Error).message || 'An error occurred during file upload'] } });
+
+            if (files.length === 0) {
+                setDropState({ errors: { _form: ['No files to upload'] } });
+                return;
+            }
+
+            setPending(true);
+            setUploadProgress(0);
+            const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+            let uploadedSize = 0;
+
+            try {
+                for (const file of files) {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('documentHash', 'documentHash'); // Ensure this is correct
+                    formData.append('userid', session.user.id);
+
+                    // Change File exist check to trigger on Drop
+                    await actions.processFile(formData);
+
+                    uploadedSize += file.size;
+                    setUploadProgress(Math.min((uploadedSize / totalSize) * 100, 100));
+                }
+                console.log()
+                update({ image: "test.jpg" })
+                // update({ image: files[0].name as string });
+                setUploadProgress(100);
+                setPending(false);
+                console.log('session updated', session);
+
+
+
+            } catch (error) {
+                setPending(false);
+                console.error('Error uploading files:', error);
+                setDropState({ errors: { _form: [(error as Error).message || 'An error occurred during file upload'] } });
+                await getSession();
+            }
         }
     };
 
@@ -107,6 +122,7 @@ export default function DragNDropUploader({ onFilesAccepted, onFilesRejected }: 
             'image/png': [],
         },
     });
+
 
     const thumbs = files.map((file) => (
         <div
