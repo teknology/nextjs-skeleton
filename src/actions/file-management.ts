@@ -3,7 +3,7 @@
 import path from 'path';
 import fs, { mkdir } from 'fs';
 import { updateUserAvatar } from '@/db/queries/user';
-import { uploadsPath, profileAvatarUrl } from '@/utils/public-paths';
+import { uploadsPath, createProfileImagePath } from '@/utils/public-paths';
 
 interface ProcessFileFormState {
   errors: {
@@ -20,6 +20,7 @@ export async function processFile(
   const userid = formData.get('userid') as string;
   const buffer = new Uint8Array(arrayBuffer);
   // Define the directory path
+  const publicPath = path.join('public', 'uploads', userid, 'profile');
   const uploadDir = path.join(process.cwd(), 'public', 'uploads', userid, 'profile');
   const fullPath = path.join(uploadDir, file.name);
   const fileExists = fs.existsSync(fullPath);
@@ -42,7 +43,7 @@ export async function processFile(
   if (fileExists) {
 
     try {
-      await updateUserAvatar(userid, file.name);
+      await updateUserAvatar(userid, publicPath);
 
     }
     catch (err: unknown) {
@@ -71,7 +72,7 @@ export async function processFile(
       fs.mkdirSync(uploadDir, { recursive: true });
     }
     await fs.promises.writeFile(fullPath, buffer);
-    await updateUserAvatar(userid, file.name);
+    await updateUserAvatar(userid, publicPath);
 
   }
   catch (err: unknown) {

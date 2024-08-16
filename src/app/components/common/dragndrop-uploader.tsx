@@ -7,7 +7,7 @@ import { SaveIcon, TrashCanIcon } from '../icons';
 import * as actions from '@/actions';
 import { getSession, useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { get } from 'http';
+import { createProfileImagePath } from '@/utils/public-paths';
 
 interface DropzoneProps {
     onFilesAccepted: (files: File[]) => void;
@@ -93,7 +93,7 @@ export default function DragNDropUploader({ onFilesAccepted, onFilesRejected }: 
                     setUploadProgress(Math.min((uploadedSize / totalSize) * 100, 100));
                 }
                 console.log()
-                update({ image: "test.jpg" })
+                update({ image: createProfileImagePath(session.user.id, files[0].name) });
                 // update({ image: files[0].name as string });
                 setUploadProgress(100);
                 setPending(false);

@@ -13,6 +13,9 @@ export default function Home() {
   console.log(session)
 
 
+
+
+
   const refreshSession = async () => {
     update()
     // console.log('session refreshed', session);
@@ -27,7 +30,7 @@ export default function Home() {
   return (
     <div className='container mx-auto space-y-1'>
 
-      <Button onClick={() => update({ name: "John Doe" })}>Update name</Button>
+      <Button onClick={() => update({ image: "John Doe" })}>Update name</Button>
 
       <Button onClick={() => update()}>Edit name</Button>
 

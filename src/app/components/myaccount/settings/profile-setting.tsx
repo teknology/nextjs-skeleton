@@ -7,7 +7,6 @@ import { cn } from "@/utils/cn";
 import { country_codes } from "@/utils/data/country-codes";
 import UserWidget from "./profile/user-widget";
 import { useSession } from "next-auth/react";
-import { profileAvatarUrl } from "@/utils/public-paths";
 
 interface ProfileSettingCardProps {
   className?: string;
@@ -19,7 +18,6 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
     const session = useSession();
     //console.log(session.data);
     // Fallback values in case session data is not available
-    const avatarSrc = session ? profileAvatarUrl(session.data?.user?.id as string, session.data?.user?.image as string) : "";
     const firstName = session?.data?.user?.name?.split(" ")[0] || "Kate";
     const lastName = session?.data?.user?.name?.split(" ")[1] || "Moore";
     const email = session?.data?.user?.email || "kate.moore@acme.com";
@@ -33,7 +31,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
             This displays your public profile on the site.
           </p>
           <UserWidget
-            avatarSrc={avatarSrc}
+            avatarSrc={session?.data?.user?.image || ""}
             firstName="Kate"
             lastName="Moore"
             email="kate.moore@acme.com"

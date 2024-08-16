@@ -38,14 +38,12 @@ import { AcmeIcon } from '@/app/components/icons'
 import NotificationsCard from '@/app/components/myaccount/notification-card'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { profileAvatarUrl } from '@/utils/public-paths'
 
 export default function MyAccountNavbar() {
   const session = useSession()
 
   //console.log(session)
 
-  const userAvatar = profileAvatarUrl(session.data?.user?.id as string, session.data?.user?.image as string)
   //console.log(userAvatar)
   const router = useRouter();
 
@@ -209,7 +207,7 @@ export default function MyAccountNavbar() {
 
                   <Avatar
                     size='sm'
-                    src={userAvatar}
+                    src={session.data?.user?.image || ''}
                   />
                 </Badge>
               </button>
