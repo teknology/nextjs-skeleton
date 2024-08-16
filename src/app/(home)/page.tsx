@@ -10,16 +10,15 @@ import { useSession, getSession } from 'next-auth/react'
 
 export default function Home() {
   const { data: session, status, update } = useSession()
-  console.log(session)
 
 
+  const updateSession = async () => {
+    await update({ image: '/test.jpg' });
 
-
-
-  const refreshSession = async () => {
-    update()
-    // console.log('session refreshed', session);
   };
+
+
+
   //const user = getUserByEmail('gary@magehd.com');
   //  console.log(user);
   /*
@@ -30,10 +29,11 @@ export default function Home() {
   return (
     <div className='container mx-auto space-y-1'>
 
-      <Button onClick={() => update({ image: "John Doe" })}>Update name</Button>
+      <Button onClick={() => updateSession()}>Update image</Button>
 
       <Button onClick={() => update()}>Edit name</Button>
 
+      <pre>{JSON.stringify(session)}</pre>
 
       <div className='flex justify-center w-100 py-100'>
         <form>

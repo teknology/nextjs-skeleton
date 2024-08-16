@@ -84,11 +84,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
 
     jwt({ token, trigger, session, user }) {
-      if (trigger === "update" && session?.image) {
+      if (trigger === "update" && session) {
         // Note, that `session` can be any arbitrary object, remember to validate it!
-        token.image = session.image
-
-
+        token.picture = session.image
+        //console.log('session image', token);
       }
       try {
         if (user) {

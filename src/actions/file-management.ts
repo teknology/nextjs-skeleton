@@ -20,7 +20,8 @@ export async function processFile(
   const userid = formData.get('userid') as string;
   const buffer = new Uint8Array(arrayBuffer);
   // Define the directory path
-  const publicPath = path.join('public', 'uploads', userid, 'profile');
+  const publicPath = createProfileImagePath(userid, file.name);
+
   const uploadDir = path.join(process.cwd(), 'public', 'uploads', userid, 'profile');
   const fullPath = path.join(uploadDir, file.name);
   const fileExists = fs.existsSync(fullPath);

@@ -28,7 +28,7 @@ export default function UserWidget({
     const onFilesAccepted = (files: File[]) => {
         //console.log('file accepted triggered');
     };
-    console.log('avatarSrc', avatarSrc);
+
 
     return (
         <Card className="mt-4 bg-default-100" shadow="none">
