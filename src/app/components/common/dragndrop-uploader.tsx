@@ -2,16 +2,19 @@
 
 import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone, FileRejection } from 'react-dropzone';
-import { Button, Card, CardBody, Divider, Progress } from '@nextui-org/react';
-import { SaveIcon, TrashCanIcon } from '../icons';
+import { Button, ButtonGroup, Card, CardBody, Divider, Progress } from '@nextui-org/react';
+import { CloseIcon, SaveIcon, TrashCanIcon } from '../icons';
 import * as actions from '@/actions';
 import { getSession, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { createProfileImagePath } from '@/utils/public-paths';
+import { set } from 'zod';
 
 interface DropzoneProps {
     onFilesAccepted: (files: File[]) => void;
     onFilesRejected?: (files: File[]) => void;
+    onClose: () => void;
+
 }
 
 interface PreviewFile extends File {
@@ -24,12 +27,13 @@ type DropState = {
     };
 };
 
-export default function DragNDropUploader({ onFilesAccepted, onFilesRejected }: DropzoneProps) {
+export default function DragNDropUploader({ onFilesAccepted, onFilesRejected, onClose }: DropzoneProps) {
     const { data: session, status, update } = useSession()
     const [formDrop, setDropState] = useState<DropState>({ errors: { _form: [] } });
     const [files, setFiles] = useState<PreviewFile[]>([]);
     const [uploadProgress, setUploadProgress] = useState<number | null>(null);
     const [pending, setPending] = useState<boolean>(false);
+    const [saveEnabled, setSaveEnabled] = useState<boolean>(true);
 
     const onDropFilesAccepted = useCallback(
         (acceptedFiles: File[]) => {
@@ -62,6 +66,7 @@ export default function DragNDropUploader({ onFilesAccepted, onFilesRejected }: 
     );
 
     const processFile = async (files: File[]) => {
+        setSaveEnabled(false);
         if (status === "authenticated") {
 
             if (!session?.user?.id) {
@@ -123,6 +128,11 @@ export default function DragNDropUploader({ onFilesAccepted, onFilesRejected }: 
         },
     });
 
+    const removeFile = (file: PreviewFile) => {
+        setFiles(files.filter((f) => f.name !== file.name));
+        setSaveEnabled(true);
+    }
+
 
     const thumbs = files.map((file) => (
         <div
@@ -135,7 +145,7 @@ export default function DragNDropUploader({ onFilesAccepted, onFilesRejected }: 
                 variant="faded"
                 aria-label="Remove image"
                 className="absolute top-1 right-1 z-10"
-                onClick={() => setFiles(files.filter((f) => f.name !== file.name))}
+                onClick={() => removeFile(file)}
             >
                 <TrashCanIcon />
             </Button>
@@ -208,9 +218,13 @@ export default function DragNDropUploader({ onFilesAccepted, onFilesRejected }: 
                 </aside>
             </div>
             <div className="flex justify-end">
-                <Button startContent={<SaveIcon />} color="primary" onClick={() => processFile(files)} isLoading={pending}>
-                    Save
-                </Button>
+                <ButtonGroup>
+
+                    <Button disabled={!saveEnabled} startContent={<SaveIcon />} color="primary" onClick={() => processFile(files)} isLoading={pending}>
+                        Save
+                    </Button>
+                    <Button startContent={<CloseIcon />} color='secondary' onClick={onClose}>Close</Button>
+                </ButtonGroup>
             </div>
         </section>
     );

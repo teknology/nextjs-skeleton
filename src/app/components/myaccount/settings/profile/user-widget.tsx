@@ -6,6 +6,7 @@ import { CheckIcon } from "@/app/components/icons";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Badge, useDisclosure, Checkbox, Input, Link } from "@nextui-org/react";
 import DragNDropUploader from "@/app/components/common/dragndrop-uploader";
 import * as actions from "@/actions/"; // Import your server-side processing function
+import { useState } from "react";
 
 // Define the interface for props
 interface UserWidgetProps {
@@ -24,12 +25,19 @@ export default function UserWidget({
     isVerified,
 }: UserWidgetProps) {
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const [visible, setVisible] = useState(false);
 
     const onFilesAccepted = (files: File[]) => {
         //console.log('file accepted triggered');
     };
 
+    const openModal = () => {
+        setVisible(true);
+    };
 
+    const closeModal = () => {
+        setVisible(false);
+    };
     return (
         <Card className="mt-4 bg-default-100" shadow="none">
             <CardBody>
@@ -66,7 +74,7 @@ export default function UserWidget({
                                 <>
                                     <ModalHeader className="flex flex-col gap-1">Upload Your Profile Image</ModalHeader>
                                     <ModalBody>
-                                        <DragNDropUploader onFilesAccepted={onFilesAccepted} />
+                                        <DragNDropUploader onFilesAccepted={onFilesAccepted} onClose={onClose} />
                                     </ModalBody>
 
                                     {/*

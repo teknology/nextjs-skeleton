@@ -35,6 +35,9 @@ export default function Home() {
 
       <pre>{JSON.stringify(session)}</pre>
 
+      <div>
+        <p>The user image is {session?.user?.image}</p>
+      </div>
       <div className='flex justify-center w-100 py-100'>
         <form>
           <Input
