@@ -2,7 +2,7 @@ import { Card, CardBody } from "@nextui-org/card";
 import { Avatar } from "@nextui-org/avatar";
 import { Icon } from "@iconify/react";
 import GlobalChip from "@/app/components/common/global-chip";
-import { CheckIcon } from "@/app/components/icons";
+import { CheckIcon, ErrorIcon } from "@/app/components/icons";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Badge, useDisclosure, Checkbox, Input, Link } from "@nextui-org/react";
 import DragNDropUploader from "@/app/components/common/dragndrop-uploader";
 import * as actions from "@/actions/"; // Import your server-side processing function
@@ -15,6 +15,8 @@ interface UserWidgetProps {
     lastName: string;
     email: string;
     isVerified: boolean;
+    title: string;
+    emailVerified: boolean;
 }
 
 export default function UserWidget({
@@ -22,7 +24,8 @@ export default function UserWidget({
     firstName,
     lastName,
     email,
-    isVerified,
+    emailVerified,
+    title,
 }: UserWidgetProps) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [visible, setVisible] = useState(false);
@@ -94,13 +97,16 @@ export default function UserWidget({
                         <p className="text-sm font-medium text-default-600">
                             {`${firstName} ${lastName}`}
                         </p>
-                        <p className="text-xs text-default-400">Customer Support</p>
+                        <p className="text-xs text-default-400">{title}</p>
                         <div className="mt-1 text-xs text-default-400 flex items-center">
                             {email}
-                            {isVerified && (
-                                <GlobalChip>
-                                    {/*  <CheckIcon className="w-4 h-4 text-blue-500 mr-1" /> */}
-                                    Verified
+                            {emailVerified ? (
+                                <GlobalChip icon={<CheckIcon size={18} />} color="success" className="text-xs">
+                                    Email  Verified
+                                </GlobalChip>
+                            ) : (
+                                <GlobalChip icon={<ErrorIcon size={18} />} color="danger" className="text-xs">
+                                    Email Not Verified
                                 </GlobalChip>
                             )}
                         </div>

@@ -39,10 +39,10 @@ import NotificationsCard from '@/app/components/myaccount/notification-card'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 
-export default function MyAccountNavbar() {
+export default function MyAccountNavbar(): JSX.Element {
   const session = useSession()
 
-  //console.log(session)
+
 
   //console.log(userAvatar)
   const router = useRouter();
@@ -80,71 +80,12 @@ export default function MyAccountNavbar() {
         <AcmeIcon />
         <p className='font-bold text-inherit'>ACME</p>
       </NavbarBrand>
-      <Breadcrumbs className='hidden sm:flex' radius='full'>
-        <BreadcrumbItem
-          classNames={{
-            separator: 'text-primary-foreground/50',
-            item: 'text-primary-foreground/50'
-          }}
-        >
-          Apps
-        </BreadcrumbItem>
-        <BreadcrumbItem
-          classNames={{
-            separator: 'text-primary-foreground/50',
-            item: 'text-primary-foreground/50'
-          }}
-        >
-          iOS App
-        </BreadcrumbItem>
-        <BreadcrumbItem
-          classNames={{
-            separator: 'text-primary-foreground/50',
-            item: 'text-primary-foreground'
-          }}
-        >
-          TestFlight
-        </BreadcrumbItem>
-      </Breadcrumbs>
 
       {/* Right Menu */}
       <NavbarContent
         className='ml-auto h-12 max-w-fit items-center gap-0'
         justify='end'
       >
-        {/* Search */}
-        <NavbarItem className='mr-2 hidden lg:flex'>
-          <Input
-            aria-label='Search'
-            classNames={{
-              base: 'px-1',
-              inputWrapper:
-                'bg-primary-400 dark:bg-primary-300 data-[hover=true]:bg-primary-300/80 group-data-[focus=true]:bg-primary-300',
-              input:
-                'font-light placeholder:text-primary-foreground/80 group-data-[has-value=true]:text-primary-foreground'
-            }}
-            labelPlacement='outside'
-            placeholder='Search...'
-            radius='full'
-            startContent={
-              <Icon
-                className='text-primary-foreground/60 [&>g]:stroke-[2px]'
-                icon='solar:magnifer-linear'
-                width={20}
-              />
-            }
-          />
-        </NavbarItem>
-        {/* Mobile search */}
-        <NavbarItem className='lg:hidden'>
-          <Button isIconOnly radius='full' variant='light'>
-            <Icon
-              className='text-primary-foreground/60'
-              icon='solar:magnifer-linear'
-              width={20}
-            />
-          </Button>
-        </NavbarItem>
         {/* Theme change */}
         <NavbarItem className='hidden lg:flex'>
           <Button isIconOnly radius='full' variant='light'>

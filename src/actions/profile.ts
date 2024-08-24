@@ -8,7 +8,7 @@ export async function getProfile() {
     const session = await auth();
     const userId = session?.user?.id
 
-    // console.log(session)
+    //console.log(session)
 
     try {
 

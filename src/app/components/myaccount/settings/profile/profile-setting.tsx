@@ -1,27 +1,30 @@
-"use client";
-
+'use client'
 import * as React from "react";
 import { Button, Badge, Input, Spacer, Textarea, SelectItem, Select } from "@nextui-org/react";
-
 import { cn } from "@/utils/cn";
 import { country_codes } from "@/utils/data/country-codes";
-import UserWidget from "./profile/user-widget";
+import UserWidget from "./user-widget";
 import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 
 interface ProfileSettingCardProps {
   className?: string;
+  //TODO: Move this to a separeta type
+  data?: any
 }
 const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>(
 
-  ({ className, ...props }, ref) => {
+  ({ data, className, ...props }, ref) => {
 
     const session = useSession();
+
+
     //console.log(session.data);
     // Fallback values in case session data is not available
     const firstName = session?.data?.user?.name?.split(" ")[0] || "Kate";
-    const lastName = session?.data?.user?.name?.split(" ")[1] || "Moore";
+    const lastName = data?.lastName?.split(" ")[1] || "Moore";
     const email = session?.data?.user?.email || "kate.moore@acme.com";
-    const isVerified = false//false;
+    const emailVerified = false//false;
     return (
       <div ref={ref} className={cn("p-2", className)} {...props}>
         {/* Profile */}
@@ -32,10 +35,11 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
           </p>
           <UserWidget
             avatarSrc={session?.data?.user?.image || ""}
-            firstName="Kate"
-            lastName="Moore"
-            email="kate.moore@acme.com"
-            isVerified={isVerified}
+            firstName={session?.data?.user?.name?.split(" ")[0] || ""}
+            lastName={data?.lastName?.split(" ")[1] || ""}
+            email={session?.data?.user?.email || ""}
+            emailVerified={emailVerified}
+            title={data?.title || ""}
           />
         </div>
         <Spacer y={4} />

@@ -19,6 +19,8 @@ export async function getProfileByUserId(userId: string): Promise<Profile | null
 
         });
 
+        console.log('profile Dada:', profile);
+
         return profile;
     } catch (error) {
         console.error('Failed to fetch user:', error);

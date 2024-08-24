@@ -27,14 +27,15 @@ model User {
 }
 
 model Profile {
-    id          Int     @id @default(autoincrement())
-    lastName    String?
-    title       String?
-    biography   String?
-    countryCode String? // Optional country code field
-    phoneNumber Int? // Optional phone number field
-    userId      String? @unique
-    user        User?   @relation(fields: [userId], references: [id])
+    id            Int     @id @default(autoincrement())
+    lastName      String?
+    emailVerified Boolean @default(false)
+    title         String?
+    biography     String?
+    countryCode   String? // Optional country code field
+    phoneNumber   Int? // Optional phone number field
+    userId        String? @unique
+    user          User?   @relation(fields: [userId], references: [id])
 }
 
 model Role {

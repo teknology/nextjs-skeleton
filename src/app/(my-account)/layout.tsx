@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google'
 import '@/app/globals.css'
 import Providers from '@/app/providers'
 import MyAccountNavbar from '@/app/components/myaccount/common/navbar'
-import { auth } from '@/auth'
+import { getSession } from 'next-auth/react'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -13,11 +13,10 @@ export const metadata: Metadata = {
 }
 
 export default async function RootLayout({
-  children
+  children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-
 
   return (
     <html lang='en'>

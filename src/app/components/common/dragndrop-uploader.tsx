@@ -102,7 +102,7 @@ export default function DragNDropUploader({ onFilesAccepted, onFilesRejected, on
                 // update({ image: files[0].name as string });
                 setUploadProgress(100);
                 setPending(false);
-                console.log('session updated', session);
+                //  console.log('session updated', session);
 
 
 
