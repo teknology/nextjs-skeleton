@@ -14,7 +14,6 @@ interface UserWidgetProps {
     firstName: string;
     lastName: string;
     email: string;
-    isVerified: boolean;
     title: string;
     emailVerified: boolean;
 }

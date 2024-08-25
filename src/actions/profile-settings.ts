@@ -4,7 +4,7 @@ import { getProfileByUserId } from '@/db/queries/profile';
 import { Profile } from '@/utils/types/types';
 import { auth } from '@/auth';
 
-export async function getProfile() {
+export async function getProfileSettings() {
     const session = await auth();
     const userId = session?.user?.id
 

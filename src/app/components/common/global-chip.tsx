@@ -5,16 +5,18 @@ interface GlobalChipProps {
     children: React.ReactNode;
     icon: React.ReactNode;  // Required icon prop
     color?: any;
+    className?: string;
 }
 
-export default function GlobalChip({ children, icon, color, ...otherProps }: GlobalChipProps) {
+export default function GlobalChip({ children, icon, color, className }: GlobalChipProps) {
     return (
         <Chip
-            {...otherProps}
-            className="mx-5 px-5"
+
+            className={`mx-5 px-5 ${className}`}
             startContent={icon}  // Use the passed icon
             variant="faded"
             color={color}
+
         >
             {children}
         </Chip>

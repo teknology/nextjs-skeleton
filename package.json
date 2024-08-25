@@ -10,7 +10,7 @@
     "maildev": "email dev",
     "seed": "tsx prisma/seed.ts"
   },
-"dependencies": {
+  "dependencies": {
     "@auth/prisma-adapter": "^2.4.1",
     "@mapbox/node-pre-gyp": "^1.0.11",
     "@nextui-org/react": "^2.4.6",
