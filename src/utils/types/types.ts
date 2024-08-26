@@ -35,3 +35,18 @@ export type UserSession = {
     image: string;
   }
 }
+
+export type Country = {
+  id: number;
+  code: string;
+  country: string;
+  alpha2: string;
+  alpha3: string;
+  flag: string;
+};
+
+export type Timezone = {
+  id: string;
+  label: string;
+  value: string;
+};

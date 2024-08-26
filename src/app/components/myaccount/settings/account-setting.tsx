@@ -7,6 +7,8 @@ import { cn } from "@/utils/cn";
 
 interface AccountSettingCardProps {
     className?: string;
+    loading?: boolean; // Add a loading prop
+    data?: any;
 }
 
 const timeZoneOptions = [
@@ -28,7 +30,7 @@ const timeZoneOptions = [
 ];
 
 const AccountSetting = React.forwardRef<HTMLDivElement, AccountSettingCardProps>(
-    ({ className, ...props }, ref) => (
+    ({ data, className, loading = false, ...props }, ref) => (
         <div ref={ref} className={cn("p-2", className)} {...props}>
             {/* Full name */}
             <div>

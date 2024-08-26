@@ -9,6 +9,8 @@ import { PlanCustomRadio } from "./plan-custom-radio";
 
 interface BillingSettingCardProps {
   className?: string;
+  loading?: boolean; // Add a loading prop
+  data?: any;
 }
 
 const addressOptions = [
@@ -28,7 +30,7 @@ const countryOptions = [
 ];
 
 const BillingSetting = React.forwardRef<HTMLDivElement, BillingSettingCardProps>(
-  ({ className, ...props }, ref) => (
+  ({ data, className, loading = false, ...props }, ref) => (
     <div ref={ref} className={cn("p-2", className)} {...props}>
       {/* Payment Method */}
       <div>

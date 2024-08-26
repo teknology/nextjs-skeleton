@@ -10,6 +10,8 @@ import SwitchCell from "@/app/components/myaccount/switch-cell";
 
 interface AppearanceSettingCardProps {
   className?: string;
+  loading?: boolean; // Add a loading prop
+  data: any;
 }
 
 const fontSizeOptions = [
@@ -19,7 +21,7 @@ const fontSizeOptions = [
 ];
 
 const AppearanceSetting = React.forwardRef<HTMLDivElement, AppearanceSettingCardProps>(
-  ({ className, ...props }, ref) => (
+  ({ data, loading = false, className, ...props }, ref) => (
     <div ref={ref} className={cn("p-2", className)} {...props}>
       {/* Theme */}
       <div>

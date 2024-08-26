@@ -18,6 +18,8 @@ import TeamManageTable from "@/app/components/myaccount/settings/team-manage-tab
 
 interface TeamSettingCardProps {
   className?: string;
+  loading?: boolean; // Add a loading prop
+  data?: any;
 }
 
 const roleOptions = [
@@ -27,7 +29,7 @@ const roleOptions = [
 ];
 
 const TeamSetting = React.forwardRef<HTMLDivElement, TeamSettingCardProps>(
-  ({ className, ...rest }, ref) => (
+  ({ data, className, loading = false, ...rest }, ref) => (
     <div {...rest} ref={ref} className={cn("p-2", className)}>
       {/* Title */}
       <p className="text-base font-medium text-default-700">Team</p>

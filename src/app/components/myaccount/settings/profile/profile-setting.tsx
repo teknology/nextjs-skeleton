@@ -1,26 +1,50 @@
-'use client'
 import * as React from "react";
-import { Button, Badge, Input, Spacer, Textarea, SelectItem, Select, Skeleton } from "@nextui-org/react";
+import { Button, Input, Spacer, Textarea, SelectItem, Select, Skeleton } from "@nextui-org/react";
 import { cn } from "@/utils/cn";
-import { country_codes } from "@/utils/data/country-codes";
 import UserWidget from "./user-widget";
 import { useSession } from "next-auth/react";
+import { Country, Timezone } from "@/utils/types/types";
+import { useEffect, useState } from "react";
+import * as actions from '@/actions';
+import { timezoneData } from "@/utils/data/timezones"; // Importing timezone data
 
 interface ProfileSettingCardProps {
   className?: string;
   data?: any;
-  loading?: boolean; // Add a loading prop
+  loading?: boolean;
 }
 
 const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>(
   ({ data, className, loading = false, ...props }, ref) => {
     const session = useSession();
 
-    // Fallback values in case session data is not available
-    const firstName = session?.data?.user?.name?.split(" ")[0] || "Kate";
-    const lastName = data?.lastName?.split(" ")[1] || "Moore";
-    const email = session?.data?.user?.email || "kate.moore@acme.com";
-    const emailVerified = false;
+    const [countryCodes, setCountryCodes] = useState<Country[]>([]);
+    const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+    const [selectedTimezone, setSelectedTimezone] = useState<string | null>(null); // Selected timezone
+
+    useEffect(() => {
+      async function fetchCountries() {
+        try {
+          const result = await actions.getCountries();
+          if (Array.isArray(result)) {
+            setCountryCodes(result);
+            console.log('select loaded', result);
+          } else {
+            console.error("Error fetching countries:", result.errors);
+          }
+        } catch (error) {
+          console.error("Error fetching countries:", error);
+        }
+      }
+
+      fetchCountries();
+    }, []);
+
+    useEffect(() => {
+      if (countryCodes.length > 0 && data?.countryCodeId) {
+        setSelectedCountry(String(data.countryCodeId));
+      }
+    }, [countryCodes, data?.countryCodeId]);
 
     return (
       <div ref={ref} className={cn("p-2", className)} {...props}>
@@ -31,13 +55,13 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
             This displays your public profile on the site.
           </p>
           {loading ? (
-            <Skeleton className="h-20 w-full" />
+            <Skeleton className="h-20 w-full rounded-lg" />
           ) : (
             <UserWidget
-              avatarSrc={data?.avatar || ""}
-              firstName={data?.firstName || ""}
+              avatarSrc={session?.data?.user?.image || ""}
+              firstName={session?.data?.user?.name || ""}
               lastName={data?.lastName || ""}
-              email={data?.email || ""}
+              email={session?.data?.user?.email || ""}
               emailVerified={data?.emailVerified || false}
               title={data?.title || ""}
             />
@@ -48,60 +72,94 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
         <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
           <div className="w-full md:w-1/2">
             {loading ? (
-              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full rounded-lg" />
             ) : (
-              <Input label="First Name" className="mt-2" placeholder="e.g Kate" />
+              <Input label="First Name" className="mt-2" placeholder="e.g Kate" defaultValue={session?.data?.user?.name || ""} />
             )}
           </div>
           <div className="w-full md:w-1/2">
             {loading ? (
-              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full rounded-lg" />
             ) : (
-              <Input label="Last Name" className="mt-2" placeholder="e.g Moore" />
+              <Input label="Last Name" className="mt-2" placeholder="e.g Moore" defaultValue={data?.lastName || ""} />
             )}
           </div>
         </div>
-        {/* Title */}
-        <div>
-          {loading ? (
-            <Skeleton className="h-12 w-full" />
-          ) : (
-            <Input label="Title" className="mt-2" placeholder="e.g C.E.O / Founder / President" />
-          )}
-        </div>
         <Spacer y={2} />
-        {/* Email & Phone Number */}
+        {/* Title & Email */}
         <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
           <div className="w-full md:w-1/2">
             {loading ? (
-              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full rounded-lg" />
             ) : (
-              <Input label="Email" className="mt-2" placeholder="email@mydomain.com " />
-            )}
-          </div>
-          <div className="w-full md:w-1/3">
-            {loading ? (
-              <Skeleton className="h-12 w-full" />
-            ) : (
-              <Select
-                items={country_codes}
-                label="Country Code"
-                placeholder="Select a country code"
-                className="max-w-13 mt-2"
-              >
-                {(country_code) => (
-                  <SelectItem key={country_code.code}>
-                    {`${country_code.country} (${country_code.code})`}
-                  </SelectItem>
-                )}
-              </Select>
+              <Input label="Title" className="mt-2" placeholder="e.g C.E.O / Founder / President" defaultValue={data?.title || ""} />
             )}
           </div>
           <div className="w-full md:w-1/2">
             {loading ? (
-              <Skeleton className="h-12 w-full" />
+              <Skeleton className="h-12 w-full rounded-lg" />
             ) : (
-              <Input label="Phone Number" className="mt-2" placeholder="5555555555" />
+              <Input label="Email" className="mt-2" placeholder="email@mydomain.com" defaultValue={session?.data?.user?.email || ""} />
+            )}
+          </div>
+        </div>
+        <Spacer y={2} />
+        {/* Country Code, Phone Number & Timezone */}
+        <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+          <div className="w-full md:w-1/2">
+            {loading ? (
+              <Skeleton className="h-12 w-full rounded-lg mt-2" />
+            ) : (
+              <Select
+                label="Country Code"
+                placeholder="Select a country code"
+                className="max-w-13 mt-2"
+                selectedKeys={selectedCountry ? [selectedCountry] : undefined}
+                selectionMode="single"
+                onSelectionChange={(keys) => setSelectedCountry(Array.from(keys)[0] as string)}
+              >
+                {countryCodes.map((country) => (
+                  <SelectItem
+                    key={country.id}
+                    value={String(country.id)}
+                    startContent={<img src={country.flag} alt={`${country.country} flag`} className="inline-block w-6 h-4 mr-2" />}
+
+                  >
+                    <div className="flex items-center">
+                      {`${country.country} (${country.code})`}
+                    </div>
+                  </SelectItem>
+                ))}
+              </Select>
+            )}
+          </div>
+
+          <div className="w-full md:w-1/2">
+            {loading ? (
+              <Skeleton className="h-12 w-full rounded-lg mt-2" />
+            ) : (
+              <Input label="Phone Number" className="mt-2" placeholder="5555555555" defaultValue={data?.phoneNumber || ""} />
+            )}
+          </div>
+
+          <div className="w-full md:w-1/2">
+            {loading ? (
+              <Skeleton className="h-12 w-full rounded-lg mt-2" />
+            ) : (
+              <Select
+                label="Timezone"
+                placeholder="Select a timezone"
+                className="max-w-13 mt-2"
+                selectedKeys={selectedTimezone ? [selectedTimezone] : undefined}
+                selectionMode="single"
+                onSelectionChange={(keys) => setSelectedTimezone(Array.from(keys)[0] as string)}
+              >
+                {timezoneData.map((timezone) => (
+                  <SelectItem key={timezone.id} value={timezone.value}>
+                    {timezone.label}
+                  </SelectItem>
+                ))}
+              </Select>
             )}
           </div>
         </div>
@@ -109,7 +167,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
         {/* Biography */}
         <div>
           {loading ? (
-            <Skeleton className="h-32 w-full" />
+            <Skeleton className="h-32 w-full rounded-lg mt-2" />
           ) : (
             <Textarea
               label="Biography"
@@ -117,12 +175,13 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
               classNames={{
                 input: cn("min-h-[115px]"),
               }}
+              defaultValue={data?.biography || ""}
               placeholder="e.g., 'Kate Moore - Acme.com Support Specialist. Passionate about solving tech issues, loves hiking and volunteering."
             />
           )}
         </div>
         {loading ? (
-          <Skeleton className="h-12 w-full mt-4" />
+          <Skeleton className="h-12 w-full mt-4 rounded-lg" />
         ) : (
           <Button className="mt-4 bg-default-foreground text-background" size="md">
             Update Profile

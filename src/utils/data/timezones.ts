@@ -1,0 +1,18 @@
+export const timezoneData = [
+    { id: '1', label: 'Pacific Time (US & Canada)', value: 'America/Los_Angeles' },
+    { id: '2', label: 'Mountain Time (US & Canada)', value: 'America/Denver' },
+    { id: '3', label: 'Central Time (US & Canada)', value: 'America/Chicago' },
+    { id: '4', label: 'Eastern Time (US & Canada)', value: 'America/New_York' },
+    { id: '5', label: 'Atlantic Time (Canada)', value: 'America/Halifax' },
+    { id: '6', label: 'Newfoundland Time', value: 'America/St_Johns' },
+    { id: '7', label: 'UTC', value: 'UTC' },
+    { id: '8', label: 'Greenwich Mean Time (GMT)', value: 'Europe/London' },
+    { id: '9', label: 'Central European Time', value: 'Europe/Paris' },
+    { id: '10', label: 'Eastern European Time', value: 'Europe/Kiev' },
+    { id: '11', label: 'Moscow Standard Time', value: 'Europe/Moscow' },
+    { id: '12', label: 'Japan Standard Time', value: 'Asia/Tokyo' },
+    { id: '13', label: 'China Standard Time', value: 'Asia/Shanghai' },
+    { id: '14', label: 'India Standard Time', value: 'Asia/Kolkata' },
+    { id: '15', label: 'Australian Eastern Time', value: 'Australia/Sydney' },
+    { id: '16', label: 'New Zealand Standard Time', value: 'Pacific/Auckland' },
+];

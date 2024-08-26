@@ -27,15 +27,19 @@ model User {
 }
 
 model Profile {
-    id            Int     @id @default(autoincrement())
+    id            Int          @id @default(autoincrement())
     lastName      String?
-    emailVerified Boolean @default(false)
+    emailVerified Boolean      @default(false)
     title         String?
     biography     String?
-    countryCode   String? // Optional country code field
-    phoneNumber   Int? // Optional phone number field
-    userId        String? @unique
-    user          User?   @relation(fields: [userId], references: [id])
+    countryCodeId Int? // Optional country code relation field
+    phoneNumber   String? // Optional phone number field
+    userId        String?      @unique
+    user          User?        @relation(fields: [userId], references: [id])
+    countryCode   CountryCode? @relation(fields: [countryCodeId], references: [id])
+    timezoneId    Int?
+
+    @@index([countryCodeId])
 }
 
 model Role {
@@ -107,4 +111,15 @@ model Authenticator {
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@id([userId, credentialID])
+}
+
+model CountryCode {
+    id      Int    @id @default(autoincrement())
+    code    String
+    country String
+    alpha2  String
+    alpha3  String
+    flag    String
+
+    profiles Profile[] // Relation to Profile
 }
