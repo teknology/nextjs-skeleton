@@ -75,131 +75,134 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
           )}
         </div>
         <Spacer y={4} />
-        {/* First Name & Last Name */}
-        <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
-          <div className="w-full md:w-1/2">
-            {loading ? (
-              <Skeleton className="h-12 w-full rounded-lg" />
-            ) : (
-              <Input label="First Name" className="mt-2" placeholder="e.g Kate" defaultValue={session?.data?.user?.name || ""} />
-            )}
+        <form>
+          {/* First Name & Last Name */}
+          <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+            <div className="w-full md:w-1/2">
+              {loading ? (
+                <Skeleton className="h-12 w-full rounded-lg" />
+              ) : (
+                <Input label="First Name" className="mt-2" placeholder="e.g Kate" defaultValue={session?.data?.user?.name || ""} />
+              )}
+            </div>
+            <div className="w-full md:w-1/2">
+              {loading ? (
+                <Skeleton className="h-12 w-full rounded-lg" />
+              ) : (
+                <Input label="Last Name" className="mt-2" placeholder="e.g Moore" defaultValue={data?.lastName || ""} />
+              )}
+            </div>
           </div>
-          <div className="w-full md:w-1/2">
-            {loading ? (
-              <Skeleton className="h-12 w-full rounded-lg" />
-            ) : (
-              <Input label="Last Name" className="mt-2" placeholder="e.g Moore" defaultValue={data?.lastName || ""} />
-            )}
+          <Spacer y={2} />
+          {/* Title & Email */}
+          <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+            <div className="w-full md:w-1/2">
+              {loading ? (
+                <Skeleton className="h-12 w-full rounded-lg" />
+              ) : (
+                <Input label="Title" className="mt-2" placeholder="e.g C.E.O / Founder / President" defaultValue={data?.title || ""} />
+              )}
+            </div>
+            <div className="w-full md:w-1/2">
+              {loading ? (
+                <Skeleton className="h-12 w-full rounded-lg" />
+              ) : (
+                <Input label="Email" className="mt-2" placeholder="email@mydomain.com" defaultValue={session?.data?.user?.email || ""} />
+              )}
+            </div>
           </div>
-        </div>
-        <Spacer y={2} />
-        {/* Title & Email */}
-        <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
-          <div className="w-full md:w-1/2">
-            {loading ? (
-              <Skeleton className="h-12 w-full rounded-lg" />
-            ) : (
-              <Input label="Title" className="mt-2" placeholder="e.g C.E.O / Founder / President" defaultValue={data?.title || ""} />
-            )}
-          </div>
-          <div className="w-full md:w-1/2">
-            {loading ? (
-              <Skeleton className="h-12 w-full rounded-lg" />
-            ) : (
-              <Input label="Email" className="mt-2" placeholder="email@mydomain.com" defaultValue={session?.data?.user?.email || ""} />
-            )}
-          </div>
-        </div>
-        <Spacer y={2} />
-        {/* Country Code, Phone Number & Timezone */}
-        <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
-          <div className="w-full md:w-1/2">
-            {loading ? (
-              <Skeleton className="h-12 w-full rounded-lg mt-2" />
-            ) : (
-              <Select
-                label="Country Code"
-                placeholder="Select a country code"
-                className="max-w-13 mt-2"
-                selectedKeys={selectedCountry ? [selectedCountry] : undefined}
-                selectionMode="single"
-                onSelectionChange={(keys) => setSelectedCountry(Array.from(keys)[0] as string)}
-              >
-                {countryCodes.map((country) => (
-                  <SelectItem
-                    key={country.id}
-                    value={String(country.id)}
-                    startContent={
-                      <img
-                        src={country.flag}
-                        alt={`${country.country} flag`}
-                        className="inline-block w-6 h-4 mr-2"
-                      />
-                    }
-                    textValue={`${country.country}`}
-                  >
-                    <div className="flex items-center">
-                      {`${country.country} (${country.code})`}
-                    </div>
-                  </SelectItem>
-                ))}
-              </Select>
-            )}
-          </div>
+          <Spacer y={2} />
+          {/* Country Code, Phone Number & Timezone */}
+          <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
+            <div className="w-full md:w-1/2">
+              {loading ? (
+                <Skeleton className="h-12 w-full rounded-lg mt-2" />
+              ) : (
+                <Select
+                  label="Country Code"
+                  placeholder="Select a country code"
+                  className="max-w-13 mt-2"
+                  selectedKeys={selectedCountry ? [selectedCountry] : undefined}
+                  selectionMode="single"
+                  onSelectionChange={(keys) => setSelectedCountry(Array.from(keys)[0] as string)}
+                >
+                  {countryCodes.map((country) => (
+                    <SelectItem
+                      key={country.id}
+                      value={String(country.id)}
+                      startContent={
+                        <img
+                          src={country.flag}
+                          alt={`${country.country} flag`}
+                          className="inline-block w-6 h-4 mr-2"
+                        />
+                      }
+                      textValue={`${country.country} (${country.code})`}
 
-          <div className="w-full md:w-1/2">
-            {loading ? (
-              <Skeleton className="h-12 w-full rounded-lg mt-2" />
-            ) : (
-              <Input label="Phone Number" className="mt-2" placeholder="5555555555" defaultValue={data?.phoneNumber || ""} />
-            )}
-          </div>
+                    >
+                      <div className="flex items-center">
+                        {`${country.country} (${country.code})`}
+                      </div>
+                    </SelectItem>
+                  ))}
+                </Select>
+              )}
+            </div>
 
-          <div className="w-full md:w-1/2">
+            <div className="w-full md:w-1/2">
+              {loading ? (
+                <Skeleton className="h-12 w-full rounded-lg mt-2" />
+              ) : (
+                <Input label="Phone Number" className="mt-2" placeholder="5555555555" defaultValue={data?.phoneNumber || ""} />
+              )}
+            </div>
+
+            <div className="w-full md:w-1/2">
+              {loading ? (
+                <Skeleton className="h-12 w-full rounded-lg mt-2" />
+              ) : (
+                <Select
+                  label="Timezone"
+                  placeholder="Select a timezone"
+                  className="max-w-13 mt-2"
+                  selectedKeys={selectedTimezone ? [selectedTimezone] : undefined}
+                  selectionMode="single"
+                  onSelectionChange={(keys) => setSelectedTimezone(Array.from(keys)[0] as string)}
+                >
+                  {timezoneData.map((timezone) => (
+                    <SelectItem key={timezone.id} value={timezone.value} textValue={timezone.label}>
+                      {timezone.label as string}
+                    </SelectItem>
+                  ))}
+                </Select>
+              )}
+            </div>
+          </div>
+          <Spacer y={4} />
+          {/* Biography */}
+          <div>
             {loading ? (
-              <Skeleton className="h-12 w-full rounded-lg mt-2" />
+              <Skeleton className="h-32 w-full rounded-lg mt-2" />
             ) : (
-              <Select
-                label="Timezone"
-                placeholder="Select a timezone"
-                className="max-w-13 mt-2"
-                selectedKeys={selectedTimezone ? [selectedTimezone] : undefined}
-                selectionMode="single"
-                onSelectionChange={(keys) => setSelectedTimezone(Array.from(keys)[0] as string)}
-              >
-                {timezoneData.map((timezone) => (
-                  <SelectItem key={timezone.id} value={timezone.value} textValue={timezone.label}>
-                    {timezone.label as string}
-                  </SelectItem>
-                ))}
-              </Select>
+              <Textarea
+                label="Biography"
+                className="mt-2"
+                classNames={{
+                  input: cn("min-h-[115px]"),
+                }}
+                defaultValue={data?.biography || ""}
+                placeholder="e.g., 'Kate Moore - Acme.com Support Specialist. Passionate about solving tech issues, loves hiking and volunteering."
+              />
             )}
           </div>
-        </div>
-        <Spacer y={4} />
-        {/* Biography */}
-        <div>
           {loading ? (
-            <Skeleton className="h-32 w-full rounded-lg mt-2" />
+            <Skeleton className="h-12 w-full mt-4 rounded-lg" />
           ) : (
-            <Textarea
-              label="Biography"
-              className="mt-2"
-              classNames={{
-                input: cn("min-h-[115px]"),
-              }}
-              defaultValue={data?.biography || ""}
-              placeholder="e.g., 'Kate Moore - Acme.com Support Specialist. Passionate about solving tech issues, loves hiking and volunteering."
-            />
+            <Button className="mt-4 bg-default-foreground text-background" size="md">
+              Update Profile
+            </Button>
           )}
-        </div>
-        {loading ? (
-          <Skeleton className="h-12 w-full mt-4 rounded-lg" />
-        ) : (
-          <Button className="mt-4 bg-default-foreground text-background" size="md">
-            Update Profile
-          </Button>
-        )}
+        </form>
       </div>
     );
   }
