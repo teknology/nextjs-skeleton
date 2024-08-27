@@ -25,10 +25,10 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
     useEffect(() => {
       async function fetchCountries() {
         try {
-          const result = await actions.getCountries();
+          let result = await actions.getCountries();
           if (Array.isArray(result)) {
             setCountryCodes(result);
-            console.log('select loaded', result);
+            //  console.log('select loaded', result);
           } else {
             console.error("Error fetching countries:", result.errors);
           }
@@ -45,6 +45,13 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
         setSelectedCountry(String(data.countryCodeId));
       }
     }, [countryCodes, data?.countryCodeId]);
+
+    useEffect(() => {
+      if (data?.timezoneId) {
+        console.log('provided timezoneId', data.timezoneId);
+        setSelectedTimezone(String(4));
+      }
+    }, [data?.timezoneId]);
 
     return (
       <div ref={ref} className={cn("p-2", className)} {...props}>
@@ -122,8 +129,14 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                   <SelectItem
                     key={country.id}
                     value={String(country.id)}
-                    startContent={<img src={country.flag} alt={`${country.country} flag`} className="inline-block w-6 h-4 mr-2" />}
-
+                    startContent={
+                      <img
+                        src={country.flag}
+                        alt={`${country.country} flag`}
+                        className="inline-block w-6 h-4 mr-2"
+                      />
+                    }
+                    textValue={`${country.country}`}
                   >
                     <div className="flex items-center">
                       {`${country.country} (${country.code})`}
@@ -155,8 +168,8 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                 onSelectionChange={(keys) => setSelectedTimezone(Array.from(keys)[0] as string)}
               >
                 {timezoneData.map((timezone) => (
-                  <SelectItem key={timezone.id} value={timezone.value}>
-                    {timezone.label}
+                  <SelectItem key={timezone.id} value={timezone.value} textValue={timezone.label}>
+                    {timezone.label as string}
                   </SelectItem>
                 ))}
               </Select>
