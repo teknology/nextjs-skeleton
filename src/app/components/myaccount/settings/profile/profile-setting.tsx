@@ -82,14 +82,26 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
               {loading ? (
                 <Skeleton className="h-12 w-full rounded-lg" />
               ) : (
-                <Input label="First Name" className="mt-2" placeholder="e.g Kate" defaultValue={session?.data?.user?.name || ""} />
+                <Input
+                  label="First Name"
+                  className="mt-2"
+                  name="firstName"
+                  placeholder="e.g Kate"
+                  defaultValue={session?.data?.user?.name || ""}
+                />
               )}
             </div>
             <div className="w-full md:w-1/2">
               {loading ? (
                 <Skeleton className="h-12 w-full rounded-lg" />
               ) : (
-                <Input label="Last Name" className="mt-2" placeholder="e.g Moore" defaultValue={data?.lastName || ""} />
+                <Input
+                  label="Last Name"
+                  className="mt-2"
+                  name="lastName"
+                  placeholder="e.g Moore"
+                  defaultValue={data?.lastName || ""}
+                />
               )}
             </div>
           </div>
@@ -100,14 +112,26 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
               {loading ? (
                 <Skeleton className="h-12 w-full rounded-lg" />
               ) : (
-                <Input label="Title" className="mt-2" placeholder="e.g C.E.O / Founder / President" defaultValue={data?.title || ""} />
+                <Input
+                  label="Title"
+                  className="mt-2"
+                  name="title"
+                  placeholder="e.g C.E.O / Founder / President"
+                  defaultValue={data?.title || ""}
+                />
               )}
             </div>
             <div className="w-full md:w-1/2">
               {loading ? (
                 <Skeleton className="h-12 w-full rounded-lg" />
               ) : (
-                <Input label="Email" className="mt-2" placeholder="email@mydomain.com" defaultValue={session?.data?.user?.email || ""} />
+                <Input
+                  label="Email"
+                  className="mt-2"
+                  name="email"
+                  placeholder="email@mydomain.com"
+                  defaultValue={session?.data?.user?.email || ""}
+                />
               )}
             </div>
           </div>
@@ -120,6 +144,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
               ) : (
                 <Select
                   label="Country Code"
+                  name="countryCode"
                   placeholder="Select a country code"
                   className="max-w-13 mt-2"
                   selectedKeys={selectedCountry ? [selectedCountry] : undefined}
@@ -138,7 +163,6 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                         />
                       }
                       textValue={`${country.country} (${country.code})`}
-
                     >
                       <div className="flex items-center">
                         {`${country.country} (${country.code})`}
@@ -153,7 +177,13 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
               {loading ? (
                 <Skeleton className="h-12 w-full rounded-lg mt-2" />
               ) : (
-                <Input label="Phone Number" className="mt-2" placeholder="5555555555" defaultValue={data?.phoneNumber || ""} />
+                <Input
+                  label="Phone Number"
+                  className="mt-2"
+                  name="phoneNumber"
+                  placeholder="5555555555"
+                  defaultValue={data?.phoneNumber || ""}
+                />
               )}
             </div>
 
@@ -163,6 +193,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
               ) : (
                 <Select
                   label="Timezone"
+                  name="timezone"
                   placeholder="Select a timezone"
                   className="max-w-13 mt-2"
                   selectedKeys={selectedTimezone ? [selectedTimezone] : undefined}
@@ -187,6 +218,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
               <Textarea
                 label="Biography"
                 className="mt-2"
+                name="biography"
                 classNames={{
                   input: cn("min-h-[115px]"),
                 }}
