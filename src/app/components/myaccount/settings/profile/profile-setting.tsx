@@ -230,7 +230,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
           {loading ? (
             <Skeleton className="h-12 w-full mt-4 rounded-lg" />
           ) : (
-            <Button className="mt-4 bg-default-foreground text-background" size="md">
+            <Button type="submit" className="mt-4 bg-default-foreground text-background" size="md">
               Update Profile
             </Button>
           )}

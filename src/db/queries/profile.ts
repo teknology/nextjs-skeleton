@@ -28,3 +28,22 @@ export async function getProfileByUserId(userId: string): Promise<Profile | null
     }
 }
 
+export async function updateProfile(data: Profile): Promise<Profile> {
+    try {
+        const session = await auth();
+        const profile = await db.profile.update({
+            where: {
+                userId: session?.user?.id,
+            },
+            data: {
+                ...data,
+            },
+        });
+
+        return profile;
+    } catch (error) {
+        console.error('Failed to update user:', error);
+        throw new Error('Failed to update user.');
+    }
+}
+

@@ -13,6 +13,8 @@ const titleSchema = z.string().min(2, { message: 'Title must be at least 2 chara
 const phoneNumberSchema = z.number().min(10, { message: 'Phone number must be at least 10 characters long' });
 const biographySchema = z.string().min(10, { message: 'Biography must be at least 10 characters long' });
 const countryCodeSchema = z.string().min(1, { message: "Please select an option." })
+const timezoneSchema = z.string().min(1, { message: "Please select an option." })
+
 
 
 //Registration Schema
@@ -40,6 +42,7 @@ export const profileSchema = z.object({
   title: titleSchema,
   countryCode: countryCodeSchema,
   phoneNumber: phoneNumberSchema,
-  biography: biographySchema
+  biography: biographySchema,
+  timezone: timezoneSchema
 });
 
