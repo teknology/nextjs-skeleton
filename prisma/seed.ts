@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { country_codes as countryCodes } from '@/utils/data/country-codes';
+import { saltAndHashPassword } from '@/utils/auth';
 
 const prisma = new PrismaClient();
 
@@ -56,9 +57,6 @@ async function main() {
 
     console.log(`Seeded roles: ${adminRole.name}, ${userRole.name}`);
 
-    // Example: Assume you have an existing user with a known ID
-    // const existingUserId = 'clz4srp700000viydor9un7ru'; // Replace with an actual user ID from your database
-
     // Find the existing US country code using `findFirst`
     const usCountryCode = await prisma.countryCode.findFirst({
         where: { alpha2: 'US' },
@@ -69,13 +67,18 @@ async function main() {
         process.exit(1);
     }
 
-    // Seed profile for the existing user
+    // Seed a user with a profile
     const user = await prisma.user.create({
         data: {
-            email: 'gary@magehd.com',
-            name: 'John',
+            username: 'johndoe',
+            // Example password hash, in a real scenario, you'd hash the password before storing
+            password: await saltAndHashPassword('1234'),
             Profile: {
                 create: {
+
+                    email: 'gary@magehd.com',
+                    emailVerifiedDate: new Date(),
+                    firstName: 'John',
                     lastName: 'Doe',
                     emailVerified: true,
                     title: 'Developer',
@@ -92,8 +95,8 @@ async function main() {
 
     console.log(`Seeded profile for user ID: ${user.id}`);
 
-    // Seed user role for the existing user
-    const userRoleAssignment = await prisma.userRole.create({
+    // Seed user role for the user
+    await prisma.userRole.create({
         data: {
             userId: user.id,
             roleId: userRole.id,
@@ -102,7 +105,7 @@ async function main() {
 
     console.log(`Assigned role to user: ${user.id}`);
 
-    // Similarly, you can seed other related models like Account, Session, etc., ensuring they reference existing User records.
+    // Similarly, you can seed other related models like Authenticator if needed.
 }
 
 // Execute the main function

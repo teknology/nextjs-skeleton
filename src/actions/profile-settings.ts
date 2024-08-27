@@ -41,7 +41,18 @@ export async function updateProfileSettings(
     formData: FormData
 ): Promise<ProfileFormState> {
     try {
-        return await updateProfile(formData);
+        const data = {
+            firstName: formData.get('first_name') as string,
+            lastName: formData.get('last_name') as string,
+            email: formData.get('email') as string,
+            phone: formData.get('phone') as string,
+            timezoneId: formData.get('timezoneId') as string,
+            countryCodeId: formData.get('countryCodeId') as string,
+        };
+
+
+
+        return await updateProfile(data);
     }
     catch (error) {
         console.error('Failed to update user:', error);

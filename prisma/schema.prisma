@@ -9,11 +9,8 @@ generator client {
 
 model User {
     id            String          @id @default(cuid())
-    name          String?
-    email         String          @unique
-    emailVerified DateTime?
-    image         String?
     role          UserRole[]
+    username      String?
     password      String?
     accounts      Account[]
     sessions      Session[]
@@ -27,17 +24,21 @@ model User {
 }
 
 model Profile {
-    id            Int          @id @default(autoincrement())
-    lastName      String?
-    emailVerified Boolean      @default(false)
-    title         String?
-    biography     String?
-    countryCodeId Int? // Optional country code relation field
-    phoneNumber   String? // Optional phone number field
-    userId        String?      @unique
-    user          User?        @relation(fields: [userId], references: [id])
-    countryCode   CountryCode? @relation(fields: [countryCodeId], references: [id])
-    timezoneId    Int?
+    id                Int          @id @default(autoincrement())
+    email             String       @unique
+    emailVerifiedDate DateTime?
+    image             String?
+    firstName         String?
+    lastName          String?
+    emailVerified     Boolean      @default(false)
+    title             String?
+    biography         String?
+    countryCodeId     Int? // Optional country code relation field
+    phoneNumber       String? // Optional phone number field
+    userId            String?      @unique
+    user              User?        @relation(fields: [userId], references: [id])
+    countryCode       CountryCode? @relation(fields: [countryCodeId], references: [id])
+    timezoneId        Int?
 
     @@index([countryCodeId])
 }

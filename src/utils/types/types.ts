@@ -12,6 +12,7 @@ export type CheckIconProps = SVGProps<SVGSVGElement> & {
 
 export type Profile = {
   id: number;
+  firstName: string | null;
   lastName: string | null;
   biography: string | null;
   title: string | null;
