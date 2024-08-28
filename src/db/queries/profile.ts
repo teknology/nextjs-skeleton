@@ -19,7 +19,7 @@ export async function getProfileByUserId(userId: string): Promise<Profile | null
 
         });
 
-        console.log('profile Dada:', profile);
+        console.log('profile Data:', profile);
 
         return profile;
     } catch (error) {

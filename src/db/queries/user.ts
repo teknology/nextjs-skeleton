@@ -1,4 +1,4 @@
-import type { User } from '@prisma/client';
+import type { Profile, User } from '@prisma/client';
 import { db } from '@/db';
 import { saltAndHashPassword } from '@/utils/auth';
 
@@ -11,28 +11,17 @@ export type { User };
  */
 export async function getUserByEmail(email: string) {
 
-  //return null;
-  const result = null;
+  const result = await db.user.findFirst({
+    select: {
+      profile: {
+        where: { email: email },
+      },
+    }
+  });
 
-
-  try {
-    const result = await db.user.findUnique({
-      where: { email },
-    });
-    //console.log(result);
-    return result;
-
-  }
-  catch (error) {
-
-
-    console.error('Failed to fetch user:', error);
-    throw new Error('Failed to fetch user.');
-  }
-
-
-
+  console.log('db call', result);
   return result;
+
 }
 
 /**
@@ -58,10 +47,14 @@ export async function createUser(email: string, password: string): Promise<User>
   try {
     return await db.user.create({
       data: {
-        email: email,
-        password: hashedPassword
-      }
-    })
+        password: hashedPassword,
+        Profile: {
+          create: {
+            email: email,
+          },
+        },
+      },
+    });
   }
   catch (error) {
     console.error('Failed to create user:', error);
@@ -69,26 +62,27 @@ export async function createUser(email: string, password: string): Promise<User>
   }
 }
 
-export async function updateUserEmail(id: string, email: string): Promise<User> {
+
+export async function updateUserEmail(id: string, email: string): Promise<Profile> {
   try {
-    return await db.user.update({
-      where: { id },
+    return await db.profile.update({
+      where: { userId: id },
       data: {
         email: email,
       }
-    })
+    });
   }
   catch (error) {
     console.error('Failed to update user:', error);
     throw new Error('Failed to update user.');
-  } //I added this line
+  }
 
 }
 
-export async function updateUserAvatar(id: string, avatar: string): Promise<User> {
+export async function updateUserAvatar(id: string, avatar: string): Promise<Profile> {
   try {
-    return await db.user.update({
-      where: { id },
+    return await db.profile.update({
+      where: { userId: id },
       data: {
         image: avatar,
       }
@@ -96,6 +90,6 @@ export async function updateUserAvatar(id: string, avatar: string): Promise<User
   }
   catch (error) {
     console.error('Failed to update user:', error);
-    throw new Error('Failed to update user.');
+    throw new Error('Failed to update user avatar.');
   }
 }

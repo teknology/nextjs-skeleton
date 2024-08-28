@@ -50,9 +50,19 @@ export async function updateProfileSettings(
             countryCodeId: formData.get('countryCodeId') as string,
         };
 
+        return {
+            errors: {
+                first_name: ['First name is required'],
+                last_name: ['Last name is required'],
+                email: ['Email is required'],
+                phone: ['Phone is required'],
+                timezoneId: ['Timezone is required'],
+                countryCodeId: ['Country is required'],
+                _form: ['Failed to update profile.'],
+            }
+        }
 
-
-        return await updateProfile(data);
+        // return await updateProfile(data);
     }
     catch (error) {
         console.error('Failed to update user:', error);

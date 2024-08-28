@@ -9,18 +9,17 @@ generator client {
 
 model User {
     id            String          @id @default(cuid())
-    role          UserRole[]
     username      String?
     password      String?
+    role          UserRole[]
     accounts      Account[]
     sessions      Session[]
+    profile       Profile?
     // Optional for WebAuthn support
     Authenticator Authenticator[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
-
-    Profile Profile[]
 }
 
 model Profile {
@@ -35,8 +34,8 @@ model Profile {
     biography         String?
     countryCodeId     Int? // Optional country code relation field
     phoneNumber       String? // Optional phone number field
-    userId            String?      @unique
-    user              User?        @relation(fields: [userId], references: [id])
+    userId            String       @unique
+    user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
     countryCode       CountryCode? @relation(fields: [countryCodeId], references: [id])
     timezoneId        Int?
 

@@ -78,6 +78,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/login",
   },
   callbacks: {
+    async signIn({ user, account, profile }) {
+      // Add your logic here and return a boolean or string
+      return true; // or return a URL string to redirect
+    },
     authorized: async ({ auth }) => {
       // Logged in users are authenticated, otherwise redirect to login page
       return !!auth
