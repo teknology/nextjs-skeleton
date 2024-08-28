@@ -8,16 +8,18 @@ generator client {
 }
 
 model User {
-    id            String          @id @default(cuid())
-    username      String?
-    email         String          @unique
-    password      String?
-    role          UserRole[]
-    accounts      Account[]
-    sessions      Session[]
-    profile       Profile?
+    id                String          @id @default(cuid())
+    username          String?
+    email             String          @unique
+    emailVerifiedDate DateTime?
+    emailVerified     Boolean         @default(false)
+    password          String?
+    role              UserRole[]
+    accounts          Account[]
+    sessions          Session[]
+    profile           Profile?
     // Optional for WebAuthn support
-    Authenticator Authenticator[]
+    Authenticator     Authenticator[]
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -26,19 +28,17 @@ model User {
 model Profile {
     id Int @id @default(autoincrement())
 
-    emailVerifiedDate DateTime?
-    image             String?
-    firstName         String?
-    lastName          String?
-    emailVerified     Boolean      @default(false)
-    title             String?
-    biography         String?
-    countryCodeId     Int? // Optional country code relation field
-    phoneNumber       String? // Optional phone number field
-    userId            String       @unique
-    user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-    countryCode       CountryCode? @relation(fields: [countryCodeId], references: [id])
-    timezoneId        Int?
+    image         String?
+    firstName     String?
+    lastName      String?
+    title         String?
+    biography     String?
+    countryCodeId Int? // Optional country code relation field
+    phoneNumber   String? // Optional phone number field
+    userId        String       @unique
+    user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+    countryCode   CountryCode? @relation(fields: [countryCodeId], references: [id])
+    timezoneId    Int?
 
     @@index([countryCodeId])
 }
