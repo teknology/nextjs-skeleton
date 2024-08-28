@@ -10,11 +10,8 @@ import { comparePasswords } from "./utils/auth"
 import { z } from 'zod';
 import { getUserByEmail } from "./db/queries/user"
 import { redirect } from "next/dist/server/api-utils"
+import type { User } from "@prisma/client"
 
-interface UserCredentials {
-  email: string;
-  password: string | null;
-}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(db),
@@ -32,7 +29,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: {},
 
       },
-      authorize: async (credentials): Promise<UserCredentials | null> => {
+      authorize: async (credentials): Promise<User | null> => {
         let user = null
 
         if (!credentials.email) {

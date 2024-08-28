@@ -71,16 +71,16 @@ async function main() {
     const user = await prisma.user.create({
         data: {
             username: 'johndoe',
+            emailVerifiedDate: new Date(),
+            email: 'gary@magehd.com',
+            emailVerified: true,
+
             // Example password hash, in a real scenario, you'd hash the password before storing
             password: await saltAndHashPassword('1234'),
-            Profile: {
+            profile: {
                 create: {
-
-                    email: 'gary@magehd.com',
-                    emailVerifiedDate: new Date(),
                     firstName: 'John',
                     lastName: 'Doe',
-                    emailVerified: true,
                     title: 'Developer',
                     biography: 'Experienced software developer.',
                     countryCodeId: usCountryCode.id, // Linking the country code

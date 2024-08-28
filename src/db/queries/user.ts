@@ -3,6 +3,7 @@ import { db } from '@/db';
 import { saltAndHashPassword } from '@/utils/auth';
 
 export type { User };
+export type { Profile };
 
 /**
  * Get a user by their email address.
@@ -12,13 +13,9 @@ export type { User };
 export async function getUserByEmail(email: string) {
 
   const result = await db.user.findFirst({
-    select: {
-      id: true,
-      password: true,
-      Profile: {
-        where: { email: email },
-      },
-    }
+    where: {
+      email: email,
+    },
   });
 
   console.log('db call', result);
@@ -50,11 +47,7 @@ export async function createUser(email: string, password: string): Promise<User>
     return await db.user.create({
       data: {
         password: hashedPassword,
-        Profile: {
-          create: {
-            email: email,
-          },
-        },
+        email: email,
       },
     });
   }
@@ -65,7 +58,7 @@ export async function createUser(email: string, password: string): Promise<User>
 }
 
 
-export async function updateUserEmail(id: string, email: string): Promise<Profile> {
+export async function updateUserEmail(id: string, email: string): Promise<User> {
   try {
     return await db.profile.update({
       where: { userId: id },
