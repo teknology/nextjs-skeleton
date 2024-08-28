@@ -13,7 +13,9 @@ export async function getUserByEmail(email: string) {
 
   const result = await db.user.findFirst({
     select: {
-      profile: {
+      id: true,
+      password: true,
+      Profile: {
         where: { email: email },
       },
     }
