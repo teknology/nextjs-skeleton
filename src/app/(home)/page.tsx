@@ -16,7 +16,7 @@ export default function Home() {
     async function fetchData() {
       try {
         const userResult = await actions.findUserByEmail('gary@magehd.com');
-        setResult(userResult); // Update state with fetched result
+        // setResult(userResult); // Update state with fetched result
       } catch (error) {
         console.error('Failed to fetch user:', error);
         setResult(null); // Set result to null if there's an error

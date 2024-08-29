@@ -1,6 +1,6 @@
 'use client';
 
-import { Select, SelectItem, Skeleton } from "@nextui-org/react";
+import { Select, SelectItem, Skeleton, Image } from "@nextui-org/react";
 import { useEffect, useState } from "react";
 import * as actions from '@/actions';
 import { Country } from '@/utils/types/types';
@@ -57,7 +57,7 @@ export default function CountrySelect({ selectedCountryId }: CountrySelectProps)
                     {countryCodes.map((country) => (
                         <SelectItem key={country.id} value={String(country.id)}>
                             <div className="flex items-center">
-                                <img
+                                <Image
                                     src={country.flag}
                                     alt={`${country.country} flag`}
                                     className="inline-block w-6 h-4 mr-2"

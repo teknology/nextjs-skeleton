@@ -60,8 +60,8 @@ export async function createUser(email: string, password: string): Promise<User>
 
 export async function updateUserEmail(id: string, email: string): Promise<User> {
   try {
-    return await db.profile.update({
-      where: { userId: id },
+    return await db.user.update({
+      where: { id },
       data: {
         email: email,
       }
@@ -73,6 +73,7 @@ export async function updateUserEmail(id: string, email: string): Promise<User> 
   }
 
 }
+
 
 export async function updateUserAvatar(id: string, avatar: string): Promise<Profile> {
   try {

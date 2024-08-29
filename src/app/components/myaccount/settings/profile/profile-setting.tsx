@@ -1,5 +1,14 @@
 import * as React from "react";
-import { Button, Input, Spacer, Textarea, SelectItem, Select, Skeleton } from "@nextui-org/react";
+import {
+  Button,
+  Input,
+  Spacer,
+  Textarea,
+  SelectItem,
+  Select,
+  Skeleton,
+  Image
+} from "@nextui-org/react";
 import { cn } from "@/utils/cn";
 import UserWidget from "./user-widget";
 import { useSession } from "next-auth/react";
@@ -66,7 +75,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
           ) : (
             <UserWidget
               avatarSrc={session?.data?.user?.image || ""}
-              firstName={session?.data?.user?.name || ""}
+              firstName={data?.firstName || ""}
               lastName={data?.lastName || ""}
               email={session?.data?.user?.email || ""}
               emailVerified={data?.emailVerified || false}
@@ -156,7 +165,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                       key={country.id}
                       value={String(country.id)}
                       startContent={
-                        <img
+                        <Image
                           src={country.flag}
                           alt={`${country.country} flag`}
                           className="inline-block w-6 h-4 mr-2"

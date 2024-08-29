@@ -3,14 +3,12 @@ import NextAuth from "next-auth"
 import Google from "next-auth/providers/google"
 import Facebook from "next-auth/providers/facebook"
 import Credentials from "next-auth/providers/credentials"
-import Github from "next-auth/providers/github"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { db } from "@/db"
 import { comparePasswords } from "./utils/auth"
-import { z } from 'zod';
 import { getUserByEmail } from "./db/queries/user"
-import { redirect } from "next/dist/server/api-utils"
 import type { User } from "@prisma/client"
+import { getProfileByUserId } from "./db/queries/profile"
 
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -75,6 +73,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/login",
   },
   callbacks: {
+
     authorized: async ({ auth }) => {
       // Logged in users are authenticated, otherwise redirect to login page
       return !!auth
@@ -96,9 +95,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       return token
     },
-    session({ session, token }: any) {
-      session.user.id = token.id
-      return session
+    async session({ session, token }: any) {
+      session.user.id = token.id;
+
+      try {
+        // Fetch the profile image from the Profile model using the user ID
+        const profile = await getProfileByUserId(token.id);
+        if (profile && profile.image) {
+          session.user.image = profile.image; // Update session with the profile image
+        }
+      } catch (error) {
+        console.error("Failed to fetch profile image:", error);
+      }
+
+      return session;
     },
   },
 
