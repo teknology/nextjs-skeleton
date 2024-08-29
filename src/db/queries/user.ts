@@ -10,11 +10,11 @@ export type { Profile };
  * @param email The email address of the user.
  * @returns The user with the given email address, or null if no user was found.
  */
-export async function getUserByEmail(email: string) {
+export async function getUserByEmail(userEmail: string) {
 
   const result = await db.user.findFirst({
     where: {
-      email: email,
+      email: userEmail,
     },
   });
 
@@ -75,10 +75,10 @@ export async function updateUserEmail(id: string, email: string): Promise<User> 
 }
 
 
-export async function updateUserAvatar(id: string, avatar: string): Promise<Profile> {
+export async function updateUserAvatar(id: string, avatar: string): Promise<User> {
   try {
-    return await db.profile.update({
-      where: { userId: id },
+    return await db.user.update({
+      where: { id },
       data: {
         image: avatar,
       }

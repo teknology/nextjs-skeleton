@@ -12,6 +12,8 @@ export default function Home() {
   const [result, setResult] = useState(null); // State to store the result
   const [loading, setLoading] = useState(true); // State to manage loading
 
+
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -33,7 +35,7 @@ export default function Home() {
       <Button>Update image</Button>
       <Button onClick={() => update()}>Edit name</Button>
 
-      <pre>{loading ? 'Loading...' : JSON.stringify(result, null, 2)}</pre> {/* Pretty-print the result */}
+      <pre>{loading ? 'Loading...' : JSON.stringify(session?.user)}</pre> {/* Pretty-print the result */}
 
       <div>
         <p>The user image is {session?.user?.image}</p>

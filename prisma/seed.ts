@@ -76,7 +76,7 @@ async function main() {
             emailVerified: true,
 
             // Example password hash, in a real scenario, you'd hash the password before storing
-            password: await saltAndHashPassword('1234'),
+            password: await saltAndHashPassword('1234567'),
             profile: {
                 create: {
                     firstName: 'John',

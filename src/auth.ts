@@ -10,6 +10,10 @@ import { getUserByEmail } from "./db/queries/user"
 import type { User } from "@prisma/client"
 import { getProfileByUserId } from "./db/queries/profile"
 
+interface UserCredentials {
+  email: string;
+  password: string | null;
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(db),
@@ -27,7 +31,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: {},
 
       },
-      authorize: async (credentials): Promise<User | null> => {
+      authorize: async (credentials): Promise<UserCredentials | null> => {
         let user = null
 
         if (!credentials.email) {
@@ -43,7 +47,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const password = credentials.password as string;
           const user = await getUserByEmail(email);
 
-          // console.log(user);
+          console.log(user);
           // console.log('user password', user?.password);
 
 
@@ -51,10 +55,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           try {
             const passwordsMatch = await comparePasswords(password as string, user?.password as string);
 
-            //  console.log(passwordsMatch);
+            console.log(passwordsMatch);
+            console.log(user);
 
             if (passwordsMatch) return user;
-            // console.log(user);
             // return user;
 
           }
@@ -80,6 +84,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
 
     jwt({ token, trigger, session, user }) {
+      console.log('JWT: ', user)
       if (trigger === "update" && session) {
         // Note, that `session` can be any arbitrary object, remember to validate it!
         token.picture = session.image
@@ -87,7 +92,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
       try {
         if (user) {
+          console.log('JWT After Try: ', user)
           token.id = user.id
+
         }
       }
       catch (error) {
@@ -98,19 +105,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }: any) {
       session.user.id = token.id;
 
-      try {
-        // Fetch the profile image from the Profile model using the user ID
-        const profile = await getProfileByUserId(token.id);
-        if (profile && profile.image) {
-          session.user.image = profile.image; // Update session with the profile image
-        }
-      } catch (error) {
-        console.error("Failed to fetch profile image:", error);
-      }
-
       return session;
     },
   },
-
 
 })
