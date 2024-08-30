@@ -33,7 +33,7 @@ model Profile {
     title         String?
     biography     String?
     countryCodeId Int? // Optional country code relation field
-    phoneNumber   String? // Optional phone number field
+    phoneNumber   Int? // Optional phone number field
     userId        String       @unique
     user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
     countryCode   CountryCode? @relation(fields: [countryCodeId], references: [id])

@@ -16,6 +16,9 @@ import { Country, Timezone } from "@/utils/types/types";
 import { useEffect, useState } from "react";
 import * as actions from '@/actions';
 import { timezoneData } from "@/utils/data/timezones"; // Importing timezone data
+import FormButton from "@/app/components/common/form-button"; // Importing SubmitButton component
+import { useFormState } from 'react-dom'
+
 
 interface ProfileSettingCardProps {
   className?: string;
@@ -30,6 +33,9 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
     const [countryCodes, setCountryCodes] = useState<Country[]>([]);
     const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
     const [selectedTimezone, setSelectedTimezone] = useState<string | null>(null); // Selected timezone
+    const [formState, action] = useFormState(actions.updateProfileSettings, {
+      errors: {}
+    })
 
     useEffect(() => {
       async function fetchCountries() {
@@ -37,7 +43,6 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
           let result = await actions.getCountries();
           if (Array.isArray(result)) {
             setCountryCodes(result);
-            //  console.log('select loaded', result);
           } else {
             console.error("Error fetching countries:", result.errors);
           }
@@ -78,13 +83,13 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
               firstName={data?.firstName || ""}
               lastName={data?.lastName || ""}
               email={session?.data?.user?.email || ""}
-              emailVerified={data?.emailVerified || false}
+              emailVerified={session?.data?.user?.emailVerified || false}
               title={data?.title || ""}
             />
           )}
         </div>
         <Spacer y={4} />
-        <form>
+        <form action={action}>
           {/* First Name & Last Name */}
           <div className="flex w-full flex-wrap md:flex-nowrap gap-4">
             <div className="w-full md:w-1/2">
@@ -96,7 +101,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                   className="mt-2"
                   name="firstName"
                   placeholder="e.g Kate"
-                  defaultValue={session?.data?.user?.name || ""}
+                  defaultValue={data?.firstName || ""}
                 />
               )}
             </div>
@@ -153,7 +158,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
               ) : (
                 <Select
                   label="Country Code"
-                  name="countryCode"
+                  name="countryCodeId"
                   placeholder="Select a country code"
                   className="max-w-13 mt-2"
                   selectedKeys={selectedCountry ? [selectedCountry] : undefined}
@@ -202,7 +207,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
               ) : (
                 <Select
                   label="Timezone"
-                  name="timezone"
+                  name="timezoneId"
                   placeholder="Select a timezone"
                   className="max-w-13 mt-2"
                   selectedKeys={selectedTimezone ? [selectedTimezone] : undefined}
@@ -239,9 +244,10 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
           {loading ? (
             <Skeleton className="h-12 w-full mt-4 rounded-lg" />
           ) : (
-            <Button type="submit" className="mt-4 bg-default-foreground text-background" size="md">
-              Update Profile
-            </Button>
+            <div className="my-2">
+              <FormButton>Update Profile</FormButton>
+
+            </div>
           )}
         </form>
       </div>

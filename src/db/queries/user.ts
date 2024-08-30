@@ -1,6 +1,8 @@
 import type { Profile, User } from '@prisma/client';
 import { db } from '@/db';
 import { saltAndHashPassword } from '@/utils/auth';
+import { auth } from '@/auth';
+import { user } from '@nextui-org/react';
 
 export type { User };
 export type { Profile };
@@ -28,9 +30,15 @@ export async function getUserByEmail(userEmail: string) {
  * @param id The ID of the user.
  * @returns The user with the given ID, or null if no user was found.
  */
-export async function getUserById(id: string): Promise<User | null> {
+export async function getUserById(userId: string = ""): Promise<User | null> {
+  const session = await auth();
+
+  if (userId === "") {
+    userId = session?.user?.id as string;
+  }
+
   return await db.user.findUnique({
-    where: { id },
+    where: { id: userId },
   });
 }
 

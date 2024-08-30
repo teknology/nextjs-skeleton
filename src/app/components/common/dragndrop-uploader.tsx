@@ -118,13 +118,16 @@ export default function DragNDropUploader({ onFilesAccepted, onFilesRejected, on
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         noClick: true,
         maxFiles: 1,
-        maxSize: 307200,
+        maxSize: 107200,
         minSize: 30,
         onDropAccepted: onDropFilesAccepted,
         onDropRejected: onDropFilesRejected,
         accept: {
             'image/jpeg': [],
             'image/png': [],
+            'image/gif': [],
+            'image/svg+xml': [],
+            'image/webp': [],
         },
     });
 

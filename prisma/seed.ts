@@ -84,7 +84,7 @@ async function main() {
                     title: 'Developer',
                     biography: 'Experienced software developer.',
                     countryCodeId: usCountryCode.id, // Linking the country code
-                    phoneNumber: '1234567890',
+                    phoneNumber: 1234567890,
                     timezoneId: 4, // Assuming you have a timezone ID
                 },
             },

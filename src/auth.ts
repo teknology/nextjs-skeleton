@@ -47,16 +47,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           const password = credentials.password as string;
           const user = await getUserByEmail(email);
 
-          console.log(user);
-          // console.log('user password', user?.password);
-
-
           // Add code to check if Password is null. If it is, then redirect to the password reset page
           try {
             const passwordsMatch = await comparePasswords(password as string, user?.password as string);
-
-            console.log(passwordsMatch);
-            console.log(user);
 
             if (passwordsMatch) return user;
             // return user;
@@ -84,16 +77,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
 
     jwt({ token, trigger, session, user }) {
-      console.log('JWT: ', user)
       if (trigger === "update" && session) {
         // Note, that `session` can be any arbitrary object, remember to validate it!
         token.picture = session.image
-        //console.log('session image', token);
       }
       try {
         if (user) {
-          console.log('JWT After Try: ', user)
           token.id = user.id
+          if ('emailVerified' in user) {
+            token.emailVerified = user.emailVerified;
+          }
 
         }
       }
@@ -104,6 +97,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async session({ session, token }: any) {
       session.user.id = token.id;
+      session.user.emailVerified = token.emailVerified;
 
       return session;
     },

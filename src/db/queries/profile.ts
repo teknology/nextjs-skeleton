@@ -9,7 +9,7 @@ export type { Profile };
 
 
 
-export async function getProfileByUserId(userId: string): Promise<Profile | null> {
+export async function getProfileByUserId(userId: string = ""): Promise<Profile | null> {
     const session = await auth();
     try {
         const profile = await db.profile.findUnique({
@@ -18,9 +18,6 @@ export async function getProfileByUserId(userId: string): Promise<Profile | null
             },
 
         });
-
-        console.log('profile Data:', profile);
-
         return profile;
     } catch (error) {
         console.error('Failed to fetch user:', error);
@@ -28,22 +25,28 @@ export async function getProfileByUserId(userId: string): Promise<Profile | null
     }
 }
 
-export async function updateProfile(data: Profile): Promise<Profile> {
-    try {
-        const session = await auth();
-        const profile = await db.profile.update({
-            where: {
-                userId: session?.user?.id,
-            },
-            data: {
-                ...data,
-            },
-        });
+export async function updateProfile(data: Profile): Promise<Profile | string | null> {
+    // ...existing code...
 
-        return profile;
-    } catch (error) {
-        console.error('Failed to update user:', error);
-        throw new Error('Failed to update user.');
+
+    if (Object.keys(data).length !== 0) {
+
+        try {
+            const session = await auth();
+            const profile = await db.profile.update({
+                where: {
+                    userId: session?.user?.id,
+                },
+                data: {
+                    ...data,
+                },
+            });
+            return profile;
+        } catch (error) {
+            console.error('Failed to update user:', (error as Error).message);
+            return (error as Error).message;
+        }
     }
+    return null;
 }
 
