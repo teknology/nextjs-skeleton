@@ -3,13 +3,12 @@ import { Avatar } from "@nextui-org/avatar";
 import { Icon } from "@iconify/react";
 import GlobalChip from "@/app/components/common/global-chip";
 import { CheckIcon, ErrorIcon } from "@/app/components/icons";
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Badge, useDisclosure, Checkbox, Input, Link } from "@nextui-org/react";
+import { Modal, ModalContent, ModalHeader, ModalBody, useDisclosure, Button, Badge } from "@nextui-org/react";
 import DragNDropUploader from "@/app/components/common/dragndrop-uploader";
-import * as actions from "@/actions/"; // Import your server-side processing function
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 
-// Define the interface for props
-interface UserWidgetProps {
+// Define the interface for the data prop
+interface UserWidgetData {
     avatarSrc: string;
     firstName: string;
     lastName: string;
@@ -18,19 +17,24 @@ interface UserWidgetProps {
     emailVerified: boolean;
 }
 
-export default function UserWidget({
-    avatarSrc,
-    firstName,
-    lastName,
-    email,
-    emailVerified,
-    title,
-}: UserWidgetProps) {
+interface UserWidgetProps {
+    data: UserWidgetData;
+}
+
+export default function UserWidget({ data }: UserWidgetProps) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [visible, setVisible] = useState(false);
+    const [dataState, setDataState] = useState<UserWidgetData | null>(null);
 
+    useEffect(() => {
+        setDataState(data);
+        console.log('data state changed')
+    }, [data]);
+
+
+    //console.log('widget data State: user widget file', dataState);
     const onFilesAccepted = (files: File[]) => {
-        //console.log('file accepted triggered');
+        // Handle file acceptance
     };
 
     const openModal = () => {
@@ -40,6 +44,7 @@ export default function UserWidget({
     const closeModal = () => {
         setVisible(false);
     };
+
     return (
         <Card className="mt-4 bg-default-100" shadow="none">
             <CardBody>
@@ -59,18 +64,17 @@ export default function UserWidget({
                             >
                                 <Icon className="h-[9px] w-[9px]" icon="solar:pen-linear" />
                             </Button>
-
                         }
                         placement="bottom-right"
                         shape="circle"
                     >
-                        <Avatar className="h-16 w-16" src={avatarSrc} />
-
+                        <Avatar className="h-16 w-16" src={data?.avatarSrc} />
                     </Badge>
                     <Modal backdrop="blur"
-                        size='5xl'
+                        size="5xl"
                         isOpen={isOpen}
-                        onClose={onClose}>
+                        onClose={onClose}
+                    >
                         <ModalContent>
                             {(onClose) => (
                                 <>
@@ -78,30 +82,20 @@ export default function UserWidget({
                                     <ModalBody>
                                         <DragNDropUploader onFilesAccepted={onFilesAccepted} onClose={onClose} />
                                     </ModalBody>
-
-                                    {/*
-                                    <ModalFooter>
-                                        <Button color="danger" variant="light" onPress={onClose}>
-                                            Close
-                                        </Button>
-                                        <Button color="primary" onPress={onClose}>
-                                            Action
-                                        </Button>
-                                    </ModalFooter> */}
                                 </>
                             )}
                         </ModalContent>
                     </Modal>
                     <div>
-                        <p className="text-sm font-medium text-default-600">
-                            {`${firstName} ${lastName}`}
+                        <p className="text-sm font-medium text-default-6 00">
+                            {`${data?.firstName} ${data?.lastName}`}
                         </p>
-                        <p className="text-xs text-default-400">{title}</p>
+                        <p className="text-xs text-default-400">{data?.title}</p>
                         <div className="mt-1 text-xs text-default-400 flex items-center">
-                            {email}
-                            {emailVerified ? (
+                            {data?.email}
+                            {data?.emailVerified ? (
                                 <GlobalChip icon={<CheckIcon size={18} />} color="success" className="text-xs">
-                                    Email  Verified
+                                    Email Verified
                                 </GlobalChip>
                             ) : (
                                 <GlobalChip icon={<ErrorIcon size={18} />} color="danger" className="text-xs">

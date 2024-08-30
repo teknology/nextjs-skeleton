@@ -41,6 +41,26 @@ export async function getUserById(userId: string = ""): Promise<User | null> {
     where: { id: userId },
   });
 }
+/**
+ * Get a user by their ID.
+ * @param id The ID of the user.
+ * @returns The user with the given ID, or null if no user was found.
+ */
+export async function getUserWithProfileById(userId: string = ""): Promise<User | null> {
+  const session = await auth();
+
+  if (userId === "") {
+    userId = session?.user?.id as string;
+  }
+
+  return await db.user.findUnique({
+    where: { id: userId },
+    include: {
+      profile: true,
+    },
+  });
+}
+
 
 /**
  * Create a new user.

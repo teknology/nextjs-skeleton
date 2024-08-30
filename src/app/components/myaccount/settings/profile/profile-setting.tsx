@@ -18,7 +18,12 @@ import * as actions from '@/actions';
 import { timezoneData } from "@/utils/data/timezones"; // Importing timezone data
 import FormButton from "@/app/components/common/form-button"; // Importing SubmitButton component
 import { useFormState } from 'react-dom'
+import { set } from "zod";
 
+// Define the interface for the user data
+interface UserWidgetData {
+  data?: any;
+}
 
 interface ProfileSettingCardProps {
   className?: string;
@@ -28,14 +33,41 @@ interface ProfileSettingCardProps {
 
 const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>(
   ({ data, className, loading = false, ...props }, ref) => {
-    const session = useSession();
+    //const session = useSession();
 
     const [countryCodes, setCountryCodes] = useState<Country[]>([]);
     const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
     const [selectedTimezone, setSelectedTimezone] = useState<string | null>(null); // Selected timezone
     const [formState, action] = useFormState(actions.updateProfileSettings, {
+      status: 'idle',
       errors: {}
     })
+    console.log('passed data', data);
+    const widgetData = {
+      emailVerified: data?.emailVerified || null,
+      email: data?.email || null,
+      title: data?.profile?.title || null,
+      firstName: data?.profile?.firstName || null,
+      lastName: data?.profile?.lastName || null,
+      avatarSrc: data?.image || null,
+    }
+    useEffect(() => {
+      if (formState.status === 'success') {
+        const widgetData = {
+          emailVerified: data?.emailVerified || null,
+          email: data?.email || null,
+          title: data?.profile?.title || null,
+          firstName: data?.profile?.firstName || null,
+          lastName: data?.profile?.lastName || null,
+          avatarSrc: data?.image || null,
+        }
+      }
+
+    }, [formState]); // Run effect when 'text' changes
+
+
+
+
 
     useEffect(() => {
       async function fetchCountries() {
@@ -55,17 +87,18 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
     }, []);
 
     useEffect(() => {
-      if (countryCodes.length > 0 && data?.countryCodeId) {
-        setSelectedCountry(String(data.countryCodeId));
+      if (countryCodes.length > 0 && data?.profile?.countryCodeId) {
+        setSelectedCountry(String(data.profile.countryCodeId));
       }
-    }, [countryCodes, data?.countryCodeId]);
+    }, [countryCodes, data?.profile?.countryCodeId]);
 
     useEffect(() => {
-      if (data?.timezoneId) {
-        console.log('provided timezoneId', data.timezoneId);
+      if (data?.profile?.timezoneId) {
+        console.log('provided timezoneId', data.profile.timezoneId);
         setSelectedTimezone(String(4));
       }
-    }, [data?.timezoneId]);
+    }, [data?.profile?.timezoneId]);
+
 
     return (
       <div ref={ref} className={cn("p-2", className)} {...props}>
@@ -79,12 +112,8 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
             <Skeleton className="h-20 w-full rounded-lg" />
           ) : (
             <UserWidget
-              avatarSrc={session?.data?.user?.image || ""}
-              firstName={data?.firstName || ""}
-              lastName={data?.lastName || ""}
-              email={session?.data?.user?.email || ""}
-              emailVerified={session?.data?.user?.emailVerified || false}
-              title={data?.title || ""}
+              data={widgetData}
+
             />
           )}
         </div>
@@ -101,7 +130,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                   className="mt-2"
                   name="firstName"
                   placeholder="e.g Kate"
-                  defaultValue={data?.firstName || ""}
+                  defaultValue={data?.profile?.firstName || ""}
                 />
               )}
             </div>
@@ -114,7 +143,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                   className="mt-2"
                   name="lastName"
                   placeholder="e.g Moore"
-                  defaultValue={data?.lastName || ""}
+                  defaultValue={data?.profile?.lastName || ""}
                 />
               )}
             </div>
@@ -131,7 +160,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                   className="mt-2"
                   name="title"
                   placeholder="e.g C.E.O / Founder / President"
-                  defaultValue={data?.title || ""}
+                  defaultValue={data?.profile?.title || ""}
                 />
               )}
             </div>
@@ -144,7 +173,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                   className="mt-2"
                   name="email"
                   placeholder="email@mydomain.com"
-                  defaultValue={session?.data?.user?.email || ""}
+                  defaultValue={data?.email || ""}
                 />
               )}
             </div>
@@ -196,7 +225,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                   className="mt-2"
                   name="phoneNumber"
                   placeholder="5555555555"
-                  defaultValue={data?.phoneNumber || ""}
+                  defaultValue={data?.profile?.phoneNumber || ""}
                 />
               )}
             </div>
@@ -236,7 +265,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                 classNames={{
                   input: cn("min-h-[115px]"),
                 }}
-                defaultValue={data?.biography || ""}
+                defaultValue={data?.profile?.biography || ""}
                 placeholder="e.g., 'Kate Moore - Acme.com Support Specialist. Passionate about solving tech issues, loves hiking and volunteering."
               />
             )}

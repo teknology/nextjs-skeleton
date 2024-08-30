@@ -118,7 +118,7 @@ export default function DragNDropUploader({ onFilesAccepted, onFilesRejected, on
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         noClick: true,
         maxFiles: 1,
-        maxSize: 107200,
+        maxSize: 207200,
         minSize: 30,
         onDropAccepted: onDropFilesAccepted,
         onDropRejected: onDropFilesRejected,

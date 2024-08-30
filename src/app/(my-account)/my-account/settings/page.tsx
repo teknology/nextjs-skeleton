@@ -50,6 +50,7 @@ export default function Settings() {
       case 'profile':
         setProfileLoading(true);
         const profileData = await actions.getProfileSettings();
+        // console.log('profileData: (settings page) ', profileData);
         setProfileData(profileData);
         setProfileLoading(false);
         break;

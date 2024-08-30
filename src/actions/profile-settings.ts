@@ -1,6 +1,7 @@
 
 'use server'
 import { getProfileByUserId, updateProfile } from '@/db/queries/profile';
+import { getUserWithProfileById } from '@/db/queries/user';
 import { Profile } from '@prisma/client';
 import { auth } from '@/auth';
 import { getUserById } from '@/db/queries/user';
@@ -13,8 +14,10 @@ export async function getProfileSettings() {
 
         if (userId) {
 
-            const profileData = await getProfileByUserId(userId)
+            const profileData = await getUserWithProfileById(userId)
+            // const userData = await getUserById(userId)
 
+            // console.log('profileData:ActionFile', profileData);
             if (profileData) {
                 return profileData;
             }
@@ -33,6 +36,7 @@ export async function getProfileSettings() {
 }
 
 interface ProfileSettingsFormState {
+    status?: 'idle' | 'pending' | 'success' | 'error';
     errors: {
         first_name?: string[];
         last_name?: string[];
@@ -60,9 +64,7 @@ export async function updateProfileSettings(
         const actionRegex = /\$ACTION/;
         const numberRegex = /^[+-]?\d+(\.\d+)?$/;
 
-        console.log('regex test', numberRegex.test('1234567890')); // Expected output: true
         const phoneNumber = formData.get('phoneNumber') as string | null;
-        console.log('regex test form', phoneNumber && numberRegex.test(phoneNumber)); // Expected output
 
         formData.forEach((value, key) => {
             let formValue = value as any;
@@ -76,24 +78,23 @@ export async function updateProfileSettings(
                 formValue = Number(formValue);
             }
 
-            // Handle user fields separately
+            // Handle user fields separately TODO: Recode to use the db query function that pulls the user data and profile data
             if (key === 'email' && formValue !== currentUser?.email) {
                 userData.email = formValue;
             }
 
             // Compare form data with current profile data
             if (formValue !== currentProfile[key] && key !== 'email') {
-                console.log('key', typeof currentProfile[key]);
-                console.log('formValue', typeof formValue);
+
                 profileData[key] = formValue;
             }
         });
 
         updateProfile(profileData);
-        console.log('profileData to update', profileData);
-        console.log('userData to update', userData);
+
 
         return {
+            status: 'success',
             errors: {}
         };
 
