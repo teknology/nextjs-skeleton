@@ -88,7 +88,12 @@ async function main() {
                     timezoneId: 4, // Assuming you have a timezone ID
                 },
             },
-        },
+            appearance: {
+                create: {
+                    theme: '0', // 0 for light, 1 for dark
+                }
+            }
+        }
     });
 
     console.log('Seed data created:', { user });

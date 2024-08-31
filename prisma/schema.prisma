@@ -19,6 +19,7 @@ model User {
     accounts          Account[]
     sessions          Session[]
     profile           Profile?
+    appearance        Appearance?
     // Optional for WebAuthn support
     Authenticator     Authenticator[]
 
@@ -40,6 +41,13 @@ model Profile {
     timezoneId    Int?
 
     @@index([countryCodeId])
+}
+
+model Appearance {
+    id     Int     @id @default(autoincrement())
+    theme  String? @default("0") // 0 = Light, 1 = Dark
+    userId String  @unique
+    user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Role {

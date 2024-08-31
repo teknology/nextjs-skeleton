@@ -48,6 +48,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
 
     useEffect(() => {
       if (formState.status === 'success') {
+
         fetchNewData();
       }
     }, [formState]);
@@ -268,6 +269,8 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
             <Skeleton className="h-12 w-full mt-4 rounded-lg" />
           ) : (
             <div className="my-2">
+              {/* TODO: Have the user widget skeleton load while updating data */}
+
               <FormButton>Update Profile</FormButton>
             </div>
           )}
