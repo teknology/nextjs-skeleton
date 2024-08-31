@@ -15,15 +15,12 @@ import { useSession } from "next-auth/react";
 import { Country, Timezone } from "@/utils/types/types";
 import { useEffect, useState } from "react";
 import * as actions from '@/actions';
-import { timezoneData } from "@/utils/data/timezones"; // Importing timezone data
-import FormButton from "@/app/components/common/form-button"; // Importing SubmitButton component
-import { useFormState } from 'react-dom'
-import { set } from "zod";
+import { timezoneData } from "@/utils/data/timezones";
+import FormButton from "@/app/components/common/form-button";
+import { useFormState } from 'react-dom';
 
 // Define the interface for the user data
-interface UserWidgetData {
-  data?: any;
-}
+
 
 interface ProfileSettingCardProps {
   className?: string;
@@ -33,56 +30,29 @@ interface ProfileSettingCardProps {
 
 const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>(
   ({ data, className, loading = false, ...props }, ref) => {
-    //const session = useSession();
-
     const [countryCodes, setCountryCodes] = useState<Country[]>([]);
     const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
-    const [selectedTimezone, setSelectedTimezone] = useState<string | null>(null); // Selected timezone
+    const [selectedTimezone, setSelectedTimezone] = useState<string | null>(null);
     const [formState, action] = useFormState(actions.updateProfileSettings, {
       status: 'idle',
-      errors: {}
-    })
-    console.log('passed data', data);
-    const widgetData = {
+      errors: {},
+    });
+    const [widgetData, setWidgetData] = useState({
       emailVerified: data?.emailVerified || null,
       email: data?.email || null,
       title: data?.profile?.title || null,
       firstName: data?.profile?.firstName || null,
       lastName: data?.profile?.lastName || null,
       avatarSrc: data?.image || null,
-    }
+    });
+
     useEffect(() => {
       if (formState.status === 'success') {
-        const widgetData = {
-          emailVerified: data?.emailVerified || null,
-          email: data?.email || null,
-          title: data?.profile?.title || null,
-          firstName: data?.profile?.firstName || null,
-          lastName: data?.profile?.lastName || null,
-          avatarSrc: data?.image || null,
-        }
+        fetchNewData();
       }
-
-    }, [formState]); // Run effect when 'text' changes
-
-
-
-
+    }, [formState]);
 
     useEffect(() => {
-      async function fetchCountries() {
-        try {
-          let result = await actions.getCountries();
-          if (Array.isArray(result)) {
-            setCountryCodes(result);
-          } else {
-            console.error("Error fetching countries:", result.errors);
-          }
-        } catch (error) {
-          console.error("Error fetching countries:", error);
-        }
-      }
-
       fetchCountries();
     }, []);
 
@@ -94,11 +64,38 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
 
     useEffect(() => {
       if (data?.profile?.timezoneId) {
-        console.log('provided timezoneId', data.profile.timezoneId);
-        setSelectedTimezone(String(4));
+        setSelectedTimezone(String(data.profile.timezoneId));
       }
     }, [data?.profile?.timezoneId]);
 
+    async function fetchNewData() {
+      try {
+        const newData = await actions.getUpdatedUserData();
+        setWidgetData({
+          emailVerified: newData?.emailVerified || null,
+          email: newData?.email || null,
+          title: newData?.profile?.title || null,
+          firstName: newData?.profile?.firstName || null,
+          lastName: newData?.profile?.lastName || null,
+          avatarSrc: newData?.image || null,
+        });
+      } catch (error) {
+        console.error('Failed to fetch updated data:', error);
+      }
+    }
+
+    async function fetchCountries() {
+      try {
+        const result = await actions.getCountries();
+        if (Array.isArray(result)) {
+          setCountryCodes(result);
+        } else {
+          console.error("Error fetching countries:", result.errors);
+        }
+      } catch (error) {
+        console.error("Error fetching countries:", error);
+      }
+    }
 
     return (
       <div ref={ref} className={cn("p-2", className)} {...props}>
@@ -111,10 +108,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
           {loading ? (
             <Skeleton className="h-20 w-full rounded-lg" />
           ) : (
-            <UserWidget
-              data={widgetData}
-
-            />
+            <UserWidget data={widgetData} />
           )}
         </div>
         <Spacer y={4} />
@@ -275,7 +269,6 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
           ) : (
             <div className="my-2">
               <FormButton>Update Profile</FormButton>
-
             </div>
           )}
         </form>

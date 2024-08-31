@@ -90,10 +90,13 @@ export async function updateProfileSettings(
             }
         });
 
-        updateProfile(profileData);
+        const newData = updateProfile(profileData);
+
+        console.log('newData', newData)
 
 
         return {
+
             status: 'success',
             errors: {}
         };

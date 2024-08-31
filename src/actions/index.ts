@@ -6,4 +6,4 @@ export { getBillingSettings } from './billing-settings';
 export { getTeamSettings } from './team-settings';
 export { getAppearanceSettings } from './appearance-settings';
 export { getCountries, getTimezones } from './internationalization';
-export { findUserByEmail } from './user';
+export { findUserByEmail, getUpdatedUserData } from './user';

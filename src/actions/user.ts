@@ -1,5 +1,5 @@
 'use server'
-import { getUserByEmail } from '@/db/queries/user';
+import { getUserByEmail, getUserWithProfileById } from '@/db/queries/user';
 
 export async function findUserByEmail(userEmail: string) {
     try {
@@ -13,6 +13,27 @@ export async function findUserByEmail(userEmail: string) {
 
     }
 
+
+
+}
+
+export async function getUpdatedUserData() {
+
+    try {
+        const user = await getUserWithProfileById();
+        console.log('action call', user)
+        return user;
+    }
+    catch (error) {
+        console.error('Failed to find user:', error);
+        throw new Error('Failed to find user.');
+
+    }
+
+
+}
+
+export async function getUpdatedWidgetData() {
 
 
 }

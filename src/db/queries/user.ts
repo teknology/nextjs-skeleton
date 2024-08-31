@@ -7,6 +7,9 @@ import { user } from '@nextui-org/react';
 export type { User };
 export type { Profile };
 
+interface UserWithProfile extends User {
+  profile: Profile | null;
+}
 /**
  * Get a user by their email address.
  * @param email The email address of the user.
@@ -46,7 +49,7 @@ export async function getUserById(userId: string = ""): Promise<User | null> {
  * @param id The ID of the user.
  * @returns The user with the given ID, or null if no user was found.
  */
-export async function getUserWithProfileById(userId: string = ""): Promise<User | null> {
+export async function getUserWithProfileById(userId: string = ""): Promise<UserWithProfile | null> {
   const session = await auth();
 
   if (userId === "") {

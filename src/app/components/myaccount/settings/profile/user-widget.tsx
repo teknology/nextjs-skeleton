@@ -26,11 +26,13 @@ export default function UserWidget({ data }: UserWidgetProps) {
     const [visible, setVisible] = useState(false);
     const [dataState, setDataState] = useState<UserWidgetData | null>(null);
 
-    useEffect(() => {
-        setDataState(data);
-        console.log('data state changed')
-    }, [data]);
-
+    /*
+     useEffect(() => {
+         setDataState(data);
+         console.log('data state changed')
+         console.log('widget data State: user widget file', data);
+     }, [data]);
+ */
 
     //console.log('widget data State: user widget file', dataState);
     const onFilesAccepted = (files: File[]) => {
