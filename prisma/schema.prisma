@@ -45,7 +45,7 @@ model Profile {
 
 model Appearance {
     id     Int     @id @default(autoincrement())
-    theme  String? @default("0") // 0 = Light, 1 = Dark
+    theme  String? @default("light") // 0 = Light, 1 = Dark
     userId String  @unique
     user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

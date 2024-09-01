@@ -26,6 +26,8 @@ export default function UserWidget({ data }: UserWidgetProps) {
     const [visible, setVisible] = useState(false);
     const [dataState, setDataState] = useState<UserWidgetData | null>(null);
 
+    console.log('widget data State: user widget file', data);
+
     /*
      useEffect(() => {
          setDataState(data);

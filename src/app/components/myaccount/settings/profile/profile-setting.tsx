@@ -38,14 +38,15 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
       errors: {},
     });
     const [widgetData, setWidgetData] = useState({
-      emailVerified: data?.emailVerified || null,
-      email: data?.email || null,
-      title: data?.profile?.title || null,
-      firstName: data?.profile?.firstName || null,
-      lastName: data?.profile?.lastName || null,
-      avatarSrc: data?.image || null,
+      emailVerified: false,
+      email: '',
+      title: '',
+      firstName: '',
+      lastName: '',
+      avatarSrc: '',
     });
-
+    console.log('passed data: profile setting file', data);
+    console.log('widget data State: profile setting file', widgetData);
     useEffect(() => {
       if (formState.status === 'success') {
 
@@ -69,16 +70,29 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
       }
     }, [data?.profile?.timezoneId]);
 
+    useEffect(() => {
+      if (data) {
+        setWidgetData({
+          emailVerified: data?.emailVerified || null,
+          email: data?.email || null,
+          title: data?.profile?.title || null,
+          firstName: data?.profile?.firstName || null,
+          lastName: data?.profile?.lastName || null,
+          avatarSrc: data?.image || null,
+        });
+      }
+    }
+      , [data]);
     async function fetchNewData() {
       try {
         const newData = await actions.getUpdatedUserData();
         setWidgetData({
-          emailVerified: newData?.emailVerified || null,
-          email: newData?.email || null,
-          title: newData?.profile?.title || null,
-          firstName: newData?.profile?.firstName || null,
-          lastName: newData?.profile?.lastName || null,
-          avatarSrc: newData?.image || null,
+          emailVerified: newData?.emailVerified || false,
+          email: newData?.email || '',
+          title: newData?.profile?.title || '',
+          firstName: newData?.profile?.firstName || '',
+          lastName: newData?.profile?.lastName || '',
+          avatarSrc: newData?.image || '',
         });
       } catch (error) {
         console.error('Failed to fetch updated data:', error);

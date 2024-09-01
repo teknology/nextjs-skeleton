@@ -5,16 +5,20 @@ import { getUserWithProfileById } from '@/db/queries/user';
 import { Profile } from '@prisma/client';
 import { auth } from '@/auth';
 import { getUserById } from '@/db/queries/user';
+import * as actions from '@/actions';
 
 export async function getProfileSettings() {
     const session = await auth();
     const userId = session?.user?.id
+    console.log('userId:ActionFile', userId);
 
     try {
 
         if (userId) {
 
             const profileData = await getUserWithProfileById(userId)
+
+            console.log('profileData:ActionFile', profileData);
             // const userData = await getUserById(userId)
 
             // console.log('profileData:ActionFile', profileData);
@@ -30,6 +34,7 @@ export async function getProfileSettings() {
     }
     catch (error) {
         console.error('Failed to fetch user:', error);
+        // actions.signOut();
         throw new Error('Failed to fetch user.');
     }
 

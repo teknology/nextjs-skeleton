@@ -10,7 +10,7 @@ import {
 } from '@nextui-org/react';
 import { Icon } from '@iconify/react';
 import ProfileSetting from '@/app/components/myaccount/settings/profile/profile-setting';
-import AppearanceSetting from '@/app/components/myaccount/settings/appearance-setting';
+import AppearanceSetting from '@/app/components/myaccount/settings/appearance/appearance-setting';
 import AccountSetting from '@/app/components/myaccount/settings/account-setting';
 import BillingSetting from '@/app/components/myaccount/settings/billing-setting';
 import TeamSetting from '@/app/components/myaccount/settings/team-setting';
@@ -50,7 +50,7 @@ export default function Settings() {
       case 'profile':
         setProfileLoading(true);
         const profileData = await actions.getProfileSettings();
-        // console.log('profileData: (settings page) ', profileData);
+        console.log('profileData: (settings page) ', profileData);
         setProfileData(profileData);
         setProfileLoading(false);
         break;

@@ -6,12 +6,15 @@ import { useState, useEffect } from 'react';
 import { Button, Input } from '@nextui-org/react';
 import FormButton from '@/app/components/common/form-button';
 import { useSession } from 'next-auth/react';
+import { useTheme } from 'next-themes'
+
 
 export default function Home() {
   const { data: session, status, update } = useSession();
   const [result, setResult] = useState(null); // State to store the result
   const [loading, setLoading] = useState(true); // State to manage loading
-
+  const { theme, setTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
 
 
   useEffect(() => {
@@ -30,6 +33,14 @@ export default function Home() {
     fetchData();
   }, []);
 
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) {
+    return null
+  }
   return (
     <div className="container mx-auto space-y-1">
       <Button>Update image</Button>
@@ -39,6 +50,16 @@ export default function Home() {
 
       <div>
         <p>The user image is {session?.user?.image}</p>
+      </div>
+      <div>
+        <div>
+          The current theme is: {theme}
+          <select value={theme} onChange={e => setTheme(e.target.value)}>
+            <option value="system">System</option>
+            <option value="dark">Dark</option>
+            <option value="light">Light</option>
+          </select>
+        </div>
       </div>
       <div className="flex justify-center w-100 py-100">
         <form>

@@ -90,7 +90,7 @@ async function main() {
             },
             appearance: {
                 create: {
-                    theme: '0', // 0 for light, 1 for dark
+                    theme: 'light', // 0 for light, 1 for dark
                 }
             }
         }
