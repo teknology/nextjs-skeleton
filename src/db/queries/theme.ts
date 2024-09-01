@@ -1,7 +1,11 @@
+'use server'
 import { db } from '../index';
 import { auth } from '../../auth';
+import { user } from '@nextui-org/react';
 
-export async function getUserTheme(userId: string | null = '') {
+export type Appearance = 'light' | 'dark';
+
+export async function getUserAppearance(userId: string | null = '') {
     const session = await auth();
 
     if (userId === null) {
@@ -12,7 +16,29 @@ export async function getUserTheme(userId: string | null = '') {
         where: { userId },
     });
 
-    return appearance?.theme || '0';  // Default to light theme
+    return appearance || '0';  // Default to light theme
+}
+
+export async function getUserTheme(id: string) {
+    const session = await auth();
+
+    console.log('dbquery: session userid', session?.user?.id)
+    console.log('dbquery: userid', id)
+
+    try {
+        const theme = await db.appearance.findUnique({
+            where: { userId: id },
+        });
+
+        console.log('dbquery: theme:', theme)
+
+        return theme?.theme || 'light';  // Default to light theme
+
+    }
+    catch (error) {
+        console.error('Failed to fetch user:', error);
+        throw new Error('Failed to fetch user.');
+    }
 }
 
 export async function setUserTheme(userId: string = '', theme: string) {

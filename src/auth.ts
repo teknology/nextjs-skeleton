@@ -8,7 +8,7 @@ import { db } from "@/db"
 import { comparePasswords } from "./utils/auth"
 import { getUserByEmail } from "./db/queries/user"
 import type { User } from "@prisma/client"
-import { getProfileByUserId } from "./db/queries/profile"
+import { getUserTheme } from "./db/queries/theme"
 
 interface UserCredentials {
   email: string;
@@ -76,16 +76,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return !!auth
     },
 
-    jwt({ token, trigger, session, user }) {
+    async jwt({ token, trigger, session, user }) {
+
       if (trigger === "update" && session) {
         // Note, that `session` can be any arbitrary object, remember to validate it!
         token.picture = session.image
       }
+
       try {
         if (user) {
           token.id = user.id
           if ('emailVerified' in user) {
             token.emailVerified = user.emailVerified;
+          }
+          if (!token.theme) {
+            const userTheme = await getUserTheme(user.id as string)
+            token.theme = userTheme
           }
 
         }
@@ -98,6 +104,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }: any) {
       session.user.id = token.id;
       session.user.emailVerified = token.emailVerified;
+      session.user.theme = token.theme;
 
       return session;
     },

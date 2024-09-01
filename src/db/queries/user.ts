@@ -22,8 +22,6 @@ export async function getUserByEmail(userEmail: string) {
       email: userEmail,
     },
   });
-
-  console.log('db call', result);
   return result;
 
 }

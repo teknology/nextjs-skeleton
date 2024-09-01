@@ -17,7 +17,7 @@ import AccountTabs from '@/app/components/myaccount/account-tabs'
 
 export default async function myAccount() {
   const session = await auth()
-  //console.log(session)
+  console.log('account page', session)
   const pageTitle = 'Account Home';
   const pageSubtitle = 'Manage your account and websites';
   const pageIcon = 'bx:bx-home';

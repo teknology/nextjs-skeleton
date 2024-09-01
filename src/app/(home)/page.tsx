@@ -7,6 +7,7 @@ import { Button, Input } from '@nextui-org/react';
 import FormButton from '@/app/components/common/form-button';
 import { useSession } from 'next-auth/react';
 import { useTheme } from 'next-themes'
+import { getUserTheme } from '@/db/queries/theme';
 
 
 export default function Home() {
@@ -21,6 +22,7 @@ export default function Home() {
     async function fetchData() {
       try {
         const userResult = await actions.findUserByEmail('gary@magehd.com');
+        //  console.log(await getUserTheme('cm0hgubny0000hc3dnm0xycpj'))
         // setResult(userResult); // Update state with fetched result
       } catch (error) {
         console.error('Failed to fetch user:', error);
@@ -28,6 +30,7 @@ export default function Home() {
       } finally {
         setLoading(false); // Set loading to false once data is fetched
       }
+
     }
 
     fetchData();
