@@ -5,6 +5,8 @@ import { get } from 'http';
 //Find out why  @ directory reference doesn't work
 import { auth } from '../auth'; // Assuming the 'auth' module is located in the 'auth' directory relative to the current file
 import { getUserTheme as getTheme } from '../db/queries/appearance';
+import { cookies } from 'next/headers'
+
 
 
 
@@ -35,7 +37,14 @@ interface AppearanceThemeFormState {
     };
 }
 
-/*export async function setUserTheme(formState: AppearanceThemeFormState,
+export async function setThemeCookie(theme: string) {
+    cookies().delete('theme')
+    cookies().set('theme', theme, {
+        maxAge: 60 * 60 * 24 * 365,
+    });
+}
+/*
+export async function setUserTheme(formState: AppearanceThemeFormState,
     formData: FormData): Promise<void> {
     const session = await auth();
 
@@ -53,4 +62,4 @@ interface AppearanceThemeFormState {
         throw new Error('Failed to set user theme.');
     }
 }
-    */
+   */

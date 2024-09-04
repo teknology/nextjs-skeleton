@@ -16,17 +16,16 @@ import AccountTabs from '@/app/components/myaccount/account-tabs'
 import { useTheme } from 'next-themes'
 import { getInitialTheme, setThemeCookie } from '@/utils/theme-utils'
 import { getTranslations } from 'next-intl/server';
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  image: string;
-  theme: string;
-}
+import { set } from 'zod'
+import { cookies } from 'next/headers'
+
 
 
 export default async function myAccount() {
   const session = await auth();
+  const initialTheme = await getInitialTheme();
+
+  console.log('initial theme:', initialTheme);
 
   if (!session) {
     // Handle the case where session is null
@@ -35,17 +34,14 @@ export default async function myAccount() {
 
 
   const t = await getTranslations('my_account');
-  console.log('session:', session)
+
   // Translation hook
   const pageTitle = t('page_title');
   const pageSubtitle = t('page_subtitle');
   const pageIcon = 'bx:bx-home';
 
-  const cookieTheme = getInitialTheme()
 
-  if ((session.user as User).theme !== cookieTheme) {
-    setThemeCookie((session.user as User).theme);
-  }
+
 
 
   return (

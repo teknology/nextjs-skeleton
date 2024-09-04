@@ -7,12 +7,24 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { db } from "@/db"
 import { comparePasswords } from "./utils/auth"
 import { getUserByEmail } from "./db/queries/user"
-import type { User } from "@prisma/client"
 import { getUserTheme } from "./db/queries/appearance"
+import { set } from "zod"
+import { setThemeCookie } from "./utils/theme-utils"
 
 interface UserCredentials {
   email: string;
   password: string | null;
+}
+declare module 'next-auth' {
+
+  interface User {
+
+    // other properties
+
+    theme?: string | '';
+
+  }
+
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
@@ -105,6 +117,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.user.id = token.id;
       session.user.emailVerified = token.emailVerified;
       session.user.theme = token.theme;
+
 
       return session;
     },

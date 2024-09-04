@@ -60,6 +60,12 @@
         "flag": "https://flagcdn.com/w320/pt.png"
     },
     {
+        "code": "br",
+        "country": "Brazil",
+        "language": "Português (Brasil)",
+        "flag": "https://flagcdn.com/w320/br.png"
+    },
+    {
         "code": "ar",
         "country": "Saudi Arabia",
         "language": "العربية",
@@ -70,12 +76,6 @@
         "country": "India",
         "language": "हिन्दी",
         "flag": "https://flagcdn.com/w320/in.png"
-    },
-    {
-        "code": "br",
-        "country": "Brazil",
-        "language": "Português (Brasil)",
-        "flag": "https://flagcdn.com/w320/br.png"
     },
     {
         "code": "nl",

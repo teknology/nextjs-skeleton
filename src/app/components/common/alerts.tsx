@@ -9,7 +9,7 @@ import { useTranslations } from 'next-intl';
 export default function AlertComponent() {
     const [isVisible, setIsVisible] = useState(true);
     const [isAnimating, setIsAnimating] = useState(false);
-    const t = useTranslations('myAccount');
+    const t = useTranslations('my_account');
     const handleClose = () => {
         setIsAnimating(true);
     };

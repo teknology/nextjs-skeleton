@@ -1,12 +1,13 @@
+'use server'
 // src/utils/getTheme.ts
 import { cookies } from 'next/headers';
 
-export function getInitialTheme() {
-    const themeCookie = cookies().get('theme');
-    return themeCookie?.value || 'light';
+export async function getInitialTheme() {
+    const themeCookie = await cookies().get('theme');
+    return themeCookie?.value;
 }
 
-export function setThemeCookie(theme: string) {
+export async function setThemeCookie(theme: string) {
     cookies().set('theme', theme, {
         maxAge: 60 * 60 * 24 * 365,
     });
