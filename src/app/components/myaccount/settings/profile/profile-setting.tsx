@@ -18,6 +18,7 @@ import * as actions from '@/actions';
 import { timezoneData } from "@/utils/data/timezones";
 import FormButton from "@/app/components/common/form-button";
 import { useFormState } from 'react-dom';
+import { useTranslations } from "next-intl";
 
 // Define the interface for the user data
 
@@ -30,6 +31,7 @@ interface ProfileSettingCardProps {
 
 const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>(
   ({ data, className, loading = false, ...props }, ref) => {
+    const t = useTranslations('my_account.settings.profile');
     const [countryCodes, setCountryCodes] = useState<Country[]>([]);
     const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
     const [selectedTimezone, setSelectedTimezone] = useState<string | null>(null);
@@ -116,9 +118,8 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
       <div ref={ref} className={cn("p-2", className)} {...props}>
         {/* Profile */}
         <div>
-          <p className="text-base font-medium text-default-700">Profile</p>
           <p className="mt-1 text-sm font-normal text-default-400">
-            This displays your public profile on the site.
+            {t("description")}
           </p>
           {loading ? (
             <Skeleton className="h-20 w-full rounded-lg" />
@@ -135,7 +136,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                 <Skeleton className="h-12 w-full rounded-lg" />
               ) : (
                 <Input
-                  label="First Name"
+                  label={t("first_name")}
                   className="mt-2"
                   name="firstName"
                   placeholder="e.g Kate"
@@ -148,7 +149,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                 <Skeleton className="h-12 w-full rounded-lg" />
               ) : (
                 <Input
-                  label="Last Name"
+                  label={t("last_name")}
                   className="mt-2"
                   name="lastName"
                   placeholder="e.g Moore"
@@ -165,7 +166,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                 <Skeleton className="h-12 w-full rounded-lg" />
               ) : (
                 <Input
-                  label="Title"
+                  label={t("title")}
                   className="mt-2"
                   name="title"
                   placeholder="e.g C.E.O / Founder / President"
@@ -178,7 +179,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                 <Skeleton className="h-12 w-full rounded-lg" />
               ) : (
                 <Input
-                  label="Email"
+                  label={t("email")}
                   className="mt-2"
                   name="email"
                   placeholder="email@mydomain.com"
@@ -195,7 +196,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                 <Skeleton className="h-12 w-full rounded-lg mt-2" />
               ) : (
                 <Select
-                  label="Country Code"
+                  label={t("country_code")}
                   name="countryCodeId"
                   placeholder="Select a country code"
                   className="max-w-13 mt-2"
@@ -230,7 +231,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                 <Skeleton className="h-12 w-full rounded-lg mt-2" />
               ) : (
                 <Input
-                  label="Phone Number"
+                  label={t("phone_number")}
                   className="mt-2"
                   name="phoneNumber"
                   placeholder="5555555555"
@@ -244,7 +245,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                 <Skeleton className="h-12 w-full rounded-lg mt-2" />
               ) : (
                 <Select
-                  label="Timezone"
+                  label={t("timezone")}
                   name="timezoneId"
                   placeholder="Select a timezone"
                   className="max-w-13 mt-2"
@@ -268,7 +269,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
               <Skeleton className="h-32 w-full rounded-lg mt-2" />
             ) : (
               <Textarea
-                label="Biography"
+                label={t("biography")}
                 className="mt-2"
                 name="biography"
                 classNames={{
@@ -285,7 +286,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
             <div className="my-2">
               {/* TODO: Have the user widget skeleton load while updating data */}
 
-              <FormButton>Update Profile</FormButton>
+              <FormButton>{t('update_profile')}</FormButton>
             </div>
           )}
         </form>

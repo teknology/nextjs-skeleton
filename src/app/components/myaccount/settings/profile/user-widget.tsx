@@ -6,6 +6,8 @@ import { CheckIcon, ErrorIcon } from "@/app/components/icons";
 import { Modal, ModalContent, ModalHeader, ModalBody, useDisclosure, Button, Badge } from "@nextui-org/react";
 import DragNDropUploader from "@/app/components/common/dragndrop-uploader";
 import { use, useEffect, useState } from "react";
+import myAccount from "@/app/(my-account)/my-account/page";
+import { useTranslations } from "next-intl";
 
 // Define the interface for the data prop
 interface UserWidgetData {
@@ -25,6 +27,8 @@ export default function UserWidget({ data }: UserWidgetProps) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [visible, setVisible] = useState(false);
     const [dataState, setDataState] = useState<UserWidgetData | null>(null);
+
+    const t = useTranslations('my_account.settings.profile.user_widget');
 
     console.log('widget data State: user widget file', data);
 
@@ -82,7 +86,7 @@ export default function UserWidget({ data }: UserWidgetProps) {
                         <ModalContent>
                             {(onClose) => (
                                 <>
-                                    <ModalHeader className="flex flex-col gap-1">Upload Your Profile Image</ModalHeader>
+                                    <ModalHeader className="flex flex-col gap-1">{t("title")}</ModalHeader>
                                     <ModalBody>
                                         <DragNDropUploader onFilesAccepted={onFilesAccepted} onClose={onClose} />
                                     </ModalBody>
@@ -99,11 +103,11 @@ export default function UserWidget({ data }: UserWidgetProps) {
                             {data?.email}
                             {data?.emailVerified ? (
                                 <GlobalChip icon={<CheckIcon size={18} />} color="success" className="text-xs">
-                                    Email Verified
+                                    {t("email_verified")}
                                 </GlobalChip>
                             ) : (
                                 <GlobalChip icon={<ErrorIcon size={18} />} color="danger" className="text-xs">
-                                    Email Not Verified
+                                    {t("email_not_verified")}
                                 </GlobalChip>
                             )}
                         </div>
@@ -113,3 +117,7 @@ export default function UserWidget({ data }: UserWidgetProps) {
         </Card>
     );
 }
+function useTranslation() {
+    throw new Error("Function not implemented.");
+}
+

@@ -1,0 +1,80 @@
+{
+    "HomePage": {
+        "title": "Hello world!"
+    },
+    "breadcrumbs": {
+        "home": "Home",
+        "account": "Account",
+        "settings": "Settings"
+    },
+    "my_account": {
+        "main_navigation": {
+            "signed_in_as": "Signed in as",
+            "log_out": "Log Out",
+            "account": "My Account",
+            "settings": "Settings",
+            "billing": "Billing",
+            "help_and_feedback": "Help & Feedback"
+        },
+        "page_title": "Account Home",
+        "page_subtitle": "Manage your account and websites",
+        "new_deployment_button": "New Deployment",
+        "settings": {
+            "page_title": "Account Settings",
+            "page_subtitle": "Manage your account settings",
+            "profile": {
+                "title": "Profile",
+                "description": "Update your profile information. E-mail and phone number will not be publicly displayed.",
+                "first_name": "First Name",
+                "last_name": "Last Name",
+                "email": "Email",
+                "phone_number": "Phone Number",
+                "country_code": "Country Code",
+                "timezone": "Timezone",
+                "biography": "Biography",
+                "update_profile": "Update Profile",
+                "user_widget": {
+                    "email_verified": "Email Verified",
+                    "email_not_verified": "Email Not Verified",
+                    "modal": {
+                        "title": "Upload Your Profile Image",
+                        "description": "Drag 'n' drop some images here, or click to select files",
+                        "save": "Save",
+                        "close": "Close",
+                        "upload_errors": {
+                            "file_size": "File size is too large. Please upload a file less than 2MB.",
+                            "file_type": "File type is not supported. Please upload a JPG, PNG, or GIF.",
+                            "file_upload": "An error occurred during file upload. Please try again.",
+                            "file_remove": "An error occurred while removing the file. Please try again."
+                        }
+                    }
+                }
+            },
+            "appearance": {
+                "title": "Appearance",
+                "description": "Update the appearance settings",
+                "dark_mode": "Dark Mode",
+                "light_mode": "Light Mode",
+                "language": "Language"
+            },
+            "account": {
+                "title": "Account",
+                "description": "Update your security settings",
+                "password": "Password",
+                "two_factor_authentication": "Two Factor Authentication"
+            }
+        },
+        "navigation_tabs": {
+            "home": "Home",
+            "latest_news": "Latest News",
+            "websites": "Websites",
+            "team": "Team"
+        }
+    },
+    "alerts": {
+        "payment_alert": {
+            "payment_alert_title": "Payment Alert",
+            "payment_alert_description": "Make beautiful websites regardless of your design experience."
+        }
+    }
+}

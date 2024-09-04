@@ -9,6 +9,7 @@ import { getSession, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import { createProfileImagePath } from '@/utils/public-paths';
 import { set } from 'zod';
+import { useTranslations } from 'next-intl';
 
 interface DropzoneProps {
     onFilesAccepted: (files: File[]) => void;
@@ -34,6 +35,7 @@ export default function DragNDropUploader({ onFilesAccepted, onFilesRejected, on
     const [uploadProgress, setUploadProgress] = useState<number | null>(null);
     const [pending, setPending] = useState<boolean>(false);
     const [saveEnabled, setSaveEnabled] = useState<boolean>(true);
+    const t = useTranslations('myAccount.settings.profile.user_widget.modal');
 
     const onDropFilesAccepted = useCallback(
         (acceptedFiles: File[]) => {
@@ -109,7 +111,7 @@ export default function DragNDropUploader({ onFilesAccepted, onFilesRejected, on
             } catch (error) {
                 setPending(false);
                 console.error('Error uploading files:', error);
-                setDropState({ errors: { _form: [(error as Error).message || 'An error occurred during file upload'] } });
+                setDropState({ errors: { _form: [(error as Error).message || t('upload_errors.file_upload')] } });
                 await getSession();
             }
         }
@@ -182,7 +184,7 @@ export default function DragNDropUploader({ onFilesAccepted, onFilesRejected, on
                 <div className="text-center">
                     <input aria-label="File upload input" {...getInputProps()} />
                     <p className="text-center text-gray-500">
-                        {isDragActive
+                        {isDragActive && getRootProps().maxFiles === 1
                             ? 'Drop your image here ...'
                             : "Drag 'n' drop some images here, or click to select files"}
                     </p>

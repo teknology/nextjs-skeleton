@@ -13,14 +13,40 @@ import MyAccountHeader from '@/app/components/myaccount/common/my-account-header
 import MessageNotification from '@/app/components/common/message-notification'
 import AlertComponent from '@/app/components/common/alerts'
 import AccountTabs from '@/app/components/myaccount/account-tabs'
+import { useTheme } from 'next-themes'
+import { getInitialTheme, setThemeCookie } from '@/utils/theme-utils'
+import { getTranslations } from 'next-intl/server';
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  image: string;
+  theme: string;
+}
 
 
 export default async function myAccount() {
-  const session = await auth()
-  console.log('account page', session)
-  const pageTitle = 'Account Home';
-  const pageSubtitle = 'Manage your account and websites';
+  const session = await auth();
+
+  if (!session) {
+    // Handle the case where session is null
+    return <div>Error: Unable to retrieve session.</div>;
+  }
+
+
+  const t = await getTranslations('my_account');
+  console.log('session:', session)
+  // Translation hook
+  const pageTitle = t('page_title');
+  const pageSubtitle = t('page_subtitle');
   const pageIcon = 'bx:bx-home';
+
+  const cookieTheme = getInitialTheme()
+
+  if ((session.user as User).theme !== cookieTheme) {
+    setThemeCookie((session.user as User).theme);
+  }
+
 
   return (
     <>

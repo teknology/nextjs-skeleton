@@ -34,9 +34,9 @@ const AccountSetting = React.forwardRef<HTMLDivElement, AccountSettingCardProps>
         <div ref={ref} className={cn("p-2", className)} {...props}>
             {/* Full name */}
             <div>
-                <p className="text-base font-medium text-default-700">Full name</p>
-                <p className="mt-1 text-sm font-normal text-default-400">Name to be used for emails.</p>
-                <Input className="mt-2" placeholder="e.g Kate Moore" />
+                <p className="text-base font-medium text-default-700">Secondary Email</p>
+                <p className="mt-1 text-sm font-normal text-default-400">Add a backup email just in case</p>
+                <Input className="mt-2" placeholder="name@secondaryemail.com" />
             </div>
             <Spacer y={2} />
             {/* Username */}

@@ -1,3 +1,4 @@
+'use client'
 import { Icon } from '@iconify/react'
 import {
     Button,
@@ -5,6 +6,9 @@ import {
 } from '@nextui-org/react'
 import Breadcrumbs from '@/app/components/common/breadcrumbs';
 import SiteBreadcrumbs from '@/app/components/common/breadcrumbs';
+import myAccount from '@/app/(my-account)/my-account/page';
+import { useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 
 interface MyAccountProps {
     pageTitle: string;
@@ -13,6 +17,9 @@ interface MyAccountProps {
 }
 
 export default function MyAccountHeader({ pageTitle, pageSubtitle, pageIcon }: MyAccountProps) {
+
+    const t = useTranslations('my_account');
+
 
     return (
         <div className='mb-6 flex w-full items-center justify-between'>
@@ -43,7 +50,7 @@ export default function MyAccountHeader({ pageTitle, pageSubtitle, pageIcon }: M
                     />
                 }
             >
-                New Deployment
+                {t('new_deployment_button')}
             </Button>
         </div>
     )

@@ -11,15 +11,17 @@ import {
 import { Icon } from '@iconify/react';
 import ProfileSetting from '@/app/components/myaccount/settings/profile/profile-setting';
 import AppearanceSetting from '@/app/components/myaccount/settings/appearance/appearance-setting';
-import AccountSetting from '@/app/components/myaccount/settings/account-setting';
+import AccountSetting from '@/app/components/myaccount/settings/account/account-setting';
 import BillingSetting from '@/app/components/myaccount/settings/billing-setting';
 import TeamSetting from '@/app/components/myaccount/settings/team-setting';
 import MyAccountHeader from '@/app/components/myaccount/common/my-account-header';
 import * as actions from '@/actions';
+import { useTranslations } from 'next-intl';
 
 export default function Settings() {
   const { isOpen, onOpenChange } = useDisclosure();
   const [selected, setSelected] = useState("profile");
+  const t = useTranslations('my_account.settings');
 
   // Individual state for each tab
   const [profileLoading, setProfileLoading] = useState(true);
@@ -37,8 +39,8 @@ export default function Settings() {
   const [teamLoading, setTeamLoading] = useState(false);
   const [teamData, setTeamData] = useState<any | null>(null);
 
-  const pageTitle = 'Settings';
-  const pageSubtitle = 'Manage your profile, team and billing';
+  const pageTitle = t('page_title');
+  const pageSubtitle = t('page_subtitle');
   const pageIcon = 'fluent:settings-32-light';
 
   useEffect(() => {
@@ -130,13 +132,13 @@ export default function Settings() {
             selectedKey={selected}
             onSelectionChange={(key) => setSelected(key.toString())}
           >
-            <Tab key="profile" title="Profile">
+            <Tab key="profile" title={t('profile.title')}>
               {renderTabContent()}
             </Tab>
-            <Tab key="appearance" title="Appearance">
+            <Tab key="appearance" title={t('appearance.title')}>
               {renderTabContent()}
             </Tab>
-            <Tab key="account" title="Account">
+            <Tab key="account" title={t('account.title')}>
               {renderTabContent()}
             </Tab>
             <Tab key="billing" title="Billing">
