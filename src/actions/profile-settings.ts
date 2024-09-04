@@ -18,6 +18,7 @@ export async function getProfileSettings() {
 
             const profileData = await getUserWithProfileById(userId)
 
+            // TODO: Find out a way to trim down the data to only the necessary fields
             console.log('profileData:ActionFile', profileData);
             // const userData = await getUserById(userId)
 

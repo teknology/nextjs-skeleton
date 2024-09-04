@@ -4,7 +4,7 @@
 import { get } from 'http';
 //Find out why  @ directory reference doesn't work
 import { auth } from '../auth'; // Assuming the 'auth' module is located in the 'auth' directory relative to the current file
-import { getUserTheme } from '../db/queries/theme';
+import { getUserTheme as getTheme } from '../db/queries/appearance';
 
 
 
@@ -15,10 +15,10 @@ export async function getUserTheme() {
 
 
     if (!session?.user?.id) {
-        return '0'; // Default to light theme
+        return 'light'; // Default to light theme
     }
     try {
-        const theme = await getUserTheme();
+        const theme = await getTheme(session?.user?.id);
         return theme;
     }
     catch (error) {
@@ -35,8 +35,8 @@ interface AppearanceThemeFormState {
     };
 }
 
-export async function setUserTheme(formState: AppearanceThemeFormState,
-    formData: FormData) {
+/*export async function setUserTheme(formState: AppearanceThemeFormState,
+    formData: FormData): Promise<void> {
     const session = await auth();
 
     if (!session?.user?.id) {
@@ -44,13 +44,13 @@ export async function setUserTheme(formState: AppearanceThemeFormState,
     }
 
     try {
-        const setTheme = await setUserTheme(Id);
+        // Assuming setTheme is a function that sets the theme
+        const setTheme = await setTheme(session.user.id, formData);
         return setTheme;
     }
     catch (error) {
         console.error('Failed to set user theme:', error);
         throw new Error('Failed to set user theme.');
     }
-
-
 }
+    */

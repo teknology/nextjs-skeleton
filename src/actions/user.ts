@@ -4,7 +4,7 @@ import { getUserByEmail, getUserWithProfileById } from '@/db/queries/user';
 export async function findUserByEmail(userEmail: string) {
     try {
         const user = await getUserByEmail(userEmail);
-        console.log('action call', user)
+        //  console.log('action call', user)
         return user;
     }
     catch (error) {
@@ -21,7 +21,7 @@ export async function getUpdatedUserData() {
 
     try {
         const user = await getUserWithProfileById();
-        console.log('action call', user)
+        //   console.log('action call', user)
         return user;
     }
     catch (error) {

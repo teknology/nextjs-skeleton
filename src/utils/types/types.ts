@@ -28,14 +28,6 @@ export type SignInPasswordFormState = {
     _form?: string[];
   }
 }
-export type UserSession = {
-  user: {
-    id: string;
-    email: string;
-    name: string;
-    image: string;
-  }
-}
 
 export type Country = {
   id: number;

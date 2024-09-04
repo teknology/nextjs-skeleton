@@ -8,7 +8,7 @@ import { db } from "@/db"
 import { comparePasswords } from "./utils/auth"
 import { getUserByEmail } from "./db/queries/user"
 import type { User } from "@prisma/client"
-import { getUserTheme } from "./db/queries/theme"
+import { getUserTheme } from "./db/queries/appearance"
 
 interface UserCredentials {
   email: string;
