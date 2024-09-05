@@ -39,6 +39,7 @@ import NotificationsCard from '@/app/components/myaccount/notification-card'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import ThemeSwitch from '../../common/theme-switcher'
 
 export default function MyAccountNavbar(): JSX.Element {
   const session = useSession()
@@ -90,13 +91,7 @@ export default function MyAccountNavbar(): JSX.Element {
       >
         {/* Theme change */}
         <NavbarItem className='hidden lg:flex'>
-          <Button isIconOnly radius='full' variant='light'>
-            <Icon
-              className='text-primary-foreground/60'
-              icon='solar:sun-linear'
-              width={24}
-            />
-          </Button>
+          <ThemeSwitch />
         </NavbarItem>
         {/* Settings */}
         <NavbarItem className='hidden lg:flex'>

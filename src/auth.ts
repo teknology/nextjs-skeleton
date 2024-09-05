@@ -7,9 +7,8 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { db } from "@/db"
 import { comparePasswords } from "./utils/auth"
 import { getUserByEmail } from "./db/queries/user"
-import { getUserTheme } from "./db/queries/appearance"
-import { set } from "zod"
-import { setThemeCookie } from "./utils/theme-utils"
+import { getThemeInDb } from "./db/queries/appearance"
+
 
 interface UserCredentials {
   email: string;
@@ -102,7 +101,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             token.emailVerified = user.emailVerified;
           }
           if (!token.theme) {
-            const userTheme = await getUserTheme(user.id as string)
+            const userTheme = await getThemeInDb(user.id as string)
             token.theme = userTheme
           }
 

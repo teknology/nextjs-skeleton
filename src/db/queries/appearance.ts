@@ -21,15 +21,15 @@ export async function getAppearanceSettings(id: string = '') {
     return appearance;  // Default to light theme
 }
 
-export async function getUserTheme(id: string) {
+export async function getThemeInDb(uid: string) {
     const session = await auth();
 
     console.log('dbquery: session userid', session?.user?.id)
-    console.log('dbquery: userid', id)
+    console.log('dbquery: userid', uid)
 
     try {
         const theme = await db.appearance.findUnique({
-            where: { userId: id },
+            where: { userId: uid },
         });
 
         console.log('dbquery: theme:', theme)
@@ -43,7 +43,7 @@ export async function getUserTheme(id: string) {
     }
 }
 
-export async function setUserTheme(userId: string = '', theme: string) {
+export async function setThemeInDb(userId: string = '', theme: string) {
     const session = await auth();
     if (userId === null) {
         userId = session?.user?.id as string;

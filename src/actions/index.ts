@@ -7,3 +7,4 @@ export { getTeamSettings } from './team-settings';
 export { getAppearanceSettings } from './appearance-settings';
 export { getCountries, getTimezones } from './internationalization';
 export { findUserByEmail, getUpdatedUserData } from './user';
+export { getThemefromDBAction, setThemeinDBAction } from './theme';

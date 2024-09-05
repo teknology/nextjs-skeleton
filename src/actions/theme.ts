@@ -4,7 +4,7 @@
 import { get } from 'http';
 //Find out why  @ directory reference doesn't work
 import { auth } from '../auth'; // Assuming the 'auth' module is located in the 'auth' directory relative to the current file
-import { getUserTheme as getTheme } from '../db/queries/appearance';
+import { getThemeInDb, setThemeInDb } from '../db/queries/appearance';
 import { cookies } from 'next/headers'
 
 
@@ -12,7 +12,7 @@ import { cookies } from 'next/headers'
 
 //import { getServerSession } from 'next-auth'; // Assuming you're using next-auth for authentication
 
-export async function getUserTheme() {
+export async function getThemefromDBAction() {
     const session = await auth();
 
 
@@ -20,7 +20,7 @@ export async function getUserTheme() {
         return 'light'; // Default to light theme
     }
     try {
-        const theme = await getTheme(session?.user?.id);
+        const theme = await getThemeInDb(session?.user?.id);
         return theme;
     }
     catch (error) {
@@ -29,19 +29,22 @@ export async function getUserTheme() {
     }
 }
 
-interface AppearanceThemeFormState {
-    status?: 'idle' | 'pending' | 'success' | 'error';
-    errors: {
-        theme?: string[];
-        _form?: string[];
-    };
-}
+export async function setThemeinDBAction(theme: string) {
+    const session = await auth();
 
-export async function setThemeCookie(theme: string) {
-    cookies().delete('theme')
-    cookies().set('theme', theme, {
-        maxAge: 60 * 60 * 24 * 365,
-    });
+    if (!session?.user?.id) {
+        throw new Error('Unauthorized');
+    }
+
+    try {
+        // Assuming setTheme is a function that sets the theme
+        const setTheme = await setThemeInDb(session.user.id, theme);
+        return setTheme;
+    }
+    catch (error) {
+        console.error('Failed to set user theme:', error);
+        throw new Error('Failed to set user theme.');
+    }
 }
 /*
 export async function setUserTheme(formState: AppearanceThemeFormState,
