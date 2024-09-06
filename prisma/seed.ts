@@ -11,6 +11,9 @@ async function clearDatabase() {
     // Deletion order is crucial due to foreign key constraints
     await prisma.userRole.deleteMany({});
     await prisma.profile.deleteMany({});
+    await prisma.accountAddress.deleteMany({}); // Clear AccountAddress join table
+    await prisma.address.deleteMany({}); // Clear Address table
+    await prisma.accountAccountType.deleteMany({}); // Clear AccountAccountType join table
     await prisma.account.deleteMany({});
     await prisma.session.deleteMany({});
     await prisma.authenticator.deleteMany({});
@@ -109,6 +112,81 @@ async function main() {
     });
 
     console.log(`Assigned role to user: ${user.id}`);
+
+    // Create accounts for the user (personal and business)
+    const userAccount = await prisma.account.create({
+        data: {
+            userId: user.id,
+
+        },
+    });
+
+
+
+    console.log(`Created accounts for user ID: ${user.id}`);
+
+    // Seed account types (USER and BUSINESS) for each account
+    await prisma.accountAccountType.createMany({
+        data: [
+            {
+                accountId: userAccount.id,
+                accountTypeId: 'USER', // AccountType.USER enum value
+            },
+            {
+                accountId: userAccount.id,
+                accountTypeId: 'BUSINESS', // AccountType.BUSINESS enum value
+            },
+        ]
+    });
+
+    console.log(`Seeded account types for user ID: ${user.id}`);
+
+    // Seed addresses and associate them with the accounts
+    const homeAddress = await prisma.address.create({
+        data: {
+            address1: '123 Home St',
+            address2: 'Apt 4B',
+            city: 'Hometown',
+            state: 'CA',
+            zipcode: '12345',
+            country: 'USA',
+        },
+    });
+
+    const businessAddress = await prisma.address.create({
+        data: {
+            address1: '456 Business Ave',
+            address2: 'Suite 101',
+            city: 'Businesstown',
+            state: 'CA',
+            zipcode: '67890',
+            country: 'USA',
+        },
+    });
+
+    console.log('Seeded addresses.');
+
+    // Associate addresses with accounts using AccountAddress join table
+    await prisma.accountAddress.createMany({
+        data: [
+            {
+                accountId: userAccount.id,
+                addressId: homeAddress.id,
+                type: 'HOME',
+                isPrimary: true,
+                isBilling: true, // Home address is also the billing address
+            },
+            {
+                accountId: userAccount.id,
+                addressId: businessAddress.id,
+                type: 'BUSINESS',
+                isPrimary: true,
+                isBilling: false, // Business address is not the billing address
+            },
+        ]
+    });
+
+    console.log(`Seeded account addresses for user ID: ${user.id}`);
 
     // Similarly, you can seed other related models like Authenticator if needed.
 }

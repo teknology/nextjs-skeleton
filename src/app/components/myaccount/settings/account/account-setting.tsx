@@ -1,80 +1,79 @@
 "use client";
 
 import * as React from "react";
-import { Button, Input, Select, SelectItem, Spacer } from "@nextui-org/react";
-
+import { Button, Input, Select, SelectItem, Spacer, Divider } from "@nextui-org/react";
 import { cn } from "@/utils/cn";
 
 interface AccountSettingCardProps {
     className?: string;
-    loading?: boolean; // Add a loading prop
+    loading?: boolean;
     data?: any;
 }
 
-const timeZoneOptions = [
-    {
-        label: "Coordinated Universal Time (UTC-3)",
-        value: "utc-3",
-        description: "Coordinated Universal Time (UTC-3)",
-    },
-    {
-        label: "Coordinated Universal Time (UTC-4)",
-        value: "utc-4",
-        description: "Coordinated Universal Time (UTC-4)",
-    },
-    {
-        label: "Coordinated Universal Time (UTC-5)",
-        value: "utc-5",
-        description: "Coordinated Universal Time (UTC-5)",
-    },
+const languageOptions = [
+    { label: "English", value: "en" },
+    { label: "Spanish", value: "es" },
+    { label: "French", value: "fr" },
+    { label: "German", value: "de" },
+];
+
+const stateOptions = [
+    { label: "California", value: "CA" },
+    { label: "Texas", value: "TX" },
+    { label: "New York", value: "NY" },
+    { label: "Florida", value: "FL" },
 ];
 
 const AccountSetting = React.forwardRef<HTMLDivElement, AccountSettingCardProps>(
-    ({ data, className, loading = false, ...props }, ref) => (
-        <div ref={ref} className={cn("p-2", className)} {...props}>
-            {/* Full name */}
-            <div>
-                <p className="text-base font-medium text-default-700">Secondary Email</p>
-                <p className="mt-1 text-sm font-normal text-default-400">Add a backup email just in case</p>
-                <Input className="mt-2" placeholder="name@secondaryemail.com" />
-            </div>
-            <Spacer y={2} />
-            {/* Username */}
-            <div>
-                <p className="text-base font-medium text-default-700">Username</p>
-                <p className="mt-1 text-sm font-normal text-default-400">Nickname or first name.</p>
-                <Input className="mt-2" placeholder="kate.moore" />
-            </div>
-            <Spacer y={2} />
-            {/* Email Address */}
-            <div>
-                <p className="text-base font-medium text-default-700">Email Address</p>
-                <p className="mt-1 text-sm font-normal text-default-400">
-                    The email address associated with your account.
-                </p>
-                <Input className="mt-2" placeholder="e.g kate.moore@acme.com" />
-            </div>
-            <Spacer y={2} />
-            {/* Timezone */}
-            <section>
+    ({ data, loading = false, className, ...props }, ref) => {
+        return (
+            <div ref={ref} className={cn("p-2", className)} {...props}>
+                {/* Address Section */}
                 <div>
-                    <p className="text-base font-medium text-default-700">Timezone</p>
-                    <p className="mt-1 text-sm font-normal text-default-400">Set your current timezone.</p>
+                    <p className="text-base font-medium text-default-700">Primary Address </p>
+                    <p className="mt-1 text-sm font-normal text-default-400">Please add an address for comminucation related mail. </p>
                 </div>
-                <Select className="mt-2" defaultSelectedKeys={["utc-3"]}>
-                    {timeZoneOptions.map((timeZoneOption) => (
-                        <SelectItem key={timeZoneOption.value} value={timeZoneOption.value}>
-                            {timeZoneOption.label}
-                        </SelectItem>
-                    ))}
-                </Select>
-            </section>
-            <Spacer y={2} />
-            <Button className="mt-4 bg-default-foreground text-background" size="sm">
-                Update Account
-            </Button>
-        </div>
-    ),
+                <div style={{ display: "flex", gap: "16px" }}>
+                    <Input className="mt-2" placeholder="Address 1" fullWidth />
+                    <Input className="mt-2" placeholder="Address 2 (Optional)" fullWidth />
+                </div>
+                <Spacer y={2} />
+                <div style={{ display: "flex", gap: "16px" }}>
+                    <Input className="mt-2" placeholder="City" fullWidth />
+                    <Select multiple className="mt-2" placeholder="Select State/Province" fullWidth>
+                        {stateOptions.map((stateOption) => (
+                            <SelectItem key={stateOption.value} value={stateOption.value}>
+                                {stateOption.label}
+                            </SelectItem>
+                        ))}
+                    </Select>
+                    <Input className="mt-2" placeholder="Zipcode" fullWidth />
+                </div>
+                <Spacer y={2} />
+                {/* Divider */}
+                <Divider />
+                <Spacer y={2} />
+                {/* Language Selection */}
+                <section>
+                    <div>
+                        <p className="text-base font-medium text-default-700">Language</p>
+                        <p className="mt-1 text-sm font-normal text-default-400">Select your preferred language.</p>
+                    </div>
+                    <Select className="mt-2" defaultSelectedKeys={["en"]}>
+                        {languageOptions.map((languageOption) => (
+                            <SelectItem key={languageOption.value} value={languageOption.value}>
+                                {languageOption.label}
+                            </SelectItem>
+                        ))}
+                    </Select>
+                </section>
+                <Spacer y={2} />
+                <Button className="mt-4 bg-default-foreground text-background" size="sm">
+                    Update Account
+                </Button>
+            </div>
+        );
+    }
 );
 
 AccountSetting.displayName = "AccountSetting";

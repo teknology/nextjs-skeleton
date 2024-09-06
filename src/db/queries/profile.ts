@@ -18,7 +18,7 @@ export async function getProfileByUserId(userId: string = ""): Promise<Profile |
             },
 
         });
-        return profile;
+        return profile as Profile | null;
     } catch (error) {
         console.error('Failed to fetch user:', error);
         throw new Error('Failed to fetch user.');

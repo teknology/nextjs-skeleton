@@ -16,7 +16,7 @@ model User {
     emailVerified     Boolean         @default(false)
     password          String?
     role              UserRole[]
-    accounts          Account[]
+    accounts          Account[] // One-to-many relation to Account
     sessions          Session[]
     profile           Profile?
     appearance        Appearance?
@@ -67,10 +67,11 @@ model UserRole {
 }
 
 model Account {
-    userId            String
-    type              String
-    provider          String
-    providerAccountId String
+    id                Int     @id @default(autoincrement()) // Use autoincrement ID for primary key
+    userId            String // Foreign key to User
+    type              String? // Account type for third-party providers (e.g., Google, Facebook)
+    provider          String? // OAuth provider
+    providerAccountId String? // OAuth provider account ID
     refresh_token     String?
     access_token      String?
     expires_at        Int?
@@ -82,9 +83,11 @@ model Account {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+    addresses    AccountAddress[] // One-to-many relation with AccountAddress
+    accountTypes AccountAccountType[] // Many-to-many relation with AccountType
 
-    @@id([provider, providerAccountId])
+    @@unique([provider, providerAccountId]) // Ensure uniqueness for third-party logins
 }
 
 model Session {
@@ -130,4 +133,60 @@ model CountryCode {
     flag    String
 
     profiles Profile[] // Relation to Profile
+}
+
+// Address Model: Stores the actual address details
+model Address {
+    id        Int              @id @default(autoincrement())
+    address1  String
+    address2  String?
+    city      String
+    state     String
+    zipcode   String
+    country   String
+    createdAt DateTime         @default(now())
+    updatedAt DateTime         @updatedAt
+    accounts  AccountAddress[]
+}
+
+// AccountAddress Join Table: Connects accounts to their addresses with additional info
+model AccountAddress {
+    id        Int         @id @default(autoincrement())
+    accountId Int // Foreign key to Account
+    addressId Int // Foreign key to Address
+    type      AddressType // Enum for address type (billing, shipping, etc.)
+    isPrimary Boolean     @default(false)
+    isBilling Boolean     @default(false)
+    createdAt DateTime    @default(now())
+    updatedAt DateTime    @updatedAt
+
+    account Account @relation(fields: [accountId], references: [id])
+    address Address @relation(fields: [addressId], references: [id])
+
+    @@unique([accountId, addressId, type]) // Ensure unique combinations of account, address, and type
+}
+
+// Many-to-Many Join Table between Account and AccountType
+model AccountAccountType {
+    id            Int         @id @default(autoincrement())
+    accountId     Int // Foreign key to Account
+    accountTypeId AccountType // Enum for account type (USER, BUSINESS, PARTNER)
+    account       Account     @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+    @@unique([accountId, accountTypeId]) // Ensure each account type is unique per account
+}
+
+// Enum for Account Type (User, Business, Partner)
+enum AccountType {
+    USER
+    BUSINESS
+    PARTNER
+}
+
+// Enum for Address Type (Home, Business, Billing, Shipping)
+enum AddressType {
+    HOME
+    BUSINESS
+    BILLING
+    SHIPPING
 }
