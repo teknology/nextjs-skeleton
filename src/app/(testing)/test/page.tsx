@@ -7,6 +7,7 @@ import { Button, Input } from '@nextui-org/react';
 import FormButton from '@/app/components/common/form-button';
 import { useSession } from 'next-auth/react';
 import { useTheme } from 'next-themes'
+import { getHomeAddress } from '@/db/queries/address';
 
 
 
@@ -20,6 +21,7 @@ export default function Home() {
 
 
 
+  console.log(getHomeAddress('cm0qyr5t00000hz5epq9ewzia'))
 
 
 

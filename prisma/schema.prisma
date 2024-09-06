@@ -8,23 +8,65 @@ generator client {
 }
 
 model User {
-    id                String          @id @default(cuid())
+    id                String            @id @default(cuid())
     image             String?
     username          String?
-    email             String          @unique
+    email             String            @unique
     emailVerifiedDate DateTime?
-    emailVerified     Boolean         @default(false)
+    emailVerified     Boolean           @default(false)
     password          String?
-    role              UserRole[]
-    accounts          Account[] // One-to-many relation to Account
-    sessions          Session[]
-    profile           Profile?
-    appearance        Appearance?
+    role              UserRole[] // Many-to-many relation with Role
+    accounts          Account? // One-to-one relation to Account
+    sessions          Session[] // One-to-many relation with Session
+    profile           Profile? // One-to-one relation with Profile
+    appearance        Appearance? // One-to-one relation with Appearance
     // Optional for WebAuthn support
-    Authenticator     Authenticator[]
+    Authenticator     Authenticator[] // One-to-many relation with Authenticator
+    providers         ProviderAccount[] // One-to-many relation with ProviderAccount
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+}
+
+model Account {
+    id           Int                  @id @default(autoincrement()) // Primary key
+    userId       String               @unique // Foreign key to User
+    localeId     Int? // Foreign key to Locale (optional)
+    locale       Locale?              @relation(fields: [localeId], references: [id]) // Relation with Locale
+    createdAt    DateTime             @default(now())
+    updatedAt    DateTime             @updatedAt
+    user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+    addresses    AccountAddress[] // One-to-many relation with AccountAddress
+    accountTypes AccountAccountType[] // Many-to-many relation with AccountType
+}
+
+model ProviderAccount {
+    id                Int      @id @default(autoincrement())
+    userId            String   @unique // Foreign key to User
+    provider          String // OAuth provider (e.g., "google", "facebook")
+    providerAccountId String // Provider account ID (unique per provider)
+    refreshToken      String? // Optional
+    accessToken       String? // Optional
+    expiresAt         Int? // Optional
+    tokenType         String? // Optional
+    scope             String? // Optional
+    id_token          String?
+    session_state     String?
+    emailVerified     Boolean?
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@unique([provider, providerAccountId])
+}
+
+model Locale {
+    id       Int    @id @default(autoincrement())
+    code     String @unique // Language code (e.g., 'en', 'fr')
+    country  String // Country name (e.g., 'United States', 'France')
+    language String // Language (e.g., 'English', 'Français')
+    flag     String // URL of the flag image
+
+    accounts Account[] // One-to-many relation with Account
 }
 
 model Profile {
@@ -64,30 +106,6 @@ model UserRole {
     role   Role   @relation(fields: [roleId], references: [id])
 
     @@unique([userId, roleId])
-}
-
-model Account {
-    id                Int     @id @default(autoincrement()) // Use autoincrement ID for primary key
-    userId            String // Foreign key to User
-    type              String? // Account type for third-party providers (e.g., Google, Facebook)
-    provider          String? // OAuth provider
-    providerAccountId String? // OAuth provider account ID
-    refresh_token     String?
-    access_token      String?
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String?
-    session_state     String?
-
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-    addresses    AccountAddress[] // One-to-many relation with AccountAddress
-    accountTypes AccountAccountType[] // Many-to-many relation with AccountType
-
-    @@unique([provider, providerAccountId]) // Ensure uniqueness for third-party logins
 }
 
 model Session {

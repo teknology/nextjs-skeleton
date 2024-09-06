@@ -5,8 +5,10 @@ import type { Appearance } from '@prisma/client';
 
 export async function getAppearanceSettings() {
     const session = await auth();
-    const userId = session?.user?.id
-    console.log('userId:ActionFile', userId);
+    // const userId = session?.user?.id
+    //  console.log('userId:ActionFile', userId);
+
+    const userId = 'cm0qyr5t00000hz5epq9ewzia'
 
     try {
 

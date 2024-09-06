@@ -1,4 +1,4 @@
-[
+export const locales = [
     {
         "code": "en",
         "country": "United States",

@@ -8,6 +8,7 @@ import { db } from "@/db"
 import { comparePasswords } from "./utils/auth"
 import { getUserByEmail } from "./db/queries/user"
 import { getThemeInDb } from "./db/queries/appearance"
+import { saveProviderAccount } from "./db/queries/provider"
 
 
 interface UserCredentials {
@@ -43,7 +44,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       },
       authorize: async (credentials): Promise<UserCredentials | null> => {
-        let user = null
+        // let user = null
 
         if (!credentials.email) {
 
@@ -81,6 +82,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/login",
   },
   callbacks: {
+    async signIn({ user, account, profile }) {
+      if (account?.provider) {
+
+        console.log("Account Provider: ", account)
+        // Save provider account data to ProviderAccount table
+        await saveProviderAccount(user.id as string, account);
+      }
+      return true;
+    },
+
 
     authorized: async ({ auth }) => {
       // Logged in users are authenticated, otherwise redirect to login page

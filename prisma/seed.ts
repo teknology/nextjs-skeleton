@@ -1,8 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import { country_codes as countryCodes } from '@/utils/data/country-codes';
+import { locales } from '@/utils/data/locale';
 import { saltAndHashPassword } from '@/utils/auth';
 
 const prisma = new PrismaClient();
+
 
 // Function to clear the database
 async function clearDatabase() {
@@ -21,6 +23,7 @@ async function clearDatabase() {
     await prisma.user.deleteMany({});
     await prisma.role.deleteMany({});
     await prisma.countryCode.deleteMany({});
+    await prisma.locale.deleteMany({}); // Clear Locale table
 
     console.log('Database cleared.');
 }
@@ -44,6 +47,13 @@ async function main() {
     }
 
     console.log('Seeded CountryCodes');
+
+    // Seed locales
+    await prisma.locale.createMany({
+        data: locales,
+    });
+
+    console.log('Seeded Locales');
 
     // Seed roles
     const adminRole = await prisma.role.create({
@@ -113,19 +123,16 @@ async function main() {
 
     console.log(`Assigned role to user: ${user.id}`);
 
-    // Create accounts for the user (personal and business)
+    // Create an account for the user (e.g., personal)
     const userAccount = await prisma.account.create({
         data: {
             userId: user.id,
-
         },
     });
 
+    console.log(`Created account for user ID: ${user.id}`);
 
-
-    console.log(`Created accounts for user ID: ${user.id}`);
-
-    // Seed account types (USER and BUSINESS) for each account
+    // Seed account types (USER and BUSINESS) for the account
     await prisma.accountAccountType.createMany({
         data: [
             {
