@@ -1,14 +1,7 @@
+'use client';
+
 import * as React from "react";
-import {
-  Button,
-  Input,
-  Spacer,
-  Textarea,
-  SelectItem,
-  Select,
-  Skeleton,
-  Image
-} from "@nextui-org/react";
+import { Button, Input, Spacer, Textarea, SelectItem, Select, Skeleton, Image } from "@nextui-org/react";
 import { cn } from "@/utils/cn";
 import UserWidget from "./user-widget";
 import { useSession } from "next-auth/react";
@@ -19,9 +12,6 @@ import { timezoneData } from "@/utils/data/timezones";
 import FormButton from "@/app/components/common/form-button";
 import { useFormState } from 'react-dom';
 import { useTranslations } from "next-intl";
-
-// Define the interface for the user data
-
 
 interface ProfileSettingCardProps {
   className?: string;
@@ -47,11 +37,31 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
       lastName: '',
       avatarSrc: '',
     });
-    console.log('passed data: profile setting file', data);
-    console.log('widget data State: profile setting file', widgetData);
+
+    // Ensure the inputs are controlled
+    const [firstName, setFirstName] = useState('');
+    const [lastName, setLastName] = useState('');
+    const [title, setTitle] = useState('');
+    const [email, setEmail] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
+    const [biography, setBiography] = useState('');
+
+    // Set the form values when data is available
+    useEffect(() => {
+      if (data) {
+        setFirstName(data.profile?.firstName || '');
+        setLastName(data.profile?.lastName || '');
+        setTitle(data.profile?.title || '');
+        setEmail(data.email || '');
+        setPhoneNumber(data.profile?.phoneNumber || '');
+        setBiography(data.profile?.biography || '');
+        setSelectedCountry(String(data.profile?.countryCodeId) || null);
+        setSelectedTimezone(String(data.profile?.timezoneId) || null);
+      }
+    }, [data]);
+
     useEffect(() => {
       if (formState.status === 'success') {
-
         fetchNewData();
       }
     }, [formState]);
@@ -75,16 +85,16 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
     useEffect(() => {
       if (data) {
         setWidgetData({
-          emailVerified: data?.emailVerified || null,
-          email: data?.email || null,
-          title: data?.profile?.title || null,
-          firstName: data?.profile?.firstName || null,
-          lastName: data?.profile?.lastName || null,
-          avatarSrc: data?.image || null,
+          emailVerified: data?.emailVerified || false,
+          email: data?.email || '',
+          title: data?.profile?.title || '',
+          firstName: data?.profile?.firstName || '',
+          lastName: data?.profile?.lastName || '',
+          avatarSrc: data?.image || '',
         });
       }
-    }
-      , [data]);
+    }, [data]);
+
     async function fetchNewData() {
       try {
         const newData = await actions.getUpdatedUserData();
@@ -140,7 +150,8 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                   className="mt-2"
                   name="firstName"
                   placeholder="e.g Kate"
-                  defaultValue={data?.profile?.firstName || ""}
+                  value={firstName} // Controlled input
+                  onChange={(e) => setFirstName(e.target.value)}
                 />
               )}
             </div>
@@ -153,7 +164,8 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                   className="mt-2"
                   name="lastName"
                   placeholder="e.g Moore"
-                  defaultValue={data?.profile?.lastName || ""}
+                  value={lastName} // Controlled input
+                  onChange={(e) => setLastName(e.target.value)}
                 />
               )}
             </div>
@@ -170,7 +182,8 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                   className="mt-2"
                   name="title"
                   placeholder="e.g C.E.O / Founder / President"
-                  defaultValue={data?.profile?.title || ""}
+                  value={title} // Controlled input
+                  onChange={(e) => setTitle(e.target.value)}
                 />
               )}
             </div>
@@ -183,7 +196,8 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                   className="mt-2"
                   name="email"
                   placeholder="email@mydomain.com"
-                  defaultValue={data?.email || ""}
+                  value={email} // Controlled input
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               )}
             </div>
@@ -235,7 +249,8 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                   className="mt-2"
                   name="phoneNumber"
                   placeholder="5555555555"
-                  defaultValue={data?.profile?.phoneNumber || ""}
+                  value={phoneNumber} // Controlled input
+                  onChange={(e) => setPhoneNumber(e.target.value)}
                 />
               )}
             </div>
@@ -275,7 +290,8 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                 classNames={{
                   input: cn("min-h-[115px]"),
                 }}
-                defaultValue={data?.profile?.biography || ""}
+                value={biography} // Controlled input
+                onChange={(e) => setBiography(e.target.value)}
                 placeholder="e.g., 'Kate Moore - Acme.com Support Specialist. Passionate about solving tech issues, loves hiking and volunteering."
               />
             )}
@@ -284,8 +300,6 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
             <Skeleton className="h-12 w-full mt-4 rounded-lg" />
           ) : (
             <div className="my-2">
-              {/* TODO: Have the user widget skeleton load while updating data */}
-
               <FormButton>{t('update_profile')}</FormButton>
             </div>
           )}

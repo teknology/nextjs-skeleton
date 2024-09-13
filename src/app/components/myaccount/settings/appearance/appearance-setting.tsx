@@ -2,13 +2,10 @@
 
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { RadioGroup } from "@nextui-org/react";
+import { RadioGroup, Skeleton } from "@nextui-org/react";
 import { useTheme } from "next-themes";
-import { useSession } from "next-auth/react";
-
 import { cn } from "@/utils/cn";
 import { ThemeCustomRadio } from "@/app/components/myaccount/settings/appearance/theme-custom-radio";
-import SwitchCell from "@/app/components/myaccount/switch-cell";
 import { useTranslations } from "next-intl";
 
 interface AppearanceSettingCardProps {
@@ -30,8 +27,6 @@ const AppearanceSetting = React.forwardRef<HTMLDivElement, AppearanceSettingCard
 
     const t = useTranslations("my_account.settings.appearance");
 
-    console.log("Appearance data", data);
-
     useEffect(() => {
       setMounted(true);
     }, []);
@@ -40,7 +35,19 @@ const AppearanceSetting = React.forwardRef<HTMLDivElement, AppearanceSettingCard
       return null; // Ensures component only renders after mounting
     }
 
-
+    // If loading, return skeletons
+    if (loading) {
+      return (
+        <div ref={ref} className={cn("p-2", className)} {...props}>
+          <Skeleton className="h-6 w-full" />
+          <Skeleton className="mt-4 h-8 w-full" />
+          <div className="flex mt-4 space-x-4">
+            <Skeleton className="h-10 w-24" />
+            <Skeleton className="h-10 w-24" />
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div ref={ref} className={cn("p-2", className)} {...props}>

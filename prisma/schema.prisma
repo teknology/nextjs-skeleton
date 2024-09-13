@@ -7,101 +7,100 @@ generator client {
     provider = "prisma-client-js"
 }
 
+enum AddressTypeEnum {
+    RESIDENTIAL
+    COMMERCIAL
+    BILLING
+    MAILING
+}
+
 model User {
-    id                String            @id @default(cuid())
+    id                String          @id @default(cuid())
     image             String?
     username          String?
-    email             String            @unique
+    email             String          @unique
     emailVerifiedDate DateTime?
-    emailVerified     Boolean           @default(false)
+    emailVerified     Boolean         @default(false)
     password          String?
     role              UserRole[] // Many-to-many relation with Role
-    accounts          Account? // One-to-one relation to Account
     sessions          Session[] // One-to-many relation with Session
     profile           Profile? // One-to-one relation with Profile
     appearance        Appearance? // One-to-one relation with Appearance
-    // Optional for WebAuthn support
     Authenticator     Authenticator[] // One-to-many relation with Authenticator
-    providers         ProviderAccount[] // One-to-many relation with ProviderAccount
+    accounts          Account[] // One-to-many relation with Account
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
 
 model Account {
-    id           Int                  @id @default(autoincrement()) // Primary key
-    userId       String               @unique // Foreign key to User
-    localeId     Int? // Foreign key to Locale (optional)
-    locale       Locale?              @relation(fields: [localeId], references: [id]) // Relation with Locale
-    createdAt    DateTime             @default(now())
-    updatedAt    DateTime             @updatedAt
-    user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-    addresses    AccountAddress[] // One-to-many relation with AccountAddress
-    accountTypes AccountAccountType[] // Many-to-many relation with AccountType
-}
-
-model ProviderAccount {
-    id                Int      @id @default(autoincrement())
-    userId            String   @unique // Foreign key to User
-    provider          String // OAuth provider (e.g., "google", "facebook")
-    providerAccountId String // Provider account ID (unique per provider)
-    refreshToken      String? // Optional
-    accessToken       String? // Optional
-    expiresAt         Int? // Optional
-    tokenType         String? // Optional
-    scope             String? // Optional
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String?
+    access_token      String?
+    expires_at        Int?
+    token_type        String?
+    scope             String?
     id_token          String?
     session_state     String?
-    emailVerified     Boolean?
-
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([provider, providerAccountId])
 }
 
-model Locale {
-    id       Int    @id @default(autoincrement())
-    code     String @unique // Language code (e.g., 'en', 'fr')
-    country  String // Country name (e.g., 'United States', 'France')
-    language String // Language (e.g., 'English', 'Français')
-    flag     String // URL of the flag image
-
-    accounts Account[] // One-to-many relation with Account
-}
-
 model Profile {
-    id            Int          @id @default(autoincrement())
+    id            String           @id @default(cuid())
     firstName     String?
     lastName      String?
     title         String?
     biography     String?
-    countryCodeId Int? // Optional country code relation field
     phoneNumber   Int? // Optional phone number field
-    userId        String       @unique
-    user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-    countryCode   CountryCode? @relation(fields: [countryCodeId], references: [id])
+    userId        String           @unique
+    user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
     timezoneId    Int?
+    localeId      Int?
+    locale        Locale?          @relation(fields: [localeId], references: [id])
+    countryCodeId Int? // Optional country code relation field
+    countryCode   CountryCode?     @relation(fields: [countryCodeId], references: [id])
+    addresses     ProfileAddress[] // Relation to ProfileAddress
+    profileTypes  ProfileType[]    @relation("ProfileProfileTypes") // Many-to-many relation to ProfileType
+}
 
-    @@index([countryCodeId])
+model ProfileType {
+    id       String    @id @default(cuid())
+    name     String    @unique
+    profiles Profile[] @relation("ProfileProfileTypes") // Many-to-many relation to Profile
+}
+
+model Locale {
+    id       Int       @id @default(autoincrement())
+    code     String    @unique // Language code (e.g., 'en', 'fr')
+    country  String // Country name (e.g., 'United States', 'France')
+    language String // Language (e.g., 'English', 'Français')
+    flag     String // URL of the flag image
+    profiles Profile[] // Relation to Profile
 }
 
 model Appearance {
-    id     Int     @id @default(autoincrement())
+    id     String  @id @default(cuid())
     theme  String? @default("light") // 0 = Light, 1 = Dark
     userId String  @unique
     user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Role {
-    id    Int        @id @default(autoincrement())
+    id    String     @id @default(cuid())
     name  String     @unique
     users UserRole[]
 }
 
 model UserRole {
-    id     Int    @id @default(autoincrement())
+    id     String @id @default(cuid())
     userId String
-    roleId Int
+    roleId String
     user   User   @relation(fields: [userId], references: [id])
     role   Role   @relation(fields: [roleId], references: [id])
 
@@ -150,61 +149,50 @@ model CountryCode {
     alpha3  String
     flag    String
 
-    profiles Profile[] // Relation to Profile
+    profiles  Profile[] // Relation to Profile
+    addresses Address[] // Relation to Address
+    states    StateProvince[] // Relation to StateProvince
+}
+
+// States/Provinces Model: Stores states or provinces related to countries
+model StateProvince {
+    id            Int         @id @default(autoincrement())
+    name          String
+    code          String? // Optional state/province code or abbreviation
+    countryCodeId Int // Foreign key to CountryCode
+    countryCode   CountryCode @relation(fields: [countryCodeId], references: [id], onDelete: Cascade)
+
+    addresses Address[] // Relation to Address
 }
 
 // Address Model: Stores the actual address details
 model Address {
-    id        Int              @id @default(autoincrement())
-    address1  String
-    address2  String?
-    city      String
-    state     String
-    zipcode   String
-    country   String
-    createdAt DateTime         @default(now())
-    updatedAt DateTime         @updatedAt
-    accounts  AccountAddress[]
+    id              String           @id @default(cuid())
+    address1        String
+    address2        String?
+    city            String
+    stateProvinceId Int? // Optional state/province relation field
+    stateProvince   StateProvince?   @relation(fields: [stateProvinceId], references: [id])
+    zipcode         String
+    countryCodeId   Int? // Optional country code relation field
+    countryCode     CountryCode?     @relation(fields: [countryCodeId], references: [id])
+    createdAt       DateTime         @default(now())
+    updatedAt       DateTime         @updatedAt
+    profiles        ProfileAddress[] // Relation to ProfileAddress
+    addressType     AddressTypeEnum // Use AddressTypeEnum instead of a separate model
 }
 
-// AccountAddress Join Table: Connects accounts to their addresses with additional info
-model AccountAddress {
-    id        Int         @id @default(autoincrement())
-    accountId Int // Foreign key to Account
-    addressId Int // Foreign key to Address
-    type      AddressType // Enum for address type (billing, shipping, etc.)
-    isPrimary Boolean     @default(false)
-    isBilling Boolean     @default(false)
-    createdAt DateTime    @default(now())
-    updatedAt DateTime    @updatedAt
+// ProfileAddress Join Table: Connects profiles to their addresses
+model ProfileAddress {
+    id        String   @id @default(cuid())
+    profileId String // Foreign key to Profile
+    addressId String // Foreign key to Address
+    isBilling Boolean  @default(false) // Boolean to indicate if it's a billing address
+    isMailing Boolean  @default(false) // Boolean to indicate if it's a mailing address
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    address   Address  @relation(fields: [addressId], references: [id])
+    profile   Profile  @relation(fields: [profileId], references: [id])
 
-    account Account @relation(fields: [accountId], references: [id])
-    address Address @relation(fields: [addressId], references: [id])
-
-    @@unique([accountId, addressId, type]) // Ensure unique combinations of account, address, and type
-}
-
-// Many-to-Many Join Table between Account and AccountType
-model AccountAccountType {
-    id            Int         @id @default(autoincrement())
-    accountId     Int // Foreign key to Account
-    accountTypeId AccountType // Enum for account type (USER, BUSINESS, PARTNER)
-    account       Account     @relation(fields: [accountId], references: [id], onDelete: Cascade)
-
-    @@unique([accountId, accountTypeId]) // Ensure each account type is unique per account
-}
-
-// Enum for Account Type (User, Business, Partner)
-enum AccountType {
-    USER
-    BUSINESS
-    PARTNER
-}
-
-// Enum for Address Type (Home, Business, Billing, Shipping)
-enum AddressType {
-    HOME
-    BUSINESS
-    BILLING
-    SHIPPING
+    @@unique([profileId, addressId]) // Ensure unique combinations of profile and address
 }

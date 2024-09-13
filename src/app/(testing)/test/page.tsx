@@ -7,13 +7,13 @@ import { Button, Input } from '@nextui-org/react';
 import FormButton from '@/app/components/common/form-button';
 import { useSession } from 'next-auth/react';
 import { useTheme } from 'next-themes'
-import { getHomeAddress } from '@/db/queries/address';
 
 
 
-export default function Home() {
+
+export default function Test() {
   const { data: session, status, update } = useSession();
-  const [result, setResult] = useState(null); // State to store the result
+  const [result, setResult] = useState<any | null>(null); // State to manage fetched data
   const [loading, setLoading] = useState(true); // State to manage loading
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
@@ -21,19 +21,16 @@ export default function Home() {
 
 
 
-  console.log(getHomeAddress('cm0qyr5t00000hz5epq9ewzia'))
-
-
 
   useEffect(() => {
     async function fetchData() {
       try {
 
-        const appearance = await actions.getAppearanceSettings();
-        setAppearance(appearance);
-        const userResult = await actions.findUserByEmail('gary@magehd.com');
+        // const appearance = await actions.getAppearanceSettings();
+        //  setAppearance(appearance);
+        const userResult = await actions.getAccountSettings();
         //  console.log(await getUserTheme('cm0hgubny0000hc3dnm0xycpj'))
-        // setResult(userResult); // Update state with fetched result
+        setResult(userResult); // Update state with fetched result
       } catch (error) {
         console.error('Failed to fetch user:', error);
         setResult(null); // Set result to null if there's an error
@@ -61,7 +58,7 @@ export default function Home() {
       <Button>Update image</Button>
       <Button onClick={() => update()}>Edit name</Button>
 
-      <pre>{loading ? 'Loading...' : JSON.stringify(session?.user)}</pre> {/* Pretty-print the result */}
+      <pre>{loading ? 'Loading...' : JSON.stringify(result)}</pre> {/* Pretty-print the result */}
 
       <div>
         <p>The user image is {session?.user?.image}</p>

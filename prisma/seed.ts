@@ -5,37 +5,37 @@ import { saltAndHashPassword } from '@/utils/auth';
 
 const prisma = new PrismaClient();
 
+async function tableExists(tableName: string): Promise<boolean> {
+    const result = await prisma.$queryRaw<Array<{ exists: boolean }>>`
+        SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = ${tableName})`;
+    return result[0].exists;
+}
 
-// Function to clear the database
 async function clearDatabase() {
     console.log('Clearing database...');
 
-    // Deletion order is crucial due to foreign key constraints
-    await prisma.userRole.deleteMany({});
-    await prisma.profile.deleteMany({});
-    await prisma.accountAddress.deleteMany({}); // Clear AccountAddress join table
-    await prisma.address.deleteMany({}); // Clear Address table
-    await prisma.accountAccountType.deleteMany({}); // Clear AccountAccountType join table
-    await prisma.account.deleteMany({});
-    await prisma.session.deleteMany({});
-    await prisma.authenticator.deleteMany({});
-    await prisma.verificationToken.deleteMany({});
-    await prisma.user.deleteMany({});
-    await prisma.role.deleteMany({});
-    await prisma.countryCode.deleteMany({});
-    await prisma.locale.deleteMany({}); // Clear Locale table
+    if (await tableExists('UserRole')) await prisma.userRole.deleteMany({});
+    if (await tableExists('ProfileAddress')) await prisma.profileAddress.deleteMany({});
+    if (await tableExists('Address')) await prisma.address.deleteMany({});
+    if (await tableExists('Profile')) await prisma.profile.deleteMany({});
+    if (await tableExists('Session')) await prisma.session.deleteMany({});
+    if (await tableExists('Authenticator')) await prisma.authenticator.deleteMany({});
+    if (await tableExists('VerificationToken')) await prisma.verificationToken.deleteMany({});
+    if (await tableExists('User')) await prisma.user.deleteMany({});
+    if (await tableExists('Role')) await prisma.role.deleteMany({});
+    if (await tableExists('CountryCode')) await prisma.countryCode.deleteMany({});
+    if (await tableExists('Locale')) await prisma.locale.deleteMany({});
+    if (await tableExists('ProfileType')) await prisma.profileType.deleteMany({});
 
     console.log('Database cleared.');
 }
 
-// Main function to seed the database
-async function main() {
-    // Clear the database
+async function seedDatabase() {
     await clearDatabase();
 
-    // Seed the CountryCode table with all fields using `create`
+    // Seed the CountryCode table with states if they exist
     for (const countryCode of countryCodes) {
-        await prisma.countryCode.create({
+        const createdCountry = await prisma.countryCode.create({
             data: {
                 code: countryCode.code,
                 country: countryCode.country,
@@ -44,51 +44,72 @@ async function main() {
                 flag: countryCode.flag,
             },
         });
-    }
 
-    console.log('Seeded CountryCodes');
+        if (countryCode.states && countryCode.states.length > 0) {
+            for (const state of countryCode.states) {
+                await prisma.stateProvince.create({
+                    data: {
+                        name: state.name,
+                        code: state.code,
+                        countryCodeId: createdCountry.id,
+                    },
+                });
+            }
+            console.log(`Seeded ${countryCode.states.length} states for ${countryCode.country}`);
+        }
+    }
+    console.log('Seeded CountryCodes and States');
 
     // Seed locales
     await prisma.locale.createMany({
         data: locales,
     });
-
     console.log('Seeded Locales');
 
     // Seed roles
     const adminRole = await prisma.role.create({
-        data: {
-            name: 'admin',
-        },
+        data: { name: 'admin' },
     });
-
     const userRole = await prisma.role.create({
-        data: {
-            name: 'user',
-        },
+        data: { name: 'user' },
     });
-
     console.log(`Seeded roles: ${adminRole.name}, ${userRole.name}`);
 
-    // Find the existing US country code using `findFirst`
+    // Seed profile types using upsert
+    const profileTypes = ['Personal', 'Business', 'Partner'];
+    for (const type of profileTypes) {
+        await prisma.profileType.upsert({
+            where: { name: type },
+            update: {},
+            create: { name: type },
+        });
+    }
+    console.log('Seeded ProfileTypes:', profileTypes.join(', '));
+
+    // Find the existing US country code and locale
     const usCountryCode = await prisma.countryCode.findFirst({
         where: { alpha2: 'US' },
+    });
+    const usLocale = await prisma.locale.findFirst({
+        where: { code: 'en' },
     });
 
     if (!usCountryCode) {
         console.error('US country code not found!');
         process.exit(1);
     }
+    if (!usLocale) {
+        console.error('US locale not found!');
+        process.exit(1);
+    }
 
-    // Seed a user with a profile
+    // Seed a user with a profile, linking to countryCodeId
     const user = await prisma.user.create({
         data: {
             username: 'johndoe',
             emailVerifiedDate: new Date(),
             email: 'gary@magehd.com',
             emailVerified: true,
-
-            // Example password hash, in a real scenario, you'd hash the password before storing
             password: await saltAndHashPassword('1234567'),
             profile: {
                 create: {
@@ -96,114 +117,113 @@ async function main() {
                     lastName: 'Doe',
                     title: 'Developer',
                     biography: 'Experienced software developer.',
-                    countryCodeId: usCountryCode.id, // Linking the country code
                     phoneNumber: 1234567890,
-                    timezoneId: 4, // Assuming you have a timezone ID
+                    timezoneId: 4,
+                    localeId: usLocale?.id,
+                    countryCodeId: usCountryCode.id,
                 },
             },
             appearance: {
                 create: {
-                    theme: 'light', // 0 for light, 1 for dark
-                }
-            }
-        }
-    });
-
-    console.log('Seed data created:', { user });
-
-    console.log(`Seeded profile for user ID: ${user.id}`);
-
-    // Seed user role for the user
-    await prisma.userRole.create({
-        data: {
-            userId: user.id,
-            roleId: userRole.id,
+                    theme: 'light',
+                },
+            },
         },
     });
+    console.log('Seeded user and profile:', { user });
 
-    console.log(`Assigned role to user: ${user.id}`);
-
-    // Create an account for the user (e.g., personal)
-    const userAccount = await prisma.account.create({
-        data: {
-            userId: user.id,
-        },
+    // Fetch the user’s profile
+    const profile = await prisma.profile.findUnique({
+        where: { userId: user.id },
     });
 
-    console.log(`Created account for user ID: ${user.id}`);
+    if (!profile) {
+        console.error('Profile not found!');
+        process.exit(1);
+    }
 
-    // Seed account types (USER and BUSINESS) for the account
-    await prisma.accountAccountType.createMany({
-        data: [
-            {
-                accountId: userAccount.id,
-                accountTypeId: 'USER', // AccountType.USER enum value
-            },
-            {
-                accountId: userAccount.id,
-                accountTypeId: 'BUSINESS', // AccountType.BUSINESS enum value
-            },
-        ]
+    // Find the state "California" for the US
+    const californiaState = await prisma.stateProvince.findFirst({
+        where: { code: 'CA', countryCodeId: usCountryCode.id },
     });
 
-    console.log(`Seeded account types for user ID: ${user.id}`);
+    if (!californiaState) {
+        console.error('California state not found!');
+        process.exit(1);
+    }
 
-    // Seed addresses and associate them with the accounts
+    // Seed addresses
     const homeAddress = await prisma.address.create({
         data: {
             address1: '123 Home St',
             address2: 'Apt 4B',
             city: 'Hometown',
-            state: 'CA',
+            stateProvinceId: californiaState.id,
             zipcode: '12345',
-            country: 'USA',
+            countryCodeId: usCountryCode.id,
+            addressType: 'RESIDENTIAL', // Use enum value
         },
     });
-
     const businessAddress = await prisma.address.create({
         data: {
             address1: '456 Business Ave',
             address2: 'Suite 101',
             city: 'Businesstown',
-            state: 'CA',
+            stateProvinceId: californiaState.id,
             zipcode: '67890',
-            country: 'USA',
+            countryCodeId: usCountryCode.id,
+            addressType: 'COMMERCIAL', // Use enum value
         },
     });
-
     console.log('Seeded addresses.');
 
-    // Associate addresses with accounts using AccountAddress join table
-    await prisma.accountAddress.createMany({
-        data: [
-            {
-                accountId: userAccount.id,
-                addressId: homeAddress.id,
-                type: 'HOME',
-                isPrimary: true,
-                isBilling: true, // Home address is also the billing address
-            },
-            {
-                accountId: userAccount.id,
-                addressId: businessAddress.id,
-                type: 'BUSINESS',
-                isPrimary: true,
-                isBilling: false, // Business address is not the billing address
-            },
-        ]
+    // Associate addresses with profiles
+    await prisma.profileAddress.create({
+        data: {
+            profileId: profile.id,
+            addressId: homeAddress.id,
+            isBilling: true,
+        },
+    });
+    await prisma.profileAddress.create({
+        data: {
+            profileId: profile.id,
+            addressId: businessAddress.id,
+            isBilling: false,
+            isMailing: true,
+        },
+    });
+    console.log(`Seeded profile addresses for user ID: ${user.id}`);
+
+    // Assign default 'Personal' profile type to the user
+    const personalProfileType = await prisma.profileType.findFirst({
+        where: { name: 'Personal' },
     });
 
-    console.log(`Seeded account addresses for user ID: ${user.id}`);
-
-    // Similarly, you can seed other related models like Authenticator if needed.
+    if (personalProfileType) {
+        await prisma.profile.update({
+            where: { id: profile.id },
+            data: {
+                profileTypes: {
+                    connect: { id: personalProfileType.id },
+                },
+            },
+        });
+        console.log(`Seeded default 'Personal' profile type for user ID: ${user.id}`);
+    } else {
+        console.error('Profile type "Personal" not found!');
+    }
 }
 
-// Execute the main function
-main()
-    .catch((e) => {
+async function main() {
+    try {
+        await seedDatabase();
+    } catch (e) {
         console.error(e);
         process.exit(1);
-    })
-    .finally(async () => {
+    } finally {
         await prisma.$disconnect();
-    });
+    }
+}
+
+main();

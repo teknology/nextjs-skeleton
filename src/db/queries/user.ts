@@ -73,10 +73,30 @@ export async function createUser(email: string, password: string): Promise<User>
   const hashedPassword = await saltAndHashPassword(password);
 
   try {
+    // Retrieve the "Personal" profile type from the database
+    const personalProfileType = await db.profileType.findUnique({
+      where: {
+        name: 'Personal',
+      },
+    });
+
+    if (!personalProfileType) {
+      throw new Error('Profile type "Personal" not found.');
+    }
+
+    // Create the user and associated profile
     return await db.user.create({
       data: {
-        password: hashedPassword,
         email: email,
+        password: hashedPassword,
+        profile: {
+          create: {
+            // Create a profile for the user
+            profileTypes: {
+              connect: { id: personalProfileType.id }, // Automatically associate "Personal" profile type
+            },
+          },
+        },
       },
     });
   }
@@ -85,7 +105,6 @@ export async function createUser(email: string, password: string): Promise<User>
     throw new Error('Failed to create user.');
   }
 }
-
 
 export async function updateUserEmail(id: string, email: string): Promise<User> {
   try {
