@@ -10,69 +10,78 @@ generator client {
 enum AddressTypeEnum {
     RESIDENTIAL
     COMMERCIAL
-    BILLING
-    MAILING
 }
 
 model User {
-    id                String          @id @default(cuid())
-    image             String?
-    username          String?
-    email             String          @unique
-    emailVerifiedDate DateTime?
-    emailVerified     Boolean         @default(false)
-    password          String?
-    role              UserRole[] // Many-to-many relation with Role
-    sessions          Session[] // One-to-many relation with Session
-    profile           Profile? // One-to-one relation with Profile
-    appearance        Appearance? // One-to-one relation with Appearance
-    Authenticator     Authenticator[] // One-to-many relation with Authenticator
-    accounts          Account[] // One-to-many relation with Account
+    id       String  @id @default(cuid())
+    image    String?
+    username String?
+
+    password      String?
+    role          UserRole[] // Many-to-many relation with Role
+    sessions      Session[] // One-to-many relation with Session
+    appearance    Appearance? // One-to-one relation with Appearance
+    Authenticator Authenticator[] // One-to-many relation with Authenticator
+    accounts      Account[] // One-to-many relation with Account
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+
+    ProviderAccount ProviderAccount[]
+    Profile         Profile?
 }
 
 model Account {
-    id                String  @id @default(cuid())
+    id           String           @id @default(cuid())
+    userId       String
+    type         String
+    user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+    accountTypes AccountType[]    @relation("AccountAccountTypes") // Relation with accountTypes
+    addresses    AccountAddress[] // Relation to AccountAddress
+    localeId     Int? // Foreign key for Locale
+    locale       Locale?          @relation(fields: [localeId], references: [id]) // Moved from Profile
+}
+
+model ProviderAccount {
+    id                String   @id @default(cuid())
     userId            String
-    type              String
     provider          String
     providerAccountId String
-    refresh_token     String?
-    access_token      String?
-    expires_at        Int?
-    token_type        String?
+    accessToken       String?
+    refreshToken      String?
+    expiresAt         Int?
+    idToken           String?
     scope             String?
-    id_token          String?
-    session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+    sessionState      String?
+    tokenType         String?
+    createdAt         DateTime @default(now())
+    updatedAt         DateTime @updatedAt
+    user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
     @@unique([provider, providerAccountId])
 }
 
 model Profile {
-    id            String           @id @default(cuid())
-    firstName     String?
-    lastName      String?
-    title         String?
-    biography     String?
-    phoneNumber   Int? // Optional phone number field
-    userId        String           @unique
-    user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-    timezoneId    Int?
-    localeId      Int?
-    locale        Locale?          @relation(fields: [localeId], references: [id])
-    countryCodeId Int? // Optional country code relation field
-    countryCode   CountryCode?     @relation(fields: [countryCodeId], references: [id])
-    addresses     ProfileAddress[] // Relation to ProfileAddress
-    profileTypes  ProfileType[]    @relation("ProfileProfileTypes") // Many-to-many relation to ProfileType
+    id                String       @id @default(cuid())
+    firstName         String?
+    lastName          String?
+    title             String?
+    biography         String?
+    phoneNumber       Int? // Optional phone number field
+    userId            String       @unique
+    user              User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+    timezoneId        Int?
+    countryCodeId     Int? // Optional country code relation field
+    countryCode       CountryCode? @relation(fields: [countryCodeId], references: [id])
+    email             String       @unique
+    emailVerifiedDate DateTime?
+    emailVerified     Boolean      @default(false)
 }
 
-model ProfileType {
+model AccountType {
     id       String    @id @default(cuid())
     name     String    @unique
-    profiles Profile[] @relation("ProfileProfileTypes") // Many-to-many relation to Profile
+    accounts Account[] @relation("AccountAccountTypes")
 }
 
 model Locale {
@@ -81,7 +90,7 @@ model Locale {
     country  String // Country name (e.g., 'United States', 'France')
     language String // Language (e.g., 'English', 'Français')
     flag     String // URL of the flag image
-    profiles Profile[] // Relation to Profile
+    accounts Account[] // Relation to Account, moved from Profile
 }
 
 model Appearance {
@@ -178,21 +187,21 @@ model Address {
     countryCode     CountryCode?     @relation(fields: [countryCodeId], references: [id])
     createdAt       DateTime         @default(now())
     updatedAt       DateTime         @updatedAt
-    profiles        ProfileAddress[] // Relation to ProfileAddress
+    accounts        AccountAddress[] // Relation to AccountAddress
     addressType     AddressTypeEnum // Use AddressTypeEnum instead of a separate model
 }
 
-// ProfileAddress Join Table: Connects profiles to their addresses
-model ProfileAddress {
+// AccountAddress Join Table: Connects accounts to their addresses
+model AccountAddress {
     id        String   @id @default(cuid())
-    profileId String // Foreign key to Profile
+    accountId String // Foreign key to Account
     addressId String // Foreign key to Address
     isBilling Boolean  @default(false) // Boolean to indicate if it's a billing address
     isMailing Boolean  @default(false) // Boolean to indicate if it's a mailing address
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
     address   Address  @relation(fields: [addressId], references: [id])
-    profile   Profile  @relation(fields: [profileId], references: [id])
+    account   Account  @relation(fields: [accountId], references: [id])
 
-    @@unique([profileId, addressId]) // Ensure unique combinations of profile and address
+    @@unique([accountId, addressId]) // Ensure unique combinations of account and address
 }

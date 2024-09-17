@@ -23,7 +23,7 @@ export async function getCountryList(): Promise<CountryCode[]> {
 export async function getStateProvinceByCountryCodeId(countryCodeId: number) {
 
     // TODO: Modify this to use findUnique instead of findFirst
-    const stateProvinceList = await db.stateProvince.findFirst({
+    const stateProvinceList = await db.stateProvince.findMany({
         where: { countryCodeId },
         select: {
             id: true,
@@ -31,8 +31,6 @@ export async function getStateProvinceByCountryCodeId(countryCodeId: number) {
             code: true,
         },
     });
-
-    console.log('StateProvinceList', stateProvinceList);
 
     return stateProvinceList;
 }

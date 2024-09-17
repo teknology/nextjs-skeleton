@@ -30,15 +30,6 @@ export default function UserWidget({ data }: UserWidgetProps) {
 
     const t = useTranslations('my_account.settings.profile.user_widget');
 
-    console.log('widget data State: user widget file', data);
-
-    /*
-     useEffect(() => {
-         setDataState(data);
-         console.log('data state changed')
-         console.log('widget data State: user widget file', data);
-     }, [data]);
- */
 
     //console.log('widget data State: user widget file', dataState);
     const onFilesAccepted = (files: File[]) => {

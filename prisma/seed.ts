@@ -15,7 +15,7 @@ async function clearDatabase() {
     console.log('Clearing database...');
 
     if (await tableExists('UserRole')) await prisma.userRole.deleteMany({});
-    if (await tableExists('ProfileAddress')) await prisma.profileAddress.deleteMany({});
+    if (await tableExists('AccountAddress')) await prisma.accountAddress.deleteMany({});
     if (await tableExists('Address')) await prisma.address.deleteMany({});
     if (await tableExists('Profile')) await prisma.profile.deleteMany({});
     if (await tableExists('Session')) await prisma.session.deleteMany({});
@@ -25,7 +25,7 @@ async function clearDatabase() {
     if (await tableExists('Role')) await prisma.role.deleteMany({});
     if (await tableExists('CountryCode')) await prisma.countryCode.deleteMany({});
     if (await tableExists('Locale')) await prisma.locale.deleteMany({});
-    if (await tableExists('ProfileType')) await prisma.profileType.deleteMany({});
+    if (await tableExists('AccountType')) await prisma.accountType.deleteMany({});
 
     console.log('Database cleared.');
 }
@@ -75,16 +75,16 @@ async function seedDatabase() {
     });
     console.log(`Seeded roles: ${adminRole.name}, ${userRole.name}`);
 
-    // Seed profile types using upsert
-    const profileTypes = ['Personal', 'Business', 'Partner'];
-    for (const type of profileTypes) {
-        await prisma.profileType.upsert({
+    // Seed account types using upsert
+    const accountTypes = ['Personal', 'Business', 'Partner'];
+    for (const type of accountTypes) {
+        await prisma.accountType.upsert({
             where: { name: type },
             update: {},
             create: { name: type },
         });
     }
-    console.log('Seeded ProfileTypes:', profileTypes.join(', '));
+    console.log('Seeded AccountTypes:', accountTypes.join(', '));
 
     // Find the existing US country code and locale
     const usCountryCode = await prisma.countryCode.findFirst({
@@ -103,26 +103,11 @@ async function seedDatabase() {
         process.exit(1);
     }
 
-    // Seed a user with a profile, linking to countryCodeId
+    // Seed a user without a profile, and create an account separately
     const user = await prisma.user.create({
         data: {
             username: 'johndoe',
-            emailVerifiedDate: new Date(),
-            email: 'gary@magehd.com',
-            emailVerified: true,
             password: await saltAndHashPassword('1234567'),
-            profile: {
-                create: {
-                    firstName: 'John',
-                    lastName: 'Doe',
-                    title: 'Developer',
-                    biography: 'Experienced software developer.',
-                    phoneNumber: 1234567890,
-                    timezoneId: 4,
-                    localeId: usLocale?.id,
-                    countryCodeId: usCountryCode.id,
-                },
-            },
             appearance: {
                 create: {
                     theme: 'light',
@@ -130,17 +115,17 @@ async function seedDatabase() {
             },
         },
     });
-    console.log('Seeded user and profile:', { user });
+    console.log('Seeded user:', { user });
 
-    // Fetch the user’s profile
-    const profile = await prisma.profile.findUnique({
-        where: { userId: user.id },
+    // Seed an account for the user
+    const account = await prisma.account.create({
+        data: {
+            userId: user.id,
+            type: 'Personal',
+            localeId: usLocale.id,
+        },
     });
-
-    if (!profile) {
-        console.error('Profile not found!');
-        process.exit(1);
-    }
+    console.log('Seeded account for user ID:', user.id);
 
     // Find the state "California" for the US
     const californiaState = await prisma.stateProvince.findFirst({
@@ -177,41 +162,41 @@ async function seedDatabase() {
     });
     console.log('Seeded addresses.');
 
-    // Associate addresses with profiles
-    await prisma.profileAddress.create({
+    // Associate addresses with accounts instead of profiles
+    await prisma.accountAddress.create({
         data: {
-            profileId: profile.id,
+            accountId: account.id,
             addressId: homeAddress.id,
             isBilling: true,
         },
     });
-    await prisma.profileAddress.create({
+    await prisma.accountAddress.create({
         data: {
-            profileId: profile.id,
+            accountId: account.id,
             addressId: businessAddress.id,
             isBilling: false,
             isMailing: true,
         },
     });
-    console.log(`Seeded profile addresses for user ID: ${user.id}`);
+    console.log(`Seeded account addresses for user ID: ${user.id}`);
 
-    // Assign default 'Personal' profile type to the user
-    const personalProfileType = await prisma.profileType.findFirst({
+    // Assign default 'Personal' account type to the user
+    const personalAccountType = await prisma.accountType.findFirst({
         where: { name: 'Personal' },
     });
 
-    if (personalProfileType) {
-        await prisma.profile.update({
-            where: { id: profile.id },
+    if (personalAccountType) {
+        await prisma.account.update({
+            where: { id: account.id },
             data: {
-                profileTypes: {
-                    connect: { id: personalProfileType.id },
+                accountTypes: {
+                    connect: { id: personalAccountType.id },
                 },
             },
         });
-        console.log(`Seeded default 'Personal' profile type for user ID: ${user.id}`);
+        console.log(`Seeded default 'Personal' account type for user ID: ${user.id}`);
     } else {
-        console.error('Profile type "Personal" not found!');
+        console.error('Account type "Personal" not found!');
     }
 }
 

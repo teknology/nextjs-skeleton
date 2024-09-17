@@ -33,12 +33,45 @@ export async function getLocaleByUserId(userId: string = '') {
             where: { id: userProfile?.localeId ?? undefined },
         });
 
-        console.log('User Locale:db query', userLocale);
-
-        return userLocale?.code || null;
+        return userLocale || null;
     } catch (error) {
         console.error('Failed to fetch locale by user ID:', error);
         throw new Error('Failed to fetch locale.');
+    }
+
+}
+
+export async function saveUserLocale(userId: string = "", localeId: number) {
+
+    if (!userId) {
+        const session = await auth();
+        userId = session?.user?.id as string;
+    }
+
+    if (!userId) {
+        throw new Error('User not authenticated.');
+    }
+
+    try {
+        const userProfile = await db.profile.findFirst({
+            where: { userId },
+        });
+
+        if (!userProfile) {
+            throw new Error('User profile not found.');
+        }
+
+        const updatedProfile = await db.profile.update({
+            where: { id: userProfile.id },
+            data: {
+                localeId,
+            },
+        });
+
+        return updatedProfile;
+    } catch (error) {
+        console.error('Failed to save locale by user ID:', error);
+        throw new Error('Failed to save locale.');
     }
 
 }

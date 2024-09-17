@@ -26,8 +26,6 @@ export async function getAppearanceSettings(id: string = '') {
         where: { userId: id },
     });
 
-    console.log('dbquery: appearance:', appearance); // Log the appearance settings
-
     return appearance;  // Return the appearance settings, if available
 }
 
@@ -41,17 +39,11 @@ export async function getThemeInDb(uid: string) {
     // Get the authenticated session (if available)
     const session = await auth();
 
-    // Log the session user ID and the passed user ID for debugging
-    console.log('dbquery: session userid', session?.user?.id);
-    console.log('dbquery: userid', uid);
-
     try {
         // Fetch the theme for the user from the appearance settings in the database
         const theme = await db.appearance.findUnique({
             where: { userId: uid },
         });
-
-        console.log('dbquery: theme:', theme); // Log the theme for debugging
 
         // Return the user's theme or default to 'light' if none is set
         return theme?.theme || 'light';

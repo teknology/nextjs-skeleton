@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, forwardRef, use } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 import { Button, Input, Select, SelectItem, Spacer, Divider, Skeleton, Image } from '@nextui-org/react';
 import { cn } from '@/utils/cn';
 import { useTranslations } from 'next-intl';
 import * as actions from '@/actions';
-import { Country } from '@/utils/types/types';
+import { Country, Locale, StateProvince } from '@/utils/types/types';
 
 interface AccountSettingCardProps {
     className?: string;
@@ -20,16 +20,9 @@ const languageOptions = [
     { label: 'German', value: 'de' },
 ];
 
-const stateOptions = [
-    { label: 'California', value: 'CA' },
-    { label: 'Texas', value: 'TX' },
-    { label: 'New York', value: 'NY' },
-    { label: 'Florida', value: 'FL' },
-];
-
 const addressTypeOptions = [
-    { label: 'Residential', value: 'residential' },
-    { label: 'Commercial', value: 'commercial' },
+    { label: 'Residential', value: 'RESIDENTIAL' },
+    { label: 'Commercial', value: 'COMMERCIAL' },
 ];
 
 const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
@@ -40,19 +33,42 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
         const [address1, setAddress1] = useState(data?.address1 || '');
         const [address2, setAddress2] = useState(data?.address2 || '');
         const [city, setCity] = useState(data?.city || '');
-        const [state, setState] = useState(data?.state || '');
         const [zipcode, setZipcode] = useState(data?.zipcode || '');
         const [addressType, setAddressType] = useState<string | undefined>(data?.addressType);
 
-        const [stateCodes, setStateCodes] = useState<string[]>([]);
-
+        const [stateCodes, setStateCodes] = useState<StateProvince[]>([]);
         const [countryCodes, setCountryCodes] = useState<Country[]>([]);
+        const [localeCodes, setLocaleCodes] = useState<Locale[]>([]);
+
+        const [selectedLocale, setSelectedLocale] = useState<string | null>(null);
         const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
+        const [selectedState, setSelectedState] = useState<string | null>(null); // For selected state
+        const [loadingStates, setLoadingStates] = useState(false); // State to handle loading of states
 
-        // Fetch states on mount
+        console.log('Data:Client File', data);
 
 
+        // Fetch countries on mount
+        useEffect(() => {
+            async function fetchLocales() {
+                try {
+                    const result = await actions.getLocales();
 
+                    console.log('Locales:ClientFile', result);
+
+                    if (Array.isArray(result)) {
+                        setLocaleCodes(result);
+                    } else {
+                        console.error('Error fetching countries:');
+                    }
+                } catch (error) {
+                    console.error('Error fetching countries:', error);
+                }
+            }
+            console.log(fetchLocales());
+
+
+        }, []);
         // Fetch countries on mount
         useEffect(() => {
             async function fetchCountries() {
@@ -61,30 +77,39 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                     if (Array.isArray(result)) {
                         setCountryCodes(result);
                     } else {
-                        console.error("Error fetching countries:", result.errors);
+                        console.error('Error fetching countries:', result.errors);
                     }
                 } catch (error) {
-                    console.error("Error fetching countries:", error);
+                    console.error('Error fetching countries:', error);
                 }
             }
             fetchCountries();
         }, []);
 
+        // Fetch states when selectedCountry changes
         useEffect(() => {
+            if (!selectedCountry) return;
+            setLoadingStates(true);
             async function fetchStates() {
                 try {
-                    const result = await actions.getStateProvince(data?.countryCodeId);
+                    const countryId = parseInt(selectedCountry as string, 10); // Safely convert to number
+                    if (isNaN(countryId)) {
+                        throw new Error('Invalid country ID');
+                    }
+                    const result = await actions.getStateProvince(countryId);
                     if (Array.isArray(result)) {
-                        setStateCodes(result);
+                        setStateCodes(result as StateProvince[]);
                     } else {
-                        console.error("Error fetching states:", result);
+                        console.error('Error fetching states:', result);
                     }
                 } catch (error) {
-                    console.error("Error fetching states:", error);
+                    console.error('Error fetching states:', error);
+                } finally {
+                    setLoadingStates(false);
                 }
             }
             fetchStates();
-        }, []);
+        }, [selectedCountry, data?.state]);
 
         // Update the state when the data prop changes
         useEffect(() => {
@@ -92,11 +117,19 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                 setAddress1(data.address1 || '');
                 setAddress2(data.address2 || '');
                 setCity(data.city || '');
-                setState(data.state || '');
                 setZipcode(data.zipcode || '');
                 setAddressType(data.addressType || undefined);
+
                 if (data.countryCodeId) {
-                    setSelectedCountry(String(data.countryCodeId));
+                    setSelectedCountry(String(data.countryCodeId)); // Pre-select the country
+                }
+
+                if (data.stateProvinceId) {
+                    setSelectedState(String(data.stateProvinceId)); // Pre-select the state
+                }
+                if (data.locale.id) {
+                    setSelectedLocale(String(data.locale.id)); // Pre-select the locale
+
                 }
             }
         }, [data]);
@@ -157,7 +190,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                         />
                     )}
 
-                    {loading ? (
+                    {loading || loadingStates ? (
                         <Skeleton className="h-12 w-full rounded-lg" />
                     ) : (
                         <Select
@@ -166,12 +199,12 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                             placeholder="Select State/Province"
                             fullWidth
                             aria-label="State or Province"
-                            selectedKeys={state ? [state] : undefined}
-                            onSelectionChange={(keys) => setState(Array.from(keys)[0] as string)}
+                            selectedKeys={selectedState ? [selectedState] : undefined} // Pre-select state if available
+                            onSelectionChange={(keys) => setSelectedState(Array.from(keys)[0] as string)}
                         >
-                            {stateOptions.map((stateOption) => (
-                                <SelectItem key={stateOption.value} value={stateOption.value}>
-                                    {stateOption.label}
+                            {stateCodes.map((state) => (
+                                <SelectItem key={state.id} value={state.code}>
+                                    {state.name}
                                 </SelectItem>
                             ))}
                         </Select>
@@ -200,8 +233,9 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                         <Skeleton className="h-12 w-full rounded-lg mt-2" />
                     ) : (
                         <Select
+                            selectionMode="single"
                             label="Country"
-                            className='mt-2'
+                            className="mt-2"
                             name="countryCodeId"
                             placeholder="Select a country"
                             fullWidth
@@ -221,9 +255,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                     }
                                     textValue={`${country.country}`}
                                 >
-                                    <div className="flex items-center">
-                                        {`${country.country}`}
-                                    </div>
+                                    <div className="flex items-center">{`${country.country}`}</div>
                                 </SelectItem>
                             ))}
                         </Select>
@@ -234,9 +266,9 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                         <Skeleton className="h-12 w-full rounded-lg mt-2" />
                     ) : (
                         <Select
+                            selectionMode="single"
                             label="Address Type"
                             name="addressType"
-
                             className="mt-2"
                             placeholder="Select Address Type"
                             fullWidth
@@ -267,10 +299,15 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                     {loading ? (
                         <Skeleton className="h-12 w-full rounded-lg" />
                     ) : (
-                        <Select className="mt-2" defaultSelectedKeys={['en']} aria-label="Preferred language">
-                            {languageOptions.map((languageOption) => (
-                                <SelectItem key={languageOption.value} value={languageOption.value}>
-                                    {languageOption.label}
+                        <Select className="mt-2"
+                            selectionMode="single"
+                            selectedKeys={selectedLocale ? [selectedLocale] : undefined}
+                            aria-label="Preferred language"
+                            onSelectionChange={(keys) => setSelectedLocale(Array.from(keys)[0] as string)}
+                        >
+                            {localeCodes.map((locale) => (
+                                <SelectItem key={locale.id} value={locale.code}>
+                                    {locale.language}
                                 </SelectItem>
                             ))}
                         </Select>

@@ -25,8 +25,6 @@ export default async function myAccount() {
   const session = await auth();
   const initialTheme = await getInitialTheme();
 
-  console.log('initial theme:', initialTheme);
-
   if (!session) {
     // Handle the case where session is null
     return <div>Error: Unable to retrieve session.</div>;

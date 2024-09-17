@@ -8,7 +8,7 @@ import { db } from "@/db"
 import { comparePasswords } from "./utils/auth"
 import { getUserByEmail } from "./db/queries/user"
 import { getThemeInDb } from "./db/queries/appearance"
-import { saveProviderAccount } from "./db/queries/provider"
+import { CustomProviderAccountAdapter } from "./lib/custom-auth-adapter"
 
 
 interface UserCredentials {
@@ -28,7 +28,7 @@ declare module 'next-auth' {
 }
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(db),
+  adapter: CustomProviderAccountAdapter(),
   session: { strategy: "jwt" },
   providers: [
     Google({

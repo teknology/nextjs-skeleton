@@ -99,7 +99,6 @@ export default function DragNDropUploader({ onFilesAccepted, onFilesRejected, on
                     uploadedSize += file.size;
                     setUploadProgress(Math.min((uploadedSize / totalSize) * 100, 100));
                 }
-                console.log()
                 update({ image: createProfileImagePath(session.user.id, files[0].name) });
                 // update({ image: files[0].name as string });
                 setUploadProgress(100);

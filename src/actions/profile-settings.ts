@@ -5,9 +5,18 @@ import { getUserWithProfileById } from '@/db/queries/user';
 import { auth } from '@/auth';
 import { db } from '@/db';
 
+// Interface for Address Form State
 
 
-// Function to update profile settings (as previously defined)
+// Function to get all addresses associated with the profile
+
+
+
+// Function to get the billing address associated with the profile
+
+
+
+
 export async function updateProfileSettings(
     formState: any,
     formData: FormData
@@ -17,10 +26,20 @@ export async function updateProfileSettings(
         const profileData: any = {};
 
         formData.forEach((value, key) => {
-            if (value !== currentProfile[key]) {
+            // Exclude keys that contain $ACTION using regex
+            const regex = /\$ACTION/;
+            if (!regex.test(key) && value !== currentProfile[key]) {
                 profileData[key] = value;
             }
         });
+
+        // Only send data if there's something to update
+        if (Object.keys(profileData).length === 0) {
+            return {
+                status: 'no_change',
+                errors: {},
+            };
+        }
 
         const newData = await updateProfile(profileData);
 
@@ -33,6 +52,7 @@ export async function updateProfileSettings(
         throw new Error('Failed to update profile.');
     }
 }
+
 
 // Function to get profile settings (as previously defined)
 export async function getProfileSettings() {
