@@ -4,7 +4,7 @@ import { PrismaClient, User } from '@prisma/client'
 const prisma = new PrismaClient()
 
 type PrismaUserWithProfile = User & {
-    Profile: {
+    profile: {
         id: string;
         firstName: string | null;
         lastName: string | null;
@@ -24,8 +24,8 @@ type PrismaUserWithProfile = User & {
 function mapPrismaUserToAdapterUser(prismaUser: PrismaUserWithProfile): AdapterUser {
     return {
         id: prismaUser.id,
-        email: prismaUser.Profile?.email ?? '', // Provide a default value if email is undefined
-        emailVerified: prismaUser.Profile?.emailVerifiedDate || null, // Handle case when profile is null
+        email: prismaUser.profile?.email ?? '', // Provide a default value if email is undefined
+        emailVerified: prismaUser.profile?.emailVerifiedDate || null, // Handle case when profile is null
         name: prismaUser.username || null, // Default to null if username is missing
         image: prismaUser.image || null, // Default to null if image is missing
     };
@@ -37,8 +37,8 @@ export function CustomProviderAccountAdapter(): Adapter {
             const prismaUser = await prisma.user.create({
                 data: {
                     username: user.name,
-                    image: user.image,
-                    Profile: {
+                    image: user.image || null, // Use the image from the provider if available
+                    profile: {
                         create: {
                             email: user.email,
                             emailVerifiedDate: user.emailVerified ? new Date() : null,
@@ -46,7 +46,7 @@ export function CustomProviderAccountAdapter(): Adapter {
                         },
                     },
                 },
-                include: { Profile: true }, // Ensure Profile is included in the result
+                include: { profile: true }, // Ensure Profile is included in the result
             })
             return mapPrismaUserToAdapterUser(prismaUser)
         },
@@ -54,7 +54,7 @@ export function CustomProviderAccountAdapter(): Adapter {
         async getUser(id): Promise<AdapterUser | null> {
             const prismaUser = await prisma.user.findUnique({
                 where: { id },
-                include: { Profile: true }, // Ensure Profile is included in the result
+                include: { profile: true }, // Ensure Profile is included in the result
             }) as PrismaUserWithProfile;
             return prismaUser ? mapPrismaUserToAdapterUser(prismaUser) : null
         },
@@ -82,27 +82,31 @@ export function CustomProviderAccountAdapter(): Adapter {
 
             const prismaUser = await prisma.user.findUnique({
                 where: { id: account.userId },
-                include: { Profile: true }, // Ensure Profile is included in the result
+                include: { profile: true }, // Ensure Profile is included in the result
             }) as PrismaUserWithProfile;
             return prismaUser ? mapPrismaUserToAdapterUser(prismaUser) : null
         },
 
         async updateUser(user): Promise<AdapterUser> {
-            const prismaUser = await prisma.user.update({
+            const existingUser = await prisma.user.findUnique({
+                where: { id: user.id },
+            });
+
+            const updatedUser = await prisma.user.update({
                 where: { id: user.id },
                 data: {
                     username: user.name,
-                    image: user.image,
-                    Profile: {
+                    image: existingUser?.image || user.image, // If the image in the database is null, use the provider image
+                    profile: {
                         update: {
                             email: user.email,
                             emailVerifiedDate: user.emailVerified ? new Date() : null,
                         },
                     },
                 },
-                include: { Profile: true }, // Ensure Profile is included in the result
+                include: { profile: true }, // Ensure Profile is included in the result
             })
-            return mapPrismaUserToAdapterUser(prismaUser)
+            return mapPrismaUserToAdapterUser(updatedUser)
         },
 
         async deleteUser(userId): Promise<void> {
@@ -152,7 +156,7 @@ export function CustomProviderAccountAdapter(): Adapter {
         async getSessionAndUser(sessionToken): Promise<{ session: AdapterSession; user: AdapterUser } | null> {
             const session = await prisma.session.findUnique({
                 where: { sessionToken },
-                include: { user: { include: { Profile: true } } }, // Ensure Profile is included
+                include: { user: { include: { profile: true } } }, // Ensure Profile is included
             })
 
             if (!session || !session.user) return null

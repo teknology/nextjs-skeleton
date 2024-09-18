@@ -7,8 +7,9 @@ export type { User };
 export type { Profile };
 
 interface UserWithProfile extends User {
-  Profile: Profile | null;
+  profile: Profile | null; // Lowercase 'profile'
 }
+
 
 /**
  * Get a user by their email address.
@@ -18,12 +19,12 @@ interface UserWithProfile extends User {
 export async function getUserByEmail(userEmail: string) {
   const result = await db.user.findFirst({
     where: {
-      Profile: {
+      profile: {
         email: userEmail,
       },
     },
     include: {
-      Profile: true, // Ensure profile is included
+      profile: true, // Ensure profile is included
     },
   });
   return result;
@@ -58,12 +59,15 @@ export async function getUserWithProfileById(userId: string = ""): Promise<UserW
     userId = session?.user?.id as string;
   }
 
-  return await db.user.findUnique({
+  const user = await db.user.findUnique({
     where: { id: userId },
     include: {
-      Profile: true, // Include the profile relation
+      profile: true, // Include the profile relation
     },
   });
+
+  // Map the profile to the expected structure
+  return user;
 }
 
 /**
@@ -92,13 +96,14 @@ export async function createUser(email: string, password: string): Promise<User>
       data: {
         accounts: {
           create: {
+            type: 'Personal', // Add the required type property
             localeId: null, // Example locale, adjust as needed
             accountTypes: {
               connect: { id: personalAccountType.id }, // Automatically associate "Personal" account type
             },
           },
         },
-        Profile: {
+        profile: {
           create: {
             email: email,
           },
@@ -123,7 +128,7 @@ export async function updateUserEmail(id: string, email: string): Promise<User> 
     return await db.user.update({
       where: { id },
       data: {
-        Profile: {
+        profile: {
           update: {
             email: email,
           },

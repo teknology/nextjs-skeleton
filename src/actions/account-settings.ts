@@ -1,42 +1,80 @@
-'use server'
-import { getLocaleByUser } from "./locale";
-import { getMailingAddress } from "./address";
+'use server';
 
-export async function getAccountSettings() {
-    try {
-        // Execute both promises concurrently, but handle failures for each individually
-        const [mailingAddressResult, localeResult] = await Promise.allSettled([
-            getMailingAddress(),
-            getLocaleByUser(),
-        ]);
+import { z } from 'zod';
+import { profileSchema } from '@/validation/schemas'; // Import your Zod schema
+import { addressSchema } from '@/utils/validation-schemas';
 
-        // Check the result of each promise
-        if (mailingAddressResult.status === 'rejected') {
-            throw new Error(`Failed to fetch mailing address: ${mailingAddressResult.reason}`);
-        }
+interface AccountFormState {
+    status?: 'success' | 'no_change';
+    errors: {
+        mailingAddress1?: string[];
+        mailingAddress2?: string[];
+        mailingCity?: string[];
+        mailingState?: string[];
+        mailingZip?: string[];
+        mailingCountry?: string[];
+        mailingAddressType?: string[];
+        billingAddress1?: string[];
+        billingAddress2?: string[];
+        billingCity?: string[];
+        billingState?: string[];
+        billingZip?: string[];
+        billingCountry?: string[];
+        billingAddressType?: string[];
+        _form?: string[];
+    };
+}
 
-        if (localeResult.status === 'rejected') {
-            throw new Error(`Failed to fetch locale: ${localeResult.reason}`);
-        }
+export async function updateAccountSettings(formState: AccountFormState, formData: FormData): Promise<any> {
+    // Map the formData to match the form structure exactly, without the removed fields
 
-        // Both promises resolved successfully, so extract their values
-        const data = mailingAddressResult.value;
-        const userLocale = localeResult.value;
-
-        if (!data) {
-            throw new Error('Mailing address not found.');
-        }
-        if (!userLocale) {
-            throw new Error('Locale not found.');
-        }
-
-        // Return a single, flattened object
-        return {
-            ...data,  // Spread the mailingAddress properties
-            locale: userLocale    // Add the locale property
-        };
-    } catch (err: unknown) {
-        console.error('Failed to fetch account settings:', (err as Error).message);
-        throw new Error('Unable to fetch account settings.');
+    const mailingAddress = {
+        address1: formData.get('mailingAddress1')?.toString() || '',
+        address2: formData.get('mailingAddress2')?.toString() || '', // optional
+        city: formData.get('mailingCity')?.toString() || '',
+        stateProvince: formData.get('mailingState')?.toString() || '',
+        zipcode: formData.get('mailingZipcode')?.toString() || '',
+        countryCode: formData.get('mailingCountry')?.toString() || '',
+        addressType: formData.get('mailingAddressType')?.toString() || '',
     }
+    const billingAddress = {
+        address1: formData.get('billingAddress1')?.toString() || '',
+        address2: formData.get('billingAddress2')?.toString() || '', // optional
+        city: formData.get('billingCity')?.toString() || '',
+        stateProvince: formData.get('billingState')?.toString() || '',
+        zipcode: formData.get('billingZipcode')?.toString() || '',
+        countryCode: formData.get('billingCountry')?.toString() || '',
+        addressType: formData.get('billingAddressType')?.toString() || '',
+    }
+    const account = formData.get('locale')?.toString() || '' // Include locale as you had in the previous component
+
+
+    // Validate the form data
+    const mailingAddressResult = addressSchema.safeParse({ mailingAddress });
+    const billingAddressResult = addressSchema.safeParse({ billingAddress });
+
+    // If validation fails, return the validation errors
+
+    if (!mailingAddressResult.success || !billingAddressResult.success) {
+        return {
+            errors: {
+                mailingAddress1: mailingAddressResult.error?.errors[0]?.message,
+                mailingAddress2: mailingAddressResult.error?.errors[1]?.message,
+                mailingCity: mailingAddressResult.error?.errors[2]?.message,
+                mailingState: mailingAddressResult.error?.errors[3]?.message,
+                mailingZip: mailingAddressResult.error?.errors[4]?.message,
+                mailingCountry: mailingAddressResult.error?.errors[5]?.message,
+                billingAddress1: billingAddressResult.error?.errors[0]?.message,
+                billingAddress2: billingAddressResult.error?.errors[1]?.message,
+                billingCity: billingAddressResult.error?.errors[2]?.message,
+                billingState: billingAddressResult.error?.errors[3]?.message,
+                billingZip: billingAddressResult.error?.errors[4]?.message,
+                billingCountry: billingAddressResult.error?.errors[5]?.message,
+                _form: ['Invalid address data'],
+            },
+        };
+    }
+
+
+
 }

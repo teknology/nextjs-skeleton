@@ -2,12 +2,11 @@
 
 import { db } from '@/db'; // Import the Prisma database client
 import { auth } from '@/auth'; // Import the authentication function
-import type { User, Profile, ProfileType } from '@prisma/client'; // Import types from Prisma schema
+import type { User, Profile } from '@prisma/client'; // Import types from Prisma schema
 
 // Export the imported types for usage in other parts of the application
 export type { User };
 export type { Profile };
-export type { ProfileType };
 
 /**
  * Fetch profile by user ID.
@@ -65,12 +64,11 @@ export async function updateProfile(data: Profile): Promise<Profile | string | n
  * @param profileData - The data for the new profile.
  * @returns The newly created profile or null if the operation fails.
  */
-export async function createProfile(userId: string, profileData: Partial<Profile>): Promise<Profile | null> {
+export async function createProfile(userId: string, profileData: Omit<Profile, 'id'> & { email: string }): Promise<Profile | null> {
     try {
         // Create a new profile for the given user
         const profile = await db.profile.create({
             data: {
-                userId,
                 ...profileData,
             },
         });
@@ -101,77 +99,4 @@ export async function deleteProfileByUserId(userId: string): Promise<string | nu
     }
 }
 
-// CRUD methods for ProfileType
 
-/**
- * Create a new profile type.
- * @param name - The name of the profile type to create.
- * @returns The newly created profile type or null if the operation fails.
- */
-export async function createProfileType(name: string): Promise<ProfileType | null> {
-    try {
-        // Create a new profile type with the given name
-        const profileType = await db.profileType.create({
-            data: {
-                name,
-            },
-        });
-        return profileType; // Return the newly created profile type
-    } catch (error) {
-        console.error('Failed to create profile type:', error); // Log any errors encountered
-        throw new Error('Failed to create profile type.'); // Throw a user-friendly error
-    }
-}
-
-/**
- * Fetch all available profile types.
- * @returns A list of all profile types or null if the operation fails.
- */
-export async function getAllProfileTypes(): Promise<ProfileType[] | null> {
-    try {
-        // Fetch all profile types from the database
-        const profileTypes = await db.profileType.findMany();
-        return profileTypes; // Return the list of profile types
-    } catch (error) {
-        console.error('Failed to fetch profile types:', error); // Log any errors encountered
-        throw new Error('Failed to fetch profile types.'); // Throw a user-friendly error
-    }
-}
-
-/**
- * Update a profile type by ID.
- * @param id - The ID of the profile type to update.
- * @param name - The new name for the profile type.
- * @returns The updated profile type or null if the operation fails.
- */
-export async function updateProfileType(id: string, name: string): Promise<ProfileType | null> {
-    try {
-        // Update the profile type with the new name
-        const profileType = await db.profileType.update({
-            where: { id },
-            data: { name },
-        });
-        return profileType; // Return the updated profile type
-    } catch (error) {
-        console.error('Failed to update profile type:', error); // Log any errors encountered
-        throw new Error('Failed to update profile type.'); // Throw a user-friendly error
-    }
-}
-
-/**
- * Delete a profile type by ID.
- * @param id - The ID of the profile type to delete.
- * @returns A success message if the profile type is deleted, or null if it fails.
- */
-export async function deleteProfileType(id: string): Promise<string | null> {
-    try {
-        // Delete the profile type with the given ID
-        await db.profileType.delete({
-            where: { id },
-        });
-        return 'Profile type deleted successfully'; // Return a success message
-    } catch (error) {
-        console.error('Failed to delete profile type:', error); // Log any errors encountered
-        return null; // Return null if the deletion fails
-    }
-}

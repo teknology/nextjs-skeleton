@@ -21,19 +21,19 @@ model User {
     role          UserRole[] // Many-to-many relation with Role
     sessions      Session[] // One-to-many relation with Session
     appearance    Appearance? // One-to-one relation with Appearance
-    Authenticator Authenticator[] // One-to-many relation with Authenticator
+    authenticator Authenticator[] // One-to-many relation with Authenticator
     accounts      Account[] // One-to-many relation with Account
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    ProviderAccount ProviderAccount[]
-    Profile         Profile?
+    provideraccount ProviderAccount[]
+    profile         Profile?
 }
 
 model Account {
     id           String           @id @default(cuid())
-    userId       String
+    userId       String           @unique
     type         String
     user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
     accountTypes AccountType[]    @relation("AccountAccountTypes") // Relation with accountTypes

@@ -52,7 +52,7 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
         setFirstName(data.profile?.firstName || '');
         setLastName(data.profile?.lastName || '');
         setTitle(data.profile?.title || '');
-        setEmail(data.email || '');
+        setEmail(data.profile?.email || '');
         setPhoneNumber(data.profile?.phoneNumber || '');
         setBiography(data.profile?.biography || '');
         setSelectedCountry(String(data.profile?.countryCodeId) || null);
@@ -85,8 +85,8 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
     useEffect(() => {
       if (data) {
         setWidgetData({
-          emailVerified: data?.emailVerified || false,
-          email: data?.email || '',
+          emailVerified: data?.profile?.emailVerified || false,
+          email: data?.profile?.email || '',
           title: data?.profile?.title || '',
           firstName: data?.profile?.firstName || '',
           lastName: data?.profile?.lastName || '',
@@ -99,8 +99,8 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
       try {
         const newData = await actions.getUpdatedUserData();
         setWidgetData({
-          emailVerified: newData?.emailVerified || false,
-          email: newData?.email || '',
+          emailVerified: newData?.profile?.emailVerified || false,
+          email: newData?.profile?.email || '',
           title: newData?.profile?.title || '',
           firstName: newData?.profile?.firstName || '',
           lastName: newData?.profile?.lastName || '',

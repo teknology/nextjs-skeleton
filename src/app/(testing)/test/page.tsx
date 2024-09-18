@@ -21,16 +21,16 @@ export default function Test() {
 
 
 
-
   useEffect(() => {
     async function fetchData() {
       try {
 
         // const appearance = await actions.getAppearanceSettings();
         //  setAppearance(appearance);
-        const userResult = await actions.getAccountSettings();
+        const userResult = await actions.getAccountSettings(); // Fetch user data
         //  console.log(await getUserTheme('cm0hgubny0000hc3dnm0xycpj'))
-        setResult(userResult); // Update state with fetched result
+        setResult(userResult); // Update state with fetched 
+        console.log('resuts:testpage', userResult)
       } catch (error) {
         console.error('Failed to fetch user:', error);
         setResult(null); // Set result to null if there's an error

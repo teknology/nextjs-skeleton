@@ -103,7 +103,7 @@ async function seedDatabase() {
         process.exit(1);
     }
 
-    // Seed a user without a profile, and create an account separately
+    // Seed a user with a profile, and create an account separately
     const user = await prisma.user.create({
         data: {
             username: 'johndoe',
@@ -113,9 +113,22 @@ async function seedDatabase() {
                     theme: 'light',
                 },
             },
+            profile: {
+                create: {
+                    firstName: 'John',
+                    lastName: 'Doe',
+                    email: 'gary@magehd.com',
+                    emailVerified: false,
+                    phoneNumber: 1234567890,
+                    countryCodeId: usCountryCode.id,
+                    timezoneId: 4,
+                    title: 'Developer', // Added title
+                    biography: 'Experienced software developer.', // Added biography
+                },
+            },
         },
     });
-    console.log('Seeded user:', { user });
+    console.log('Seeded user and profile:', { user });
 
     // Seed an account for the user
     const account = await prisma.account.create({

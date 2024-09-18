@@ -41,7 +41,7 @@ export type Country = {
 export type StateProvince = {
   id: number;
   name: string;
-  code: string;
+  code: string | null;
 };
 
 export type Locale = {

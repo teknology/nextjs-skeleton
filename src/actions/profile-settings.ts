@@ -4,23 +4,43 @@ import { getProfileByUserId, updateProfile } from '@/db/queries/profile';
 import { getUserWithProfileById } from '@/db/queries/user';
 import { auth } from '@/auth';
 import { db } from '@/db';
+import { profileSchema } from '@/utils/validation-schemas'
 
-// Interface for Address Form State
+interface ProfileFormState {
+    status?: 'success' | 'no_change';
+    errors: {
+        firstName?: string[];
+        lastName?: string[];
+        biography?: string[];
+        title?: string[];
+        phoneNumber?: string[];
+        countryCode?: string[];
+        timezone?: string[];
+        _form?: string[];
+    }
 
 
-// Function to get all addresses associated with the profile
-
-
-
-// Function to get the billing address associated with the profile
-
-
-
+}
 
 export async function updateProfileSettings(
-    formState: any,
+    formState: ProfileFormState,
     formData: FormData
-): Promise<any> {
+): Promise<ProfileFormState> {
+    const result = profileSchema.safeParse({
+        firstName: formData.get('firstName'),
+        lastName: formData.get('lastName'),
+        biography: formData.get('biography'),
+        title: formData.get('title'),
+        phoneNumber: formData.get('phoneNumber'),
+        countryCode: formData.get('countryCode'),
+        timezone: formData.get('timezone')
+    });
+    // If validation fails, return the validation errors
+    if (!result.success) {
+        return {
+            errors: result.error.flatten().fieldErrors
+        };
+    }
     try {
         const currentProfile = await getProfileByUserId() as { [key: string]: any };
         const profileData: any = {};
@@ -59,7 +79,7 @@ export async function getProfileSettings() {
     try {
         const profile = await getUserWithProfileById();
 
-        console.log('profile', profile);
+        console.log('profile:actionfile', profile);
 
         return profile
     } catch (error) {
