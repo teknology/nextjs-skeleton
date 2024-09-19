@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import * as actions from '@/actions';
 import { Country, Locale, StateProvince } from '@/utils/types/types';
 import { useFormState } from 'react-dom';
+import FormButton from '@/app/components/common/form-button';
 
 interface AccountSettingCardProps {
     className?: string;
@@ -164,6 +165,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                             <Skeleton className="w-full h-12 rounded" />
                         ) : (
                             <Input
+                                name='mailingZipcode'
                                 className="mt-2"
                                 placeholder="Zipcode"
                                 fullWidth
@@ -184,7 +186,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 selectionMode="single"
                                 label="Country"
                                 className="mt-2"
-                                name="mailingCountry"
+                                name="mailingCountryId"
                                 placeholder="Select a country"
                                 fullWidth
                                 selectedKeys={mailingCountry ? [mailingCountry] : undefined}
@@ -284,6 +286,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                             <Skeleton className="w-full h-12 rounded" />
                         ) : (
                             <Input
+                                name="billingZipcode"
                                 className="mt-2"
                                 placeholder="Zipcode"
                                 fullWidth
@@ -304,7 +307,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 selectionMode="single"
                                 label="Country"
                                 className="mt-2"
-                                name="billingCountry"
+                                name="billingCountryId"
                                 placeholder="Select a country"
                                 fullWidth
                                 selectedKeys={billingCountry ? [billingCountry] : undefined}
@@ -360,6 +363,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                             <Skeleton className="h-12 w-full rounded-lg" />
                         ) : (
                             <Select
+                                name='localeId'
                                 className="mt-2"
                                 selectionMode="single"
                                 selectedKeys={selectedLocale ? [selectedLocale] : undefined}
@@ -380,9 +384,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                     {loading ? (
                         <Skeleton className="h-12 w-full rounded-lg mt-4" />
                     ) : (
-                        <Button type="submit" className="mt-4 bg-default-foreground text-background" size="sm" aria-label="Update Account Settings">
-                            Update Account
-                        </Button>
+                        <FormButton>Update Account</FormButton>
+
                     )}
                 </form>
             </div>
