@@ -7,39 +7,321 @@ generator client {
     provider = "prisma-client-js"
 }
 
+// Enum for address types (e.g., Residential, Commercial)
 enum AddressTypeEnum {
     RESIDENTIAL
     COMMERCIAL
 }
 
-model User {
+// Enum for website industries (e.g., eCommerce, Doctor, Course, Event)
+enum WebsiteTypeEnum {
+    ECOMMERCE
+    DOCTOR
+    EVENT
+    COURSE
+}
+
+// Enum for website page types
+enum PageTypeEnum {
+    HOME_PAGE
+    PRODUCT_PAGE
+    CATEGORY_PAGE
+    CART_PAGE
+    CHECKOUT_PAGE
+    BOOKING_PAGE
+    BOOKING_CONFIRMATION_PAGE
+    CALENDAR_PAGE
+}
+
+// Enum for order status (e.g., Pending, Completed, Canceled, Shipped)
+enum OrderStatusEnum {
+    PENDING
+    COMPLETED
+    CANCELED
+    SHIPPED
+}
+
+// Enum for payment status (e.g., Pending, Completed, Failed)
+enum PaymentStatusEnum {
+    PENDING
+    COMPLETED
+    FAILED
+}
+
+// Enum for shipping status (e.g., Pending, Shipped, Delivered)
+enum ShippingStatusEnum {
+    PENDING
+    SHIPPED
+    DELIVERED
+}
+
+// Main model for multi-tenant websites (supporting different industries)
+model Website {
+    id        String          @id @default(cuid())
+    tenantId  String
+    tenant    Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+    name      String
+    type      WebsiteTypeEnum // Specifies the website type (eCommerce, Doctor, Event, etc.)
+    industry  WebsiteTypeEnum // Industry type for the website
+    domain    String? // Optional custom domain for the website
+    createdAt DateTime        @default(now())
+    updatedAt DateTime        @updatedAt
+
+    templates TemplateGroup[] // Industry-specific templates associated with the website
+
+    // eCommerce-specific relationships
+    products  Product[] // Products for eCommerce websites
+    orders    Order[] // Orders for eCommerce websites
+    customers Customer[] // Customers related to eCommerce websites
+    cart      Cart[] // Shopping carts for eCommerce websites
+    shippings Shipping[] // Shipping information for eCommerce orders
+
+    ProductCategory ProductCategory[]
+}
+
+// Template Group model to define industry-specific template sets
+model TemplateGroup {
+    id        String         @id @default(cuid())
+    name      String // Name of the template group (e.g., "eCommerce Template", "Doctor Website Template")
+    websiteId String // Associated with a specific website
+    website   Website        @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+    isDefault Boolean        @default(false) // Whether this is a system default template for the industry
+    pages     TemplatePage[] // Pages associated with this template group
+    createdAt DateTime       @default(now())
+    updatedAt DateTime       @updatedAt
+}
+
+// Template Page model that represents individual pages in the template group
+model TemplatePage {
+    id              String            @id @default(cuid())
+    templateGroupId String
+    templateGroup   TemplateGroup     @relation(fields: [templateGroupId], references: [id], onDelete: Cascade)
+    name            String // Name of the page (e.g., "Home Page", "Product Page", etc.)
+    type            PageTypeEnum // Enum to define page types
+    filePath        String // Stores the file path to the template file in the file system
+    isEditable      Boolean           @default(true) // Determines if users can edit this template via Monaco Editor
+    createdAt       DateTime          @default(now())
+    updatedAt       DateTime          @updatedAt
+    TemplateVersion TemplateVersion[]
+}
+
+// Versioning model for template pages (enabling rollback and version control)
+model TemplateVersion {
+    id             String       @id @default(cuid())
+    templatePageId String
+    templatePage   TemplatePage @relation(fields: [templatePageId], references: [id], onDelete: Cascade)
+    version        Int          @default(1)
+    content        String // Stores the versioned content of the template page
+    createdAt      DateTime     @default(now())
+}
+
+// Multi-tenancy support
+model Tenant {
     id       String  @id @default(cuid())
-    image    String?
-    username String?
+    name     String  @unique // Name of the tenant or business
+    slug     String  @unique // Unique identifier or slug for the tenant
+    domain   String? // Optional custom domain for the tenant's websites
+    industry String? // Optional industry the tenant operates in (e.g., eCommerce, Healthcare)
 
-    password      String?
-    role          UserRole[] // Many-to-many relation with Role
-    sessions      Session[] // One-to-many relation with Session
-    appearance    Appearance? // One-to-one relation with Appearance
-    authenticator Authenticator[] // One-to-many relation with Authenticator
-    accounts      Account[] // One-to-many relation with Account
+    // Business Information
+    contactEmail String? // Contact email for the business
+    phoneNumber  String? // Phone number for the business
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    // Subscription & Billing Information
+    subscriptionPlan   String? // Current subscription plan (e.g., Free, Premium, Enterprise)
+    billingCycle       String? // Billing cycle (e.g., monthly, yearly)
+    trialEndsAt        DateTime? // End date for trial period
+    subscriptionEndsAt DateTime? // End date for the current subscription
 
+    accountId String // Foreign key for the Account that owns this Tenant
+    account   Account   @relation(fields: [accountId], references: [id], onDelete: Cascade) // A Tenant belongs to one Account
+    websites  Website[] // Websites created under this tenant
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+}
+
+// User model tied to tenant
+model User {
+    id              String            @id @default(cuid())
+    tenantId        String
+    image           String?
+    username        String?
+    password        String?
+    role            UserRole[] // Many-to-many relation with Role
+    sessions        Session[] // One-to-many relation with Session
+    appearance      Appearance? // One-to-one relation with Appearance
+    authenticator   Authenticator[] // One-to-many relation with Authenticator
+    accounts        Account[] // One-to-many relation with Account
+    createdAt       DateTime          @default(now())
+    updatedAt       DateTime          @updatedAt
     provideraccount ProviderAccount[]
     profile         Profile?
 }
 
+// Account model tied to tenant
 model Account {
     id           String           @id @default(cuid())
     userId       String           @unique
     type         String
     user         User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+    tenants      Tenant[] // One Account can have multiple Tenants
     accountTypes AccountType[]    @relation("AccountAccountTypes") // Relation with accountTypes
     addresses    AccountAddress[] // Relation to AccountAddress
     localeId     Int? // Foreign key for Locale
-    locale       Locale?          @relation(fields: [localeId], references: [id]) // Moved from Profile
+    locale       Locale?          @relation(fields: [localeId], references: [id])
+}
+
+// eCommerce product model (linked to Website)
+model Product {
+    id          String   @id @default(cuid())
+    websiteId   String // Foreign key to Website
+    name        String
+    description String?
+    price       Float
+    currency    String // Currency type (USD, EUR, etc.)
+    stock       Int // Inventory stock level
+    categoryId  String? // Foreign key to ProductCategory
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    website  Website          @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+    category ProductCategory? @relation(fields: [categoryId], references: [id])
+    orders   OrderItem[] // Relation to orders that include this product
+
+    CartItem CartItem[]
+}
+
+// Product categories (optional, allows for product organization)
+model ProductCategory {
+    id        String  @id @default(cuid())
+    websiteId String // Foreign key to Website
+    name      String // Category name
+    parentId  String? // Optional parent category for nested categories
+
+    website Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+
+    Product Product[]
+}
+
+// Tracks customer orders, associated with products and a customer
+model Order {
+    id          String          @id @default(cuid())
+    websiteId   String // Foreign key to Website
+    customerId  String // Foreign key to Customer
+    totalAmount Float // Total order amount
+    currency    String // Currency type (USD, EUR, etc.)
+    status      OrderStatusEnum // Order status (PENDING, COMPLETED, CANCELED, SHIPPED)
+    createdAt   DateTime        @default(now())
+    updatedAt   DateTime        @updatedAt
+
+    customer Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+    website  Website     @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+    items    OrderItem[] // Relation to OrderItem (one-to-many)
+    payments Payment[] // Relation to Payment (one-to-many)
+
+    Shipping Shipping[]
+}
+
+// Tracks individual products within an order
+model OrderItem {
+    id        String @id @default(cuid())
+    orderId   String // Foreign key to Order
+    productId String // Foreign key to Product
+    quantity  Int // Quantity of the product ordered
+    price     Float // Product price at the time of order
+    total     Float // Total cost for this order item
+
+    order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+    product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+// Represents customers in an eCommerce website
+model Customer {
+    id        String   @id @default(cuid())
+    websiteId String // Foreign key to Website
+    email     String   @unique
+    firstName String
+    lastName  String
+    phone     String?
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    website   Website           @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+    addresses CustomerAddress[] // Customer addresses (billing/shipping)
+    orders    Order[] // Orders associated with this customer
+
+    Cart Cart[]
+}
+
+// Customer addresses for billing and shipping
+model CustomerAddress {
+    id         String   @id @default(cuid())
+    customerId String // Foreign key to Customer
+    address1   String
+    address2   String?
+    city       String
+    state      String
+    postalCode String
+    country    String
+    isBilling  Boolean  @default(false) // Indicates if it's a billing address
+    isShipping Boolean  @default(false) // Indicates if it's a shipping address
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+}
+
+// Tracks payments made for orders (linked to Order)
+model Payment {
+    id        String            @id @default(cuid())
+    orderId   String // Foreign key to Order
+    amount    Float // Payment amount
+    currency  String // Currency type (USD, EUR, etc.)
+    status    PaymentStatusEnum // Payment status (PENDING, COMPLETED, FAILED)
+    method    String // Payment method (e.g., Credit Card, PayPal)
+    createdAt DateTime          @default(now())
+    updatedAt DateTime          @updatedAt
+
+    order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+// Tracks shipping information for orders
+model Shipping {
+    id             String             @id @default(cuid())
+    orderId        String // Foreign key to Order
+    method         String // Shipping method (e.g., USPS, FedEx)
+    status         ShippingStatusEnum // Shipping status (PENDING, SHIPPED, DELIVERED)
+    trackingNumber String? // Optional tracking number for shipments
+    createdAt      DateTime           @default(now())
+    updatedAt      DateTime           @updatedAt
+
+    order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+    Website Website[]
+}
+
+// Represents shopping carts for customers (before placing orders)
+model Cart {
+    id         String   @id @default(cuid())
+    websiteId  String // Foreign key to Website
+    customerId String // Foreign key to Customer
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+
+    website  Website    @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+    customer Customer   @relation(fields: [customerId], references: [id], onDelete: Cascade)
+    items    CartItem[] // Relation to CartItem (one-to-many)
+}
+
+// Individual items in the shopping cart
+model CartItem {
+    id        String @id @default(cuid())
+    cartId    String // Foreign key to Cart
+    productId String // Foreign key to Product
+    quantity  Int // Quantity of the product in the cart
+
+    cart    Cart    @relation(fields: [cartId], references: [id], onDelete: Cascade)
+    product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model ProviderAccount {
@@ -100,6 +382,7 @@ model Appearance {
     user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+//Users can belong to tenants, and role-based access control (RBAC) ensures only authorized users can manage and edit templates.
 model Role {
     id    String     @id @default(cuid())
     name  String     @unique
@@ -146,8 +429,6 @@ model Authenticator {
     transports           String?
 
     user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-    @@id([userId, credentialID])
 }
 
 model CountryCode {
@@ -163,18 +444,17 @@ model CountryCode {
     states    StateProvince[] // Relation to StateProvince
 }
 
-// States/Provinces Model: Stores states or provinces related to countries
+// States/Provinces for address management
 model StateProvince {
     id            Int         @id @default(autoincrement())
     name          String
     code          String? // Optional state/province code or abbreviation
     countryCodeId Int // Foreign key to CountryCode
     countryCode   CountryCode @relation(fields: [countryCodeId], references: [id], onDelete: Cascade)
-
-    addresses Address[] // Relation to Address
+    Address       Address[]
 }
 
-// Address Model: Stores the actual address details
+// Address management
 model Address {
     id              String           @id @default(cuid())
     address1        String

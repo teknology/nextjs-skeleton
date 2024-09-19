@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{product.name}} - {{siteName}}</title>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <h1>{{siteName}}</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/products">Products</a></li>
+                <li><a href="/contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Product Section -->
+    <section id="product-details">
+        <div class="product-image">
+            <img src="{{product.imageUrl}}" alt="{{product.name}}">
+        </div>
+        <div class="product-info">
+            <h2>{{product.name}}</h2>
+            <p>{{product.description}}</p>
+            <p>Price: {{product.price}} USD</p>
+            <button>Add to Cart</button>
+        </div>
+    </section>
+
+    <!-- Related Products Section -->
+    <section id="related-products">
+        <h2>Related Products</h2>
+        <ul>
+            {{#each relatedProducts}}
+                <li>
+                    <a href="/product/{{this.id}}">
+                        <img src="{{this.imageUrl}}" alt="{{this.name}}">
+                        <h3>{{this.name}}</h3>
+                        <p>{{this.price}} USD</p>
+                    </a>
+                </li>
+            {{/each}}
+        </ul>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+        <p>&copy; {{currentYear}} {{siteName}}. All rights reserved.</p>
+    </footer>
+</body>
+</html>
