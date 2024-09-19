@@ -7,15 +7,16 @@ import { db } from '@/db';
 import { profileSchema } from '@/utils/validation-schemas'
 
 interface ProfileFormState {
-    status?: 'success' | 'no_change';
+    status?: 'idle' | 'success' | 'no_change';
     errors: {
         firstName?: string[];
         lastName?: string[];
         biography?: string[];
         title?: string[];
+        email?: string[];
         phoneNumber?: string[];
-        countryCode?: string[];
-        timezone?: string[];
+        countryCodeId?: string[];
+        timezoneId?: string[];
         _form?: string[];
     }
 
@@ -31,11 +32,14 @@ export async function updateProfileSettings(
         lastName: formData.get('lastName'),
         biography: formData.get('biography'),
         title: formData.get('title'),
-        phoneNumber: formData.get('phoneNumber'),
-        countryCode: formData.get('countryCode'),
-        timezone: formData.get('timezone')
+        phoneNumber: Number(formData.get('phoneNumber')),
+        email: formData.get('email'),
+        countryCodeId: Number(formData.get('countryCodeId')),
+        timezoneId: Number(formData.get('timezoneId'))
     });
-    // If validation fails, return the validation errors
+
+
+
     if (!result.success) {
         return {
             errors: result.error.flatten().fieldErrors
@@ -48,11 +52,21 @@ export async function updateProfileSettings(
         formData.forEach((value, key) => {
             // Exclude keys that contain $ACTION using regex
             const regex = /\$ACTION/;
+
+
+
             if (!regex.test(key) && value !== currentProfile[key]) {
+
+                if (key === 'countryCodeId' || key === 'timezoneId' || key === 'phoneNumber') {
+                    profileData[key] = Number(value);
+                    return;
+                }
+
                 profileData[key] = value;
             }
         });
 
+        console.log('profileData:actionfile', profileData);
         // Only send data if there's something to update
         if (Object.keys(profileData).length === 0) {
             return {
@@ -68,8 +82,14 @@ export async function updateProfileSettings(
             errors: {},
         };
     } catch (error) {
-        console.error('Failed to update profile:', error);
-        throw new Error('Failed to update profile.');
+
+        return {
+            status: 'idle',
+            errors: {
+                _form: ['Failed to update profile settings']
+
+            }
+        }
     }
 }
 

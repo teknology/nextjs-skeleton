@@ -150,8 +150,10 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                   className="mt-2"
                   name="firstName"
                   placeholder="e.g Kate"
-                  value={firstName} // Controlled input
+                  value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
+                  isInvalid={!!formState.errors?.firstName}
+                  errorMessage={formState.errors.firstName?.join(', ')}
                 />
               )}
             </div>
@@ -164,8 +166,10 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                   className="mt-2"
                   name="lastName"
                   placeholder="e.g Moore"
-                  value={lastName} // Controlled input
+                  value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
+                  isInvalid={!!formState.errors?.lastName}
+                  errorMessage={formState.errors.lastName?.join(', ')}
                 />
               )}
             </div>
@@ -182,8 +186,10 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                   className="mt-2"
                   name="title"
                   placeholder="e.g C.E.O / Founder / President"
-                  value={title} // Controlled input
+                  value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  isInvalid={!!formState.errors?.title}
+                  errorMessage={formState.errors.title?.join(', ')}
                 />
               )}
             </div>
@@ -196,8 +202,10 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                   className="mt-2"
                   name="email"
                   placeholder="email@mydomain.com"
-                  value={email} // Controlled input
+                  value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  isInvalid={!!formState.errors?.email}
+                  errorMessage={formState.errors.email?.join(', ')}
                 />
               )}
             </div>
@@ -217,6 +225,8 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                   selectedKeys={selectedCountry ? [selectedCountry] : undefined}
                   selectionMode="single"
                   onSelectionChange={(keys) => setSelectedCountry(Array.from(keys)[0] as string)}
+                  isInvalid={!!formState.errors?.countryCodeId}
+                  errorMessage={formState.errors.countryCodeId?.join(', ')}
                 >
                   {countryCodes.map((country) => (
                     <SelectItem
@@ -249,8 +259,10 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                   className="mt-2"
                   name="phoneNumber"
                   placeholder="5555555555"
-                  value={phoneNumber} // Controlled input
+                  value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
+                  isInvalid={!!formState.errors?.phoneNumber}
+                  errorMessage={formState.errors.phoneNumber?.join(', ')}
                 />
               )}
             </div>
@@ -267,6 +279,8 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                   selectedKeys={selectedTimezone ? [selectedTimezone] : undefined}
                   selectionMode="single"
                   onSelectionChange={(keys) => setSelectedTimezone(Array.from(keys)[0] as string)}
+                  isInvalid={!!formState.errors?.timezoneId}
+                  errorMessage={formState.errors.timezoneId?.join(', ')}
                 >
                   {timezoneData.map((timezone) => (
                     <SelectItem key={timezone.id} value={timezone.value} textValue={timezone.label}>
@@ -290,9 +304,11 @@ const ProfileSetting = React.forwardRef<HTMLDivElement, ProfileSettingCardProps>
                 classNames={{
                   input: cn("min-h-[115px]"),
                 }}
-                value={biography} // Controlled input
+                value={biography}
                 onChange={(e) => setBiography(e.target.value)}
                 placeholder="e.g., 'Kate Moore - Acme.com Support Specialist. Passionate about solving tech issues, loves hiking and volunteering."
+                isInvalid={!!formState.errors?.biography}
+                errorMessage={formState.errors.biography?.join(', ')}
               />
             )}
           </div>

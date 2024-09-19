@@ -23,7 +23,7 @@
             "page_title": "Account Settings",
             "page_subtitle": "Manage your account settings",
             "profile": {
-                "title": "Profile",
+                "title": "Title",
                 "description": "Update your profile information. E-mail and phone number will not be publicly displayed.",
                 "first_name": "First Name",
                 "last_name": "Last Name",

@@ -1,3 +1,4 @@
+'use server'
 export async function getBillingSettings() {
     try {
         return null;

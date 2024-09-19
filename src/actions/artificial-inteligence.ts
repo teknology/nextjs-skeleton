@@ -1,3 +1,4 @@
+'use server';
 export default async function checkImage(image: File) {
     const formData = new FormData();
     formData.append('image', image);

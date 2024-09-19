@@ -1,80 +1,116 @@
 'use server';
 
 import { z } from 'zod';
-import { profileSchema } from '@/validation/schemas'; // Import your Zod schema
 import { addressSchema } from '@/utils/validation-schemas';
+import { getAccountWithAddressesByUserId, updateAccountWithAddress } from '@/db/queries/account';
 
 interface AccountFormState {
-    status?: 'success' | 'no_change';
+    status?: 'idle' | 'success' | 'no_change' | 'error';
     errors: {
         mailingAddress1?: string[];
-        mailingAddress2?: string[];
+        mailingAddress2?: string[] | null;
         mailingCity?: string[];
         mailingState?: string[];
-        mailingZip?: string[];
+        mailingZipcode?: string[];
         mailingCountry?: string[];
         mailingAddressType?: string[];
         billingAddress1?: string[];
-        billingAddress2?: string[];
+        billingAddress2?: string[] | null;
         billingCity?: string[];
         billingState?: string[];
-        billingZip?: string[];
+        billingZipcode?: string[];
         billingCountry?: string[];
         billingAddressType?: string[];
         _form?: string[];
     };
 }
+export async function getAccountSettings() {
+    try {
+        const data = await getAccountWithAddressesByUserId();
+        console.log('action:account-settings', data);
+        return data;
+    } catch (error) {
+        console.error('Failed to fetch user:', error);
+        throw new Error('Failed to fetch Account settings.');
+        return null;
+    }
+}
+export async function updateAccountSettings(formState: AccountFormState, formData: FormData): Promise<AccountFormState> {
 
-export async function updateAccountSettings(formState: AccountFormState, formData: FormData): Promise<any> {
+
+
+
     // Map the formData to match the form structure exactly, without the removed fields
-
     const mailingAddress = {
-        address1: formData.get('mailingAddress1')?.toString() || '',
+        address1: formData.get('mailingAddress1'),
         address2: formData.get('mailingAddress2')?.toString() || '', // optional
-        city: formData.get('mailingCity')?.toString() || '',
-        stateProvince: formData.get('mailingState')?.toString() || '',
-        zipcode: formData.get('mailingZipcode')?.toString() || '',
-        countryCode: formData.get('mailingCountry')?.toString() || '',
-        addressType: formData.get('mailingAddressType')?.toString() || '',
-    }
-    const billingAddress = {
-        address1: formData.get('billingAddress1')?.toString() || '',
-        address2: formData.get('billingAddress2')?.toString() || '', // optional
-        city: formData.get('billingCity')?.toString() || '',
-        stateProvince: formData.get('billingState')?.toString() || '',
-        zipcode: formData.get('billingZipcode')?.toString() || '',
-        countryCode: formData.get('billingCountry')?.toString() || '',
-        addressType: formData.get('billingAddressType')?.toString() || '',
-    }
-    const account = formData.get('locale')?.toString() || '' // Include locale as you had in the previous component
+        city: formData.get('mailingCity')?.toString(),
+        stateProvinceId: Number(formData.get('mailingStateId')),
+        zipcode: formData.get('mailingZipcode'),
+        countryCodeId: Number(formData.get('mailingCountry')),
+        addressType: formData.get('mailingAddressType'),
+    };
 
+    const billingAddress = {
+        address1: formData.get('billingAddress1'),
+        address2: formData.get('billingAddress2') || '', // optional
+        city: formData.get('billingCity'),
+        stateProvinceId: Number(formData.get('billingStateId')),
+        zipcode: formData.get('billingZipcode'),
+        countryCodeId: Number(formData.get('billingCountry')),
+        addressType: formData.get('billingAddressType'),
+    };
+
+    const accountUpdateData = {
+        localeId: Number(formData.get('locale')),
+    };
+
+    console.log('actionfile:passedFormData', formData);
 
     // Validate the form data
-    const mailingAddressResult = addressSchema.safeParse({ mailingAddress });
-    const billingAddressResult = addressSchema.safeParse({ billingAddress });
-
-    // If validation fails, return the validation errors
+    const mailingAddressResult = addressSchema.safeParse(mailingAddress);
+    const billingAddressResult = addressSchema.safeParse(billingAddress);
 
     if (!mailingAddressResult.success || !billingAddressResult.success) {
         return {
             errors: {
-                mailingAddress1: mailingAddressResult.error?.errors[0]?.message,
-                mailingAddress2: mailingAddressResult.error?.errors[1]?.message,
-                mailingCity: mailingAddressResult.error?.errors[2]?.message,
-                mailingState: mailingAddressResult.error?.errors[3]?.message,
-                mailingZip: mailingAddressResult.error?.errors[4]?.message,
-                mailingCountry: mailingAddressResult.error?.errors[5]?.message,
-                billingAddress1: billingAddressResult.error?.errors[0]?.message,
-                billingAddress2: billingAddressResult.error?.errors[1]?.message,
-                billingCity: billingAddressResult.error?.errors[2]?.message,
-                billingState: billingAddressResult.error?.errors[3]?.message,
-                billingZip: billingAddressResult.error?.errors[4]?.message,
-                billingCountry: billingAddressResult.error?.errors[5]?.message,
-                _form: ['Invalid address data'],
-            },
+                mailingAddress1: mailingAddressResult.error?.flatten().fieldErrors.address1,
+                mailingAddress2: mailingAddressResult.error?.flatten().fieldErrors.address2,
+                mailingCity: mailingAddressResult.error?.flatten().fieldErrors.city,
+                mailingState: mailingAddressResult.error?.flatten().fieldErrors.stateProvinceId,
+                mailingZip: mailingAddressResult.error?.flatten().fieldErrors.zipcode,
+                mailingCountry: mailingAddressResult.error?.flatten().fieldErrors.countryCodeId,
+                mailingAddressType: mailingAddressResult.error?.flatten().fieldErrors.addressType,
+                billingAddress1: billingAddressResult.error?.flatten().fieldErrors.address1,
+                billingAddress2: billingAddressResult.error?.flatten().fieldErrors.address2,
+                billingCity: billingAddressResult.error?.flatten().fieldErrors.city,
+                billingState: billingAddressResult.error?.flatten().fieldErrors.stateProvinceId,
+                billingZip: billingAddressResult.error?.flatten().fieldErrors.zipcode,
+                billingCountry: billingAddressResult.error?.flatten().fieldErrors.countryCodeId,
+                billingAddressType: billingAddressResult.error?.flatten().fieldErrors.addressType,
+
+            }
         };
     }
 
+    console.log('actionfile:mailingAddress', mailingAddressResult);
+    console.log('actionfile:billingAddress', billingAddressResult);
 
 
+
+    try {
+        const result = await updateAccountWithAddress(accountUpdateData, mailingAddress, billingAddress);
+
+        return {
+            status: 'success',
+            errors: {},
+        };
+    } catch (error) {
+        console.error('Failed to update account settings:', error);
+
+        return {
+            status: 'error',
+            message: 'Failed to update account settings.',
+        };
+    }
 }
