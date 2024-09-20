@@ -2,7 +2,6 @@
 import { db } from '@/db'; // Import the Prisma database client
 import { auth } from '@/auth'; // Import the authentication function
 import type { Account, Address } from '@prisma/client'; // Import the Account type from Prisma schema
-import { getSession } from 'next-auth/react';
 
 // Export the imported types for usage in other parts of the application
 export type { Account };
@@ -49,15 +48,17 @@ export async function getAccountWithAddressesByUserId(userId: string = ""): Prom
     }
 }
 
+
 /**
  * Update an account for the current authenticated user, including mailing and billing addresses.
- * @param data - The account data to update.
+ * @param accountUpdateData - The account data to update (locale, etc.).
  * @param mailingAddress - The mailing address data to update.
  * @param billingAddress - The billing address data to update.
- * @returns The updated account, an error message, or null if no data was provided.
+ * @returns An object with a status and message indicating success or failure.
  */
-export async function updateAccountWithAddress(accountUpdateData: Partial<Account>, mailingAddress: Partial<Address>, billingAddress: Partial<Address>) {
-    const session = await getSession();
+export async function updateAccountWithAddress(accountUpdateData: any, mailingAddress: Partial<Address>, billingAddress: Partial<Address>) {
+    const session = await auth(); // Get the authenticated session
+
     // Ensure the user is logged in
     if (!session || !session.user || !session.user.id) {
         return {
@@ -66,13 +67,10 @@ export async function updateAccountWithAddress(accountUpdateData: Partial<Accoun
         };
     }
 
-
-
-
     try {
-        // Fetch existing data from the database
+        // Fetch existing account data from the database, including addresses
         const existingAccount = await db.account.findUnique({
-            where: { userId: session.user?.id },
+            where: { userId: session.user.id },
             include: {
                 addresses: {
                     include: {
@@ -82,26 +80,29 @@ export async function updateAccountWithAddress(accountUpdateData: Partial<Accoun
             },
         });
 
+
+        console.log('dbquery:UpdateAccountWithAddress', existingAccount)
+
+
+
         if (!existingAccount) {
             throw new Error('Account not found');
         }
 
-        // Check for changed fields in the account data (locale)
         const updates: any = {};
+
+        // Check for changes in locale
         if (existingAccount.localeId !== accountUpdateData.localeId) {
             updates['localeId'] = accountUpdateData.localeId;
         }
 
-        // Check for changed fields in the mailing address
-        const existingMailingAddress = existingAccount.addresses.find((addr) => {
-            return addr.isMailing;
-        });
-
-
+        // Mailing Address: Compare and collect updates
+        const existingMailingAddress = existingAccount.addresses.find((addr) => addr.isMailing);
         const mailingAddressUpdates: any = {};
+
         if (existingMailingAddress) {
             for (const key in mailingAddress) {
-                if ((mailingAddress as Partial<Address>)[key as keyof Address] !== (existingMailingAddress as Partial<Address>)[key as keyof Address]) {
+                if (mailingAddress[key as keyof Address] !== existingMailingAddress.address[key as keyof Address]) {
                     mailingAddressUpdates[key as keyof Address] = mailingAddress[key as keyof Address];
                 }
             }
@@ -110,17 +111,14 @@ export async function updateAccountWithAddress(accountUpdateData: Partial<Accoun
             Object.assign(mailingAddressUpdates, mailingAddress);
         }
 
-        console.log('mailingAddressUpdates:dbquery', mailingAddressUpdates)
-        return;
-        // Check for changed fields in the billing address
-        const existingBillingAddress = existingAccount.addresses.find(
-            (address) => address.addressType === 'COMMERCIAL'
-        );
+        // Billing Address: Compare and collect updates
+        const existingBillingAddress = existingAccount.addresses.find((addr) => addr.isBilling);
         const billingAddressUpdates: any = {};
+
         if (existingBillingAddress) {
             for (const key in billingAddress) {
-                if (billingAddress[key] !== existingBillingAddress[key]) {
-                    billingAddressUpdates[key] = billingAddress[key];
+                if (billingAddress[key as keyof Address] !== existingBillingAddress.address[key as keyof Address]) {
+                    billingAddressUpdates[key as keyof Address] = billingAddress[key as keyof Address];
                 }
             }
         } else {
@@ -130,21 +128,21 @@ export async function updateAccountWithAddress(accountUpdateData: Partial<Accoun
 
         // Only perform the update if there are changes
         if (Object.keys(updates).length > 0 || Object.keys(mailingAddressUpdates).length > 0 || Object.keys(billingAddressUpdates).length > 0) {
-            await prisma.account.update({
-                where: { userId: accountId },
+            await db.account.update({
+                where: { userId: session.user.id },
                 data: {
                     ...updates,
                     addresses: {
                         upsert: [
                             {
-                                where: { accountId_addressId: { accountId: existingAccount.id, addressId: existingMailingAddress?.id } },
+                                where: { accountId_addressId: { accountId: existingAccount.id, addressId: existingMailingAddress?.id || '' } },
                                 update: mailingAddressUpdates,
-                                create: { ...mailingAddress, addressType: 'RESIDENTIAL' },
+                                create: { ...mailingAddress, addressType: 'RESIDENTIAL', isMailing: true },
                             },
                             {
-                                where: { accountId_addressId: { accountId: existingAccount.id, addressId: existingBillingAddress?.id } },
+                                where: { accountId_addressId: { accountId: existingAccount.id, addressId: existingBillingAddress?.id || '' } },
                                 update: billingAddressUpdates,
-                                create: { ...billingAddress, addressType: 'COMMERCIAL' },
+                                create: { ...billingAddress, addressType: 'COMMERCIAL', isBilling: true },
                             },
                         ],
                     },
@@ -163,12 +161,7 @@ export async function updateAccountWithAddress(accountUpdateData: Partial<Accoun
             message: 'Failed to update account settings.',
         };
     }
-
-
-
 }
-
-
 
 
 /**
