@@ -474,8 +474,8 @@ model Address {
 // AccountAddress Join Table: Connects accounts to their addresses
 model AccountAddress {
     id        String   @id @default(cuid())
-    accountId String   @unique // Foreign key to Account
-    addressId String   @unique // Foreign key to Address
+    accountId String //@unique // Foreign key to Account
+    addressId String //@unique // Foreign key to Address
     isBilling Boolean  @default(false) // Boolean to indicate if it's a billing address
     isMailing Boolean  @default(false) // Boolean to indicate if it's a mailing address
     createdAt DateTime @default(now())

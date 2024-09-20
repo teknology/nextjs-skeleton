@@ -3,7 +3,7 @@
 import { z } from 'zod';
 import { addressSchema } from '@/utils/validation-schemas';
 import { getAccountWithAddressesByUserId, updateAccountWithAddress } from '@/db/queries/account';
-import type { Address, AddressTypeEnum } from '@prisma/client';
+import type { AddressTypeEnum } from '@prisma/client';
 
 
 interface AccountFormState {
@@ -41,34 +41,50 @@ export async function getAccountSettings() {
         throw new Error('Failed to fetch Account settings.');
     }
 }
+
+// Assuming Address is a defined type
+interface Address {
+    address1: string;
+    address2?: string | null;
+    city: string;
+    stateProvinceId?: number | null;
+    zipcode: string;
+    countryCodeId?: number | null;
+    createdAt?: Date;
+    updatedAt?: Date;
+    addressType?: AddressTypeEnum;
+}
+
+
+
 export async function updateAccountSettings(formState: AccountFormState, formData: FormData): Promise<AccountFormState> {
 
 
 
 
     // Map the formData to match the form structure exactly, without the removed fields
-    const mailingAddress: Partial<Address> = {
+    const mailingAddress = {
         address1: formData.get('mailingAddress1') as string,
         address2: formData.get('mailingAddress2') as string, // optional
         city: formData.get('mailingCity') as string,
-        stateProvinceId: Number(formData.get('mailingStateId')),
+        stateProvince: Number(formData.get('mailingStateId')),
         zipcode: formData.get('mailingZipcode') as string,
-        countryCodeId: Number(formData.get('mailingCountry')),
+        countryCode: Number(formData.get('mailingCountry')),
         addressType: formData.get('mailingAddressType') as AddressTypeEnum,
     };
 
-    const billingAddress: Partial<Address> = {
+    const billingAddress = {
         address1: formData.get('billingAddress1') as string,
         address2: formData.get('billingAddress2') as string, // optional
         city: formData.get('billingCity') as string,
-        stateProvinceId: Number(formData.get('billingStateId')),
+        stateProvince: Number(formData.get('billingStateId')),
         zipcode: formData.get('billingZipcode') as string,
-        countryCodeId: Number(formData.get('billingCountry')),
+        countryCode: Number(formData.get('billingCountry')),
         addressType: formData.get('billingAddressType') as AddressTypeEnum,
     };
 
     const accountUpdateData = {
-        localeId: Number(formData.get('locale')),
+        locale: Number(formData.get('locale')),
     };
 
 
@@ -107,15 +123,22 @@ export async function updateAccountSettings(formState: AccountFormState, formDat
             status: 'success',
             errors: {},
         };
-    } catch (error) {
-        console.error('Failed to update account settings:', error);
 
-        return {
-            status: 'error',
-            errors: {
-                _form: ['Failed to update account settings.'],
-            },
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+            return {
+                errors: {
+                    _form: [err.message]
+                },
+            };
+        } else {
+            return {
+                errors: {
+                    _form: ['An unknown error occurred']
+                }
+            }
+        }
 
-        };
     }
+
 }

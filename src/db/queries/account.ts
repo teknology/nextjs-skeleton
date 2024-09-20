@@ -1,4 +1,3 @@
-'use server'
 import { db } from '@/db'; // Import the Prisma database client
 import { auth } from '@/auth'; // Import the authentication function
 import type { Account, Address } from '@prisma/client'; // Import the Account type from Prisma schema
@@ -68,6 +67,17 @@ export async function updateAccountWithAddress(accountUpdateData: any, mailingAd
     }
 
     try {
+        // Validate localeId before proceeding
+        if (accountUpdateData.localeId) {
+            const localeExists = await db.locale.findUnique({
+                where: { id: accountUpdateData.localeId },
+            });
+
+            if (!localeExists) {
+                throw new Error('Invalid locale ID');
+            }
+        }
+
         // Fetch existing account data from the database, including addresses
         const existingAccount = await db.account.findUnique({
             where: { userId: session.user.id },
@@ -79,11 +89,6 @@ export async function updateAccountWithAddress(accountUpdateData: any, mailingAd
                 },
             },
         });
-
-
-        console.log('dbquery:UpdateAccountWithAddress', existingAccount)
-
-
 
         if (!existingAccount) {
             throw new Error('Account not found');
@@ -126,23 +131,66 @@ export async function updateAccountWithAddress(accountUpdateData: any, mailingAd
             Object.assign(billingAddressUpdates, billingAddress);
         }
 
+        console.log("dbquery: updates", updates);
+        console.log("dbquery: mailingAddressUpdates", mailingAddressUpdates);
+        console.log("dbquery: billingAddressUpdates", billingAddressUpdates);
+
+
         // Only perform the update if there are changes
         if (Object.keys(updates).length > 0 || Object.keys(mailingAddressUpdates).length > 0 || Object.keys(billingAddressUpdates).length > 0) {
             await db.account.update({
                 where: { userId: session.user.id },
                 data: {
-                    ...updates,
+                    ...updates, // Updates for the account itself
                     addresses: {
                         upsert: [
                             {
-                                where: { accountId_addressId: { accountId: existingAccount.id, addressId: existingMailingAddress?.id || '' } },
-                                update: mailingAddressUpdates,
-                                create: { ...mailingAddress, addressType: 'RESIDENTIAL', isMailing: true },
+                                where: {
+                                    accountId_addressId: {
+                                        accountId: existingAccount.id,
+                                        addressId: existingMailingAddress?.addressId || '', // Use the proper address relation
+                                    },
+                                },
+                                update: {
+                                    address: {
+                                        update: {
+                                            ...mailingAddressUpdates, // The updates for the address
+                                        },
+                                    },
+                                },
+                                create: {
+                                    address: {
+                                        create: {
+                                            ...mailingAddress, // The data to create a new address
+                                            addressType: mailingAddress.addressType, // Use dynamic addressType from mailingAddress
+                                        },
+                                    },
+                                    isMailing: true, // AccountAddress field
+                                },
                             },
                             {
-                                where: { accountId_addressId: { accountId: existingAccount.id, addressId: existingBillingAddress?.id || '' } },
-                                update: billingAddressUpdates,
-                                create: { ...billingAddress, addressType: 'COMMERCIAL', isBilling: true },
+                                where: {
+                                    accountId_addressId: {
+                                        accountId: existingAccount.id,
+                                        addressId: existingBillingAddress?.addressId || '', // Use the proper address relation
+                                    },
+                                },
+                                update: {
+                                    address: {
+                                        update: {
+                                            ...billingAddressUpdates, // The updates for the address
+                                        },
+                                    },
+                                },
+                                create: {
+                                    address: {
+                                        create: {
+                                            ...billingAddress, // The data to create a new address
+                                            addressType: billingAddress.addressType, // Use dynamic addressType from billingAddress
+                                        },
+                                    },
+                                    isBilling: true, // AccountAddress field
+                                },
                             },
                         ],
                     },
@@ -158,7 +206,7 @@ export async function updateAccountWithAddress(accountUpdateData: any, mailingAd
         console.error('Failed to update account settings:', error);
         return {
             status: 'error',
-            message: 'Failed to update account settings.',
+            message: 'Failed to save to the database.',
         };
     }
 }
@@ -188,7 +236,7 @@ export async function getAccountByUserId() {
             },
         });
 
-        console.log('account:dbquery', account)
+        console.log('account:dbquery', account);
 
         return account as Account | null; // Return the account if found, otherwise return null
     } catch (error) {
@@ -223,5 +271,3 @@ export async function updateAccount(data: Account): Promise<Account | string | n
     }
     return null; // Return null if no data was provided
 }
-
-
