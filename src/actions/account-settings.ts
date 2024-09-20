@@ -23,6 +23,7 @@ interface AccountFormState {
         billingZipcode?: string[];
         billingCountry?: string[];
         billingAddressType?: string[];
+        localId?: string[];
         _form?: string[];
     };
 }
@@ -43,18 +44,6 @@ export async function getAccountSettings() {
 }
 
 // Assuming Address is a defined type
-interface Address {
-    address1: string;
-    address2?: string | null;
-    city: string;
-    stateProvinceId?: number | null;
-    zipcode: string;
-    countryCodeId?: number | null;
-    createdAt?: Date;
-    updatedAt?: Date;
-    addressType?: AddressTypeEnum;
-}
-
 
 
 export async function updateAccountSettings(formState: AccountFormState, formData: FormData): Promise<AccountFormState> {
@@ -84,13 +73,16 @@ export async function updateAccountSettings(formState: AccountFormState, formDat
     };
 
     const accountUpdateData = {
-        locale: Number(formData.get('locale')),
+        locale: Number(formData.get('localeId')),
     };
 
 
     // Validate the form data
     const mailingAddressResult = addressSchema.safeParse(mailingAddress);
     const billingAddressResult = addressSchema.safeParse(billingAddress);
+
+    console.log("actionfile: validation result", mailingAddressResult)
+    console.log("actionfile: validation result", billingAddressResult)
 
     if (!mailingAddressResult.success || !billingAddressResult.success) {
         return {
@@ -118,6 +110,8 @@ export async function updateAccountSettings(formState: AccountFormState, formDat
 
     try {
         const result = await updateAccountWithAddress(accountUpdateData, mailingAddress, billingAddress);
+
+        console.log('actionfile: dbquery result:', result)
 
         return {
             status: 'success',

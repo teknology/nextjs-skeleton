@@ -128,6 +128,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 aria-label="Mailing Address line 1"
                                 value={mailingAddress1}
                                 onChange={(e) => setMailingAddress1(e.target.value)}
+                                isInvalid={!!formState.errors?.mailingAddress1}
+                                errorMessage={formState.errors.mailingAddress1?.join(', ')}
                             />
                         )}
                         {loading ? (
@@ -141,6 +143,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 aria-label="Mailing Address line 2"
                                 value={mailingAddress2}
                                 onChange={(e) => setMailingAddress2(e.target.value)}
+                                isInvalid={!!formState.errors?.mailingAddress2}
+                                errorMessage={formState.errors.mailingAddress2?.join(', ')}
                             />
                         )}
                     </div>
@@ -159,6 +163,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 aria-label="Mailing City"
                                 value={mailingCity}
                                 onChange={(e) => setMailingCity(e.target.value)}
+                                isInvalid={!!formState.errors?.mailingCity}
+                                errorMessage={formState.errors.mailingCity?.join(', ')}
                             />
                         )}
                         {loading ? (
@@ -172,6 +178,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 aria-label="Mailing Zipcode"
                                 value={mailingZipcode}
                                 onChange={(e) => setMailingZipcode(e.target.value)}
+                                isInvalid={!!formState.errors?.mailingZipcode}
+                                errorMessage={formState.errors.mailingZipcode?.join(', ')}
                             />
                         )}
                     </div>
@@ -191,6 +199,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 fullWidth
                                 selectedKeys={mailingCountry ? [mailingCountry] : undefined}
                                 onSelectionChange={(keys) => setMailingCountry(Array.from(keys)[0] as string)}
+                                isInvalid={!!formState.errors?.mailingCountry}
+                                errorMessage={formState.errors.mailingCountry?.join(', ')}
                             >
                                 {countryCodes.map((country) => (
                                     <SelectItem
@@ -217,6 +227,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 aria-label="Mailing Address Type"
                                 selectedKeys={mailingAddressType ? [mailingAddressType] : undefined}
                                 onSelectionChange={(event) => setMailingAddressType(Array.from(event)[0] as string)}
+                                isInvalid={!!formState.errors?.mailingAddressType}
+                                errorMessage={formState.errors.mailingAddressType?.join(', ')}
                             >
                                 {addressTypeOptions.map((option) => (
                                     <SelectItem key={option.value} value={option.value}>
@@ -249,6 +261,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 aria-label="Billing Address line 1"
                                 value={billingAddress1}
                                 onChange={(e) => setBillingAddress1(e.target.value)}
+                                isInvalid={!!formState.errors?.billingAddress1}
+                                errorMessage={formState.errors.billingAddress1?.join(', ')}
                             />
                         )}
                         {loading ? (
@@ -262,6 +276,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 aria-label="Billing Address line 2"
                                 value={billingAddress2}
                                 onChange={(e) => setBillingAddress2(e.target.value)}
+                                isInvalid={!!formState.errors?.billingAddress2}
+                                errorMessage={formState.errors.billingAddress2?.join(', ')}
                             />
                         )}
                     </div>
@@ -280,6 +296,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 aria-label="Billing City"
                                 value={billingCity}
                                 onChange={(e) => setBillingCity(e.target.value)}
+                                isInvalid={!!formState.errors?.billingCity}
+                                errorMessage={formState.errors.billingCity?.join(', ')}
                             />
                         )}
                         {loading ? (
@@ -293,6 +311,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 aria-label="Billing Zipcode"
                                 value={billingZipcode}
                                 onChange={(e) => setBillingZipcode(e.target.value)}
+                                isInvalid={!!formState.errors?.billingZipcode}
+                                errorMessage={formState.errors.billingZipcode?.join(', ')}
                             />
                         )}
                     </div>
@@ -312,6 +332,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 fullWidth
                                 selectedKeys={billingCountry ? [billingCountry] : undefined}
                                 onSelectionChange={(keys) => setBillingCountry(Array.from(keys)[0] as string)}
+                                isInvalid={!!formState.errors?.billingCountry}
+                                errorMessage={formState.errors.billingCountry?.join(', ')}
                             >
                                 {countryCodes.map((country) => (
                                     <SelectItem
@@ -338,6 +360,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 aria-label="Billing Address Type"
                                 selectedKeys={billingAddressType ? [billingAddressType] : undefined}
                                 onSelectionChange={(event) => setBillingAddressType(Array.from(event)[0] as string)}
+                                isInvalid={!!formState.errors?.billingAddressType}
+                                errorMessage={formState.errors.billingAddressType?.join(', ')}
                             >
                                 {addressTypeOptions.map((option) => (
                                     <SelectItem key={option.value} value={option.value}>
@@ -369,6 +393,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 selectedKeys={selectedLocale ? [selectedLocale] : undefined}
                                 aria-label="Preferred language"
                                 onSelectionChange={(keys) => setSelectedLocale(Array.from(keys)[0] as string)}
+                                isInvalid={!!formState.errors?.localId}
+                                errorMessage={formState.errors.localId?.join(', ')}
                             >
                                 {localeCodes.map((locale) => (
                                     <SelectItem key={locale.id} value={locale.code}>
@@ -385,7 +411,6 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                         <Skeleton className="h-12 w-full rounded-lg mt-4" />
                     ) : (
                         <FormButton>Update Account</FormButton>
-
                     )}
                 </form>
             </div>
