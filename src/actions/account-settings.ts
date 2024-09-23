@@ -56,9 +56,9 @@ export async function updateAccountSettings(formState: AccountFormState, formDat
         address1: formData.get('mailingAddress1') as string,
         address2: formData.get('mailingAddress2') as string, // optional
         city: formData.get('mailingCity') as string,
-        stateProvince: Number(formData.get('mailingStateCodeId')),
+        stateProvinceId: Number(formData.get('mailingStateCodeId')),
         zipcode: formData.get('mailingZipcode') as string,
-        countryCode: Number(formData.get('mailingCountryCodeId')),
+        countryCodeId: Number(formData.get('mailingCountryCodeId')),
         addressType: formData.get('mailingAddressType') as AddressTypeEnum,
     };
 
@@ -66,9 +66,9 @@ export async function updateAccountSettings(formState: AccountFormState, formDat
         address1: formData.get('billingAddress1') as string,
         address2: formData.get('billingAddress2') as string, // optional
         city: formData.get('billingCity') as string,
-        stateProvince: Number(formData.get('billingStateCodeId')),
+        stateProvinceId: Number(formData.get('billingStateCodeId')),
         zipcode: formData.get('billingZipcode') as string,
-        countryCode: Number(formData.get('billingCountryCodeId')),
+        countryCodeId: Number(formData.get('billingCountryCodeId')),
         addressType: formData.get('billingAddressType') as AddressTypeEnum,
     };
 
