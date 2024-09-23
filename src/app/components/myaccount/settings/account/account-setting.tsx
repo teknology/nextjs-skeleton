@@ -25,28 +25,28 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
         const t = useTranslations('my_account.settings.profile');
 
         // Controlled input state for mailing address
-        const [mailingAddress1, setMailingAddress1] = useState(data?.mailingAddress?.address1 || '');
-        const [mailingAddress2, setMailingAddress2] = useState(data?.mailingAddress?.address2 || '');
-        const [mailingCity, setMailingCity] = useState(data?.mailingAddress?.city || '');
-        const [mailingZipcode, setMailingZipcode] = useState(data?.mailingAddress?.zipcode || '');
-        const [mailingCountry, setMailingCountry] = useState<string | null>(data?.mailingAddress?.countryCodeId || null);
-        const [mailingState, setMailingState] = useState<string | null>(data?.mailingAddress?.stateProvinceId || null);
-        const [mailingAddressType, setMailingAddressType] = useState<string | undefined>(data?.mailingAddress?.addressType);
+        const [mailingAddress1, setMailingAddress1] = useState('');
+        const [mailingAddress2, setMailingAddress2] = useState('');
+        const [mailingCity, setMailingCity] = useState('');
+        const [mailingZipcode, setMailingZipcode] = useState<string>('');
+        const [mailingCountry, setMailingCountry] = useState<string | null>(null);
+        const [mailingState, setMailingState] = useState<string | null>(null);
+        const [mailingAddressType, setMailingAddressType] = useState<string | undefined>(undefined);
 
         // Controlled input state for billing address
-        const [billingAddress1, setBillingAddress1] = useState(data?.billingAddress?.address1 || '');
-        const [billingAddress2, setBillingAddress2] = useState(data?.billingAddress?.address2 || '');
-        const [billingCity, setBillingCity] = useState(data?.billingAddress?.city || '');
-        const [billingZipcode, setBillingZipcode] = useState(data?.billingAddress?.zipcode || '');
-        const [billingCountry, setBillingCountry] = useState<string | null>(data?.billingAddress?.countryCodeId || null);
-        const [billingState, setBillingState] = useState<string | null>(data?.billingAddress?.stateProvinceId || null);
-        const [billingAddressType, setBillingAddressType] = useState<string | undefined>(data?.billingAddress?.addressType);
+        const [billingAddress1, setBillingAddress1] = useState('');
+        const [billingAddress2, setBillingAddress2] = useState('');
+        const [billingCity, setBillingCity] = useState('');
+        const [billingZipcode, setBillingZipcode] = useState('');
+        const [billingCountry, setBillingCountry] = useState<string | null>(null);
+        const [billingState, setBillingState] = useState<string | null>(null);
+        const [billingAddressType, setBillingAddressType] = useState<string | undefined>(undefined);
 
         const [stateCodes, setStateCodes] = useState<StateProvince[]>([]);
         const [countryCodes, setCountryCodes] = useState<Country[]>([]);
         const [localeCodes, setLocaleCodes] = useState<Locale[]>([]);
 
-        const [selectedLocale, setSelectedLocale] = useState<string | null>(data?.account?.localeId || null); // Preload user's locale
+        const [selectedLocale, setSelectedLocale] = useState<string | null>(null); // Preload user's locale
         const [loadingStates, setLoadingStates] = useState(false);
         const [formState, action] = useFormState(actions.updateAccountSettings, {
             status: 'idle',
@@ -116,6 +116,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                         <p className="mt-1 text-sm font-normal text-default-400">Please add an address for communication-related mail.</p>
                     </div>
 
+                    <Spacer y={1} />
+
                     <div style={{ display: 'flex', gap: '16px' }}>
                         {loading ? (
                             <Skeleton className="w-full h-12 rounded" />
@@ -123,7 +125,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                             <Input
                                 name="mailingAddress1"
                                 className="mt-2"
-                                placeholder="Address 1"
+                                label="Address"
+                                placeholder="Enter Address Line 1"
                                 fullWidth
                                 aria-label="Mailing Address line 1"
                                 value={mailingAddress1}
@@ -138,7 +141,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                             <Input
                                 name="mailingAddress2"
                                 className="mt-2"
-                                placeholder="Address 2 (Optional)"
+                                label="Address 2"
+                                placeholder="Enter Address Line 2 (Optional)"
                                 fullWidth
                                 aria-label="Mailing Address line 2"
                                 value={mailingAddress2}
@@ -158,7 +162,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                             <Input
                                 name="mailingCity"
                                 className="mt-2"
-                                placeholder="City"
+                                label="City"
+                                placeholder="Enter City"
                                 fullWidth
                                 aria-label="Mailing City"
                                 value={mailingCity}
@@ -173,10 +178,11 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                             <Input
                                 name='mailingZipcode'
                                 className="mt-2"
-                                placeholder="Zipcode"
+                                label="Zipcode"
+                                placeholder="Enter Zipcode"
                                 fullWidth
                                 aria-label="Mailing Zipcode"
-                                value={mailingZipcode}
+                                value={mailingZipcode || ''}
                                 onChange={(e) => setMailingZipcode(e.target.value)}
                                 isInvalid={!!formState.errors?.mailingZipcode}
                                 errorMessage={formState.errors.mailingZipcode?.join(', ')}
@@ -194,7 +200,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 selectionMode="single"
                                 label="Country"
                                 className="mt-2"
-                                name="mailingCountryId"
+                                name="mailingCountryCodeId"
                                 placeholder="Select a country"
                                 fullWidth
                                 selectedKeys={mailingCountry ? [mailingCountry] : undefined}
@@ -214,6 +220,33 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 ))}
                             </Select>
                         )}
+                        {loading ? (
+                            <Skeleton className="w-full h-12 rounded" />
+                        ) : (
+                            <Select
+                                selectionMode="single"
+                                label="State"
+                                className="mt-2"
+                                name="mailingStateCodeId"
+                                placeholder="Select a state"
+                                fullWidth
+                                selectedKeys={mailingState ? [mailingState] : undefined}
+                                onSelectionChange={(keys) => setMailingState(Array.from(keys)[0] as string)}
+                                isInvalid={!!formState.errors?.mailingState}
+                                errorMessage={formState.errors.mailingState?.join(', ')}
+                            >
+                                {stateCodes.map((state) => (
+                                    <SelectItem key={state.id} value={String(state.id)}>
+                                        {state.name}
+                                    </SelectItem>
+                                ))}
+                            </Select>
+                        )}
+                    </div>
+
+                    <Spacer y={2} />
+
+                    <div style={{ display: 'flex', gap: '16px' }}>
                         {loading ? (
                             <Skeleton className="w-full h-12 rounded" />
                         ) : (
@@ -256,7 +289,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                             <Input
                                 name="billingAddress1"
                                 className="mt-2"
-                                placeholder="Address 1"
+                                label="Address"
+                                placeholder="Enter Address Line 1"
                                 fullWidth
                                 aria-label="Billing Address line 1"
                                 value={billingAddress1}
@@ -271,7 +305,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                             <Input
                                 name="billingAddress2"
                                 className="mt-2"
-                                placeholder="Address 2 (Optional)"
+                                label="Address 2"
+                                placeholder="Enter Address Line 2 (Optional)"
                                 fullWidth
                                 aria-label="Billing Address line 2"
                                 value={billingAddress2}
@@ -291,7 +326,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                             <Input
                                 name="billingCity"
                                 className="mt-2"
-                                placeholder="City"
+                                label="City"
+                                placeholder="Enter City"
                                 fullWidth
                                 aria-label="Billing City"
                                 value={billingCity}
@@ -306,7 +342,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                             <Input
                                 name="billingZipcode"
                                 className="mt-2"
-                                placeholder="Zipcode"
+                                label="Zipcode"
+                                placeholder="Enter Zipcode"
                                 fullWidth
                                 aria-label="Billing Zipcode"
                                 value={billingZipcode}
@@ -327,9 +364,10 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 selectionMode="single"
                                 label="Country"
                                 className="mt-2"
-                                name="billingCountryId"
+                                name="billingCountryCodeId"
                                 placeholder="Select a country"
                                 fullWidth
+                                value={billingCountry ?? ''}
                                 selectedKeys={billingCountry ? [billingCountry] : undefined}
                                 onSelectionChange={(keys) => setBillingCountry(Array.from(keys)[0] as string)}
                                 isInvalid={!!formState.errors?.billingCountry}
@@ -347,6 +385,33 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 ))}
                             </Select>
                         )}
+                        {loading ? (
+                            <Skeleton className="w-full h-12 rounded" />
+                        ) : (
+                            <Select
+                                selectionMode="single"
+                                label="State"
+                                className="mt-2"
+                                name="billingStateCodeId"
+                                placeholder="Select a state"
+                                fullWidth
+                                selectedKeys={billingState ? [billingState] : undefined}
+                                onSelectionChange={(keys) => setBillingState(Array.from(keys)[0] as string)}
+                                isInvalid={!!formState.errors?.billingState}
+                                errorMessage={formState.errors.billingState?.join(', ')}
+                            >
+                                {stateCodes.map((state) => (
+                                    <SelectItem key={state.id} value={String(state.id)}>
+                                        {state.name}
+                                    </SelectItem>
+                                ))}
+                            </Select>
+                        )}
+                    </div>
+
+                    <Spacer y={2} />
+
+                    <div style={{ display: 'flex', gap: '16px' }}>
                         {loading ? (
                             <Skeleton className="w-full h-12 rounded" />
                         ) : (
@@ -390,6 +455,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 name='localeId'
                                 className="mt-2"
                                 selectionMode="single"
+                                label="Preferred Language"
                                 selectedKeys={selectedLocale ? [selectedLocale] : undefined}
                                 aria-label="Preferred language"
                                 onSelectionChange={(keys) => setSelectedLocale(Array.from(keys)[0] as string)}

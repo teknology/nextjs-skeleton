@@ -56,9 +56,9 @@ export async function updateAccountSettings(formState: AccountFormState, formDat
         address1: formData.get('mailingAddress1') as string,
         address2: formData.get('mailingAddress2') as string, // optional
         city: formData.get('mailingCity') as string,
-        stateProvince: Number(formData.get('mailingStateId')),
+        stateProvince: Number(formData.get('mailingStateCodeId')),
         zipcode: formData.get('mailingZipcode') as string,
-        countryCode: Number(formData.get('mailingCountry')),
+        countryCode: Number(formData.get('mailingCountryCodeId')),
         addressType: formData.get('mailingAddressType') as AddressTypeEnum,
     };
 
@@ -66,9 +66,9 @@ export async function updateAccountSettings(formState: AccountFormState, formDat
         address1: formData.get('billingAddress1') as string,
         address2: formData.get('billingAddress2') as string, // optional
         city: formData.get('billingCity') as string,
-        stateProvince: Number(formData.get('billingStateId')),
+        stateProvince: Number(formData.get('billingStateCodeId')),
         zipcode: formData.get('billingZipcode') as string,
-        countryCode: Number(formData.get('billingCountry')),
+        countryCode: Number(formData.get('billingCountryCodeId')),
         addressType: formData.get('billingAddressType') as AddressTypeEnum,
     };
 
@@ -76,12 +76,14 @@ export async function updateAccountSettings(formState: AccountFormState, formDat
         locale: Number(formData.get('localeId')),
     };
 
+    console.log('actionfile:mailingAddressResult', mailingAddress)
 
     // Validate the form data
     const mailingAddressResult = addressSchema.safeParse(mailingAddress);
     const billingAddressResult = addressSchema.safeParse(billingAddress);
 
     console.log("actionfile: validation result", mailingAddressResult)
+    console.log("actionfile: validation result", mailingAddressResult.error?.flatten().fieldErrors)
     console.log("actionfile: validation result", billingAddressResult)
 
     if (!mailingAddressResult.success || !billingAddressResult.success) {

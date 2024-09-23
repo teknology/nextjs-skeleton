@@ -17,8 +17,7 @@ const timezoneIdSchema = z.number().min(1, { message: "Please select an option."
 const address1Schema = z.string().min(5, { message: 'Address line 1 must be at least 5 characters long' });
 const address2Schema = z.string().max(100, { message: 'Address line 2 must be at most 100 characters long' }).optional();
 const citySchema = z.string().min(2, { message: 'City must be at least 2 characters long' });
-const stateProvinceIdSchema = z.number().max(50);
-const countryIdSchema = z.number().max(50);
+const stateProvinceIdSchema = z.number().min(1, { message: 'Please select a state/province' });
 const zipcodeSchema = z.union([
   z.string().regex(/^\d{5}(-\d{4})?$/, { message: 'Invalid US ZIP code' }),  // US ZIP code format
   z.string().regex(/^[A-Z0-9\s-]{3,10}$/, { message: 'Invalid postal code' })  // General postal code format for other countries
@@ -32,7 +31,7 @@ export const addressSchema = z.object({
   address2: address2Schema,
   city: citySchema,
   stateProvinceId: stateProvinceIdSchema,
-  countryCodeId: countryIdSchema,
+  countryCodeId: countryCodeIdSchema,
   zipcode: zipcodeSchema,
   addressType: addressTypeSchema
 });
