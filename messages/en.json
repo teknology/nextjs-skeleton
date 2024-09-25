@@ -110,9 +110,20 @@
                     "country": {
                         "title": "Country",
                         "placeholder": "Select A country"
+                    },
+                    "address_type": {
+                        "title": "Address Type",
+                        "placeholder": "Select an address type"
                     }
                 },
-                "locale": "",
+                "locale": {
+                    "title": "Locale",
+                    "description": "Update your locale settings",
+                    "language": {
+                        "title": "Language",
+                        "placeholder": "Select a language"
+                    }
+                },
                 "update_account": "Update Account"
             },
             "appearance": {

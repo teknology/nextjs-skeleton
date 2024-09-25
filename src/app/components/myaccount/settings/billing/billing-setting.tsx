@@ -6,6 +6,7 @@ import { Icon } from "@iconify/react";
 
 import { cn } from "@/utils/cn";
 import { PlanCustomRadio } from "./plan-custom-radio";
+import WebsiteTable from "./website-table";
 
 interface BillingSettingCardProps {
   className?: string;
@@ -117,38 +118,9 @@ const BillingSetting = React.forwardRef<HTMLDivElement, BillingSettingCardProps>
         </RadioGroup>
       </div>
       <Spacer y={4} />
-      {/* Billing Address */}
-      <div>
-        {/*  Title */}
-        <div>
-          <p className="text-base font-medium text-default-700">Billing Address</p>
-          <p className="mt-1 text-sm font-normal text-default-400">
-            If you&apos;d like to add a postal address to every invoice, enter it here.
-          </p>
-        </div>
-      </div>
-      <div className="mt-2 space-y-2">
-        <Input placeholder="Address Line 1" />
-        <Input placeholder="Address Line 2" />
-        <Input placeholder="City" />
-        <div className="flex items-center gap-2">
-          <Select defaultSelectedKeys={["buenos-aires"]}>
-            {addressOptions.map((addressOption) => (
-              <SelectItem key={addressOption.value} value={addressOption.value}>
-                {addressOption.label}
-              </SelectItem>
-            ))}
-          </Select>
-          <Input placeholder="Postal Code" />
-        </div>
-        <Select defaultSelectedKeys={["ar"]}>
-          {countryOptions.map((countryOption) => (
-            <SelectItem key={countryOption.value} value={countryOption.value}>
-              {countryOption.label}
-            </SelectItem>
-          ))}
-        </Select>
-      </div>
+
+      <WebsiteTable />
+
       <Button className="mt-5 bg-default-foreground text-background" size="sm">
         Save
       </Button>

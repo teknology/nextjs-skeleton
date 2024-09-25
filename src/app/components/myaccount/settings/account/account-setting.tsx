@@ -118,7 +118,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
 
                     <Spacer y={1} />
 
-                    <div style={{ display: 'flex', gap: '16px' }}>
+                    <div className='flex gap-4'>
                         {loading ? (
                             <Skeleton className="w-full h-12 rounded" />
                         ) : (
@@ -155,7 +155,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
 
                     <Spacer y={2} />
 
-                    <div style={{ display: 'flex', gap: '16px' }}>
+                    <div className='flex gap-4'>
                         {loading ? (
                             <Skeleton className="w-full h-12 rounded" />
                         ) : (
@@ -192,7 +192,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
 
                     <Spacer y={2} />
 
-                    <div style={{ display: 'flex', gap: '16px' }}>
+                    <div className='flex gap-4'>
                         {loading ? (
                             <Skeleton className="w-full h-12 rounded" />
                         ) : (
@@ -246,7 +246,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
 
                     <Spacer y={2} />
 
-                    <div style={{ display: 'flex', gap: '16px' }}>
+                    <div className='flex gap-4'>
                         {loading ? (
                             <Skeleton className="w-full h-12 rounded" />
                         ) : (
@@ -273,7 +273,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                     </div>
 
                     <Spacer y={2} />
-                    <Divider />
+                    <Divider className='my-7' />
                     <Spacer y={2} />
 
                     {/* Billing Address Section */}
@@ -282,7 +282,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                         <p className="mt-1 text-sm font-normal text-default-400">{t('billing_address.description')}</p>
                     </div>
 
-                    <div style={{ display: 'flex', gap: '16px' }}>
+                    <div className='flex gap-4'>
                         {loading ? (
                             <Skeleton className="w-full h-12 rounded" />
                         ) : (
@@ -306,7 +306,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 name="billingAddress2"
                                 className="mt-2"
                                 label={t('billing_address.address2.title')}
-                                placeholder="Enter Address Line 2 (Optional)"
+                                placeholder={t('billing_address.address2.placeholder')}
                                 fullWidth
                                 aria-label="Billing Address line 2"
                                 value={billingAddress2}
@@ -319,7 +319,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
 
                     <Spacer y={2} />
 
-                    <div style={{ display: 'flex', gap: '16px' }}>
+                    <div className='flex gap-4'>
                         {loading ? (
                             <Skeleton className="w-full h-12 rounded" />
                         ) : (
@@ -356,7 +356,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
 
                     <Spacer y={2} />
 
-                    <div style={{ display: 'flex', gap: '16px' }}>
+                    <div className='flex gap-4'>
                         {loading ? (
                             <Skeleton className="w-full h-12 rounded" />
                         ) : (
@@ -411,7 +411,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
 
                     <Spacer y={2} />
 
-                    <div style={{ display: 'flex', gap: '16px' }}>
+                    <div className='flex gap-4'>
                         {loading ? (
                             <Skeleton className="w-full h-12 rounded" />
                         ) : (
@@ -438,14 +438,14 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                     </div>
 
                     <Spacer y={2} />
-                    <Divider />
+                    <Divider className='my-7' />
                     <Spacer y={2} />
 
                     {/* Language Selection */}
                     <section>
                         <div>
-                            <p className="text-base font-medium text-default-700">Language</p>
-                            <p className="mt-1 text-sm font-normal text-default-400">Select your preferred language.</p>
+                            <p className="text-base font-medium text-default-700">{t('locale.title')}</p>
+                            <p className="mt-1 text-sm font-normal text-default-400">{t('locale.description')}</p>
                         </div>
 
                         {loading ? (
@@ -455,7 +455,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                                 name='localeId'
                                 className="mt-2"
                                 selectionMode="single"
-                                label="Preferred Language"
+                                label={t('locale.language.title')}
                                 selectedKeys={selectedLocale ? [selectedLocale] : undefined}
                                 aria-label="Preferred language"
                                 onSelectionChange={(keys) => setSelectedLocale(Array.from(keys)[0] as string)}
@@ -476,7 +476,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                     {loading ? (
                         <Skeleton className="h-12 w-full rounded-lg mt-4" />
                     ) : (
-                        <FormButton>Update Account</FormButton>
+                        <FormButton>{t('update_account')}</FormButton>
                     )}
                 </form>
             </div>
