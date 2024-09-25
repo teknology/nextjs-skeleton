@@ -22,7 +22,7 @@ const addressTypeOptions = [
 
 const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
     ({ data, loading = false, className, ...props }, ref) => {
-        const t = useTranslations('my_account.settings.profile');
+        const t = useTranslations('my_account.settings.account');
 
         // Controlled input state for mailing address
         const [mailingAddress1, setMailingAddress1] = useState('');
@@ -112,8 +112,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                 <form action={action}>
                     {/* Mailing Address Section */}
                     <div>
-                        <p className="text-base font-medium text-default-700">Mailing Address</p>
-                        <p className="mt-1 text-sm font-normal text-default-400">Please add an address for communication-related mail.</p>
+                        <p className="text-base font-medium text-default-700">{t('mailing_address.title')}</p>
+                        <p className="mt-1 text-sm font-normal text-default-400">{t('mailing_address.description')}</p>
                     </div>
 
                     <Spacer y={1} />
@@ -125,10 +125,10 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                             <Input
                                 name="mailingAddress1"
                                 className="mt-2"
-                                label="Address"
-                                placeholder="Enter Address Line 1"
+                                label={t('mailing_address.address.title')}
+                                placeholder={t('mailing_address.address.placeholder')}
                                 fullWidth
-                                aria-label="Mailing Address line 1"
+                                aria-label="Mailing Address line"
                                 value={mailingAddress1}
                                 onChange={(e) => setMailingAddress1(e.target.value)}
                                 isInvalid={!!formState.errors?.mailingAddress1}
@@ -141,8 +141,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                             <Input
                                 name="mailingAddress2"
                                 className="mt-2"
-                                label="Address 2"
-                                placeholder="Enter Address Line 2 (Optional)"
+                                label={t('mailing_address.address2.title')}
+                                placeholder={t('mailing_address.address2.title')}
                                 fullWidth
                                 aria-label="Mailing Address line 2"
                                 value={mailingAddress2}
@@ -162,8 +162,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                             <Input
                                 name="mailingCity"
                                 className="mt-2"
-                                label="City"
-                                placeholder="Enter City"
+                                label={t('mailing_address.city.title')}
+                                placeholder={t('mailing_address.city.placeholder')}
                                 fullWidth
                                 aria-label="Mailing City"
                                 value={mailingCity}
@@ -178,8 +178,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                             <Input
                                 name='mailingZipcode'
                                 className="mt-2"
-                                label="Zipcode"
-                                placeholder="Enter Zipcode"
+                                label={t('mailing_address.zip_code.title')}
+                                placeholder={t('mailing_address.zip_code.placeholder')}
                                 fullWidth
                                 aria-label="Mailing Zipcode"
                                 value={mailingZipcode || ''}
@@ -198,10 +198,10 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                         ) : (
                             <Select
                                 selectionMode="single"
-                                label="Country"
+                                label={t('mailing_address.country.title')}
                                 className="mt-2"
                                 name="mailingCountryCodeId"
-                                placeholder="Select a country"
+                                placeholder={t('mailing_address.country.placeholder')}
                                 fullWidth
                                 selectedKeys={mailingCountry ? [mailingCountry] : undefined}
                                 onSelectionChange={(keys) => setMailingCountry(Array.from(keys)[0] as string)}
@@ -225,10 +225,10 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                         ) : (
                             <Select
                                 selectionMode="single"
-                                label="State"
+                                label={t('mailing_address.state.title')}
                                 className="mt-2"
                                 name="mailingStateCodeId"
-                                placeholder="Select a state"
+                                placeholder={t('mailing_address.state.placeholder')}
                                 fullWidth
                                 selectedKeys={mailingState ? [mailingState] : undefined}
                                 onSelectionChange={(keys) => setMailingState(Array.from(keys)[0] as string)}
@@ -252,10 +252,10 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                         ) : (
                             <Select
                                 selectionMode="single"
-                                label="Address Type"
+                                label={t('mailing_address.address_type.title')}
                                 name="mailingAddressType"
                                 className="mt-2"
-                                placeholder="Select Address Type"
+                                placeholder={t('mailing_address.address_type.placeholder')}
                                 fullWidth
                                 aria-label="Mailing Address Type"
                                 selectedKeys={mailingAddressType ? [mailingAddressType] : undefined}
@@ -278,8 +278,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
 
                     {/* Billing Address Section */}
                     <div>
-                        <p className="text-base font-medium text-default-700">Billing Address</p>
-                        <p className="mt-1 text-sm font-normal text-default-400">Please add an address for billing purposes.</p>
+                        <p className="text-base font-medium text-default-700"> {t('billing_address.title')}</p>
+                        <p className="mt-1 text-sm font-normal text-default-400">{t('billing_address.description')}</p>
                     </div>
 
                     <div style={{ display: 'flex', gap: '16px' }}>
@@ -289,8 +289,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                             <Input
                                 name="billingAddress1"
                                 className="mt-2"
-                                label="Address"
-                                placeholder="Enter Address Line 1"
+                                label={t('billing_address.address.title')}
+                                placeholder={t('billing_address.address.placeholder')}
                                 fullWidth
                                 aria-label="Billing Address line 1"
                                 value={billingAddress1}
@@ -305,7 +305,7 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                             <Input
                                 name="billingAddress2"
                                 className="mt-2"
-                                label="Address 2"
+                                label={t('billing_address.address2.title')}
                                 placeholder="Enter Address Line 2 (Optional)"
                                 fullWidth
                                 aria-label="Billing Address line 2"
@@ -326,8 +326,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                             <Input
                                 name="billingCity"
                                 className="mt-2"
-                                label="City"
-                                placeholder="Enter City"
+                                label={t('billing_address.city.title')}
+                                placeholder={t('billing_address.city.placeholder')}
                                 fullWidth
                                 aria-label="Billing City"
                                 value={billingCity}
@@ -342,8 +342,8 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                             <Input
                                 name="billingZipcode"
                                 className="mt-2"
-                                label="Zipcode"
-                                placeholder="Enter Zipcode"
+                                label={t('billing_address.zip_code.title')}
+                                placeholder={t('billing_address.zip_code.placeholder')}
                                 fullWidth
                                 aria-label="Billing Zipcode"
                                 value={billingZipcode}
@@ -362,10 +362,10 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                         ) : (
                             <Select
                                 selectionMode="single"
-                                label="Country"
+                                label={t('billing_address.country.title')}
                                 className="mt-2"
                                 name="billingCountryCodeId"
-                                placeholder="Select a country"
+                                placeholder={t('billing_address.country.placeholder')}
                                 fullWidth
                                 value={billingCountry ?? ''}
                                 selectedKeys={billingCountry ? [billingCountry] : undefined}
@@ -390,10 +390,10 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                         ) : (
                             <Select
                                 selectionMode="single"
-                                label="State"
+                                label={t('billing_address.state.title')}
                                 className="mt-2"
                                 name="billingStateCodeId"
-                                placeholder="Select a state"
+                                placeholder={t('billing_address.state.placeholder')}
                                 fullWidth
                                 selectedKeys={billingState ? [billingState] : undefined}
                                 onSelectionChange={(keys) => setBillingState(Array.from(keys)[0] as string)}
@@ -417,10 +417,10 @@ const AccountSetting = forwardRef<HTMLDivElement, AccountSettingCardProps>(
                         ) : (
                             <Select
                                 selectionMode="single"
-                                label="Address Type"
+                                label={t('billing_address.address_type.title')}
                                 name="billingAddressType"
                                 className="mt-2"
-                                placeholder="Select Address Type"
+                                placeholder={t('billing_address.address_type.placeholder')}
                                 fullWidth
                                 aria-label="Billing Address Type"
                                 selectedKeys={billingAddressType ? [billingAddressType] : undefined}

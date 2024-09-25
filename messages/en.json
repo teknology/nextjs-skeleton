@@ -23,7 +23,7 @@
             "page_title": "Account Settings",
             "page_subtitle": "Manage your account settings",
             "profile": {
-                "title": "Title",
+                "title": "Profile",
                 "description": "Update your profile information. E-mail and phone number will not be publicly displayed.",
                 "first_name": "First Name",
                 "last_name": "Last Name",
@@ -50,18 +50,77 @@
                     }
                 }
             },
+            "account": {
+                "title": "Account",
+                "description": "Update your account settings",
+                "mailing_address": {
+                    "title": "Mailing Address",
+                    "description": "Please add an address for communication-related mail.",
+                    "address": {
+                        "title": "Address",
+                        "placeholder": "Update your mailing address"
+                    },
+                    "address2": {
+                        "title": "Address 2",
+                        "placeholder": "Suite, ATP, etc."
+                    },
+                    "city": {
+                        "title": "City",
+                        "placeholder": "Update your city"
+                    },
+                    "state": {
+                        "title": "State",
+                        "placeholder": "Select a state"
+                    },
+                    "zip_code": {
+                        "title": "Zip Code",
+                        "placeholder": "Update your zip code"
+                    },
+                    "country": {
+                        "title": "Country",
+                        "placeholder": "Select A country"
+                    },
+                    "address_type": {
+                        "title": "Address Type",
+                        "placeholder": "Select an address type"
+                    }
+                },
+                "billing_address": {
+                    "title": "Billing Address",
+                    "description": "Update your billing address",
+                    "address": {
+                        "title": "Address",
+                        "placeholder": "Update your billing address"
+                    },
+                    "address2": {
+                        "title": "Address 2",
+                        "placeholder": "Suite, ATP, etc."
+                    },
+                    "city": {
+                        "title": "City",
+                        "placeholder": "Update your city"
+                    },
+                    "state": {
+                        "title": "State"
+                    },
+                    "zip_code": {
+                        "title": "Zip Code",
+                        "placeholder": "Update your zip code"
+                    },
+                    "country": {
+                        "title": "Country",
+                        "placeholder": "Select A country"
+                    }
+                },
+                "locale": "",
+                "update_account": "Update Account"
+            },
             "appearance": {
                 "title": "Appearance",
                 "description": "Update the appearance settings",
                 "dark_mode": "Dark Mode",
                 "light_mode": "Light Mode",
                 "language": "Language"
-            },
-            "account": {
-                "title": "Account",
-                "description": "Update your security settings",
-                "password": "Password",
-                "two_factor_authentication": "Two Factor Authentication"
             }
         },
         "navigation_tabs": {
