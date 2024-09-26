@@ -63,6 +63,7 @@ export default function MyAccountNavbar(): JSX.Element {
         item: 'data-[active=true]:text-primary',
       }}
       height="64px"
+      maxWidth='full'
     >
       <NavbarBrand>
         <NavbarMenuToggle className="mr-2 h-6 sm:hidden" />

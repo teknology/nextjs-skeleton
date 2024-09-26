@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Button, Input, RadioGroup, Select, SelectItem, Spacer } from "@nextui-org/react";
+import { Button, Divider, Input, RadioGroup, Select, SelectItem, Spacer } from "@nextui-org/react";
 import { Icon } from "@iconify/react";
 
 import { cn } from "@/utils/cn";
@@ -34,6 +34,11 @@ const BillingSetting = React.forwardRef<HTMLDivElement, BillingSettingCardProps>
   ({ data, className, loading = false, ...props }, ref) => (
     <div ref={ref} className={cn("p-2", className)} {...props}>
       {/* Payment Method */}
+      <p className="text-base font-medium text-default-700">Current Payment Method</p>
+      <p className="mt-1 text-sm font-normal text-default-400">
+        Your free trial ends in <span className="text-default-500">8 days.</span>
+      </p>
+      <Spacer />
       <div>
         <div className="rounded-large bg-default-100">
           <div className="flex items-center justify-between gap-2 px-4 py-3">
@@ -56,6 +61,8 @@ const BillingSetting = React.forwardRef<HTMLDivElement, BillingSettingCardProps>
         </div>
       </div>
       <Spacer y={4} />
+      <Divider />
+      <Spacer y={4} />
       {/* Current Plan */}
       <div>
         <p className="text-base font-medium text-default-700">Current Plan</p>
@@ -63,59 +70,6 @@ const BillingSetting = React.forwardRef<HTMLDivElement, BillingSettingCardProps>
           Your free trial ends in <span className="text-default-500">8 days.</span>
         </p>
         {/* Plan radio group */}
-        <RadioGroup
-          className="mt-4"
-          classNames={{
-            wrapper: "gap-4 flex-row flex-wrap",
-          }}
-          defaultValue="pro-monthly"
-          orientation="horizontal"
-        >
-          <PlanCustomRadio
-            classNames={{
-              label: "text-default-500 font-medium",
-            }}
-            description="Pro Monthly"
-            value="pro-monthly"
-          >
-            <div className="mt-2">
-              <p className="pt-2">
-                <span className="text-[30px] font-semibold leading-7 text-default-foreground">
-                  $12
-                </span>
-                &nbsp;<span className="text-xs font-medium text-default-400">/per month</span>
-              </p>
-              <ul className="list-inside list-disc text-xs font-normal text-default-500">
-                <li>Unlimited users</li>
-                <li>All features</li>
-                <li>Support via email and chat</li>
-                <li>Billed monthly, cancel any time</li>
-              </ul>
-            </div>
-          </PlanCustomRadio>
-          <PlanCustomRadio
-            classNames={{
-              label: "text-default-500 font-medium",
-            }}
-            description="Pro Yearly"
-            value="pro-yearly"
-          >
-            <div className="mt-2">
-              <p className="pt-2">
-                <span className="text-[30px] font-semibold leading-7 text-default-foreground">
-                  $72
-                </span>
-                &nbsp;<span className="text-xs font-medium text-default-400">/per year</span>
-              </p>
-              <ul className="list-inside list-disc text-xs font-normal text-default-500">
-                <li>Unlimited users</li>
-                <li>All features</li>
-                <li>Support via email and chat</li>
-                <li>Billed monthly, cancel any time</li>
-              </ul>
-            </div>
-          </PlanCustomRadio>
-        </RadioGroup>
       </div>
       <Spacer y={4} />
 

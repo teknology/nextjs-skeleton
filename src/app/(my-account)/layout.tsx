@@ -32,7 +32,7 @@ export default async function RootLayout({
             <MyAccountNavbar />
             <div className='w-full'>
               <main className='mt-6 flex w-full flex-col items-center'>
-                <div className='w-full max-w-[1024px] px-4 lg:px-8'>
+                <div className='w-full max-w-[1440px] px-4 lg:px-8'>
                   {children}
                 </div>
               </main>
