@@ -20,25 +20,24 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   const locale = await getLocale();
-
-  // Providing all messages to the client
-  // side is the easiest way to get started
   const messages = await getMessages();
+
+
+
   return (
     <html lang={locale} suppressHydrationWarning>
       <body className={inter.className}>
-        <NextIntlClientProvider messages={messages}>
-          <Providers>
-            <MyAccountNavbar />
-            <div className='w-full'>
-              <main className='mt-6 flex w-full flex-col items-center'>
-                <div className='w-full max-w-[1440px] px-4 lg:px-8'>
-                  {children}
-                </div>
-              </main>
-            </div>
-          </Providers>
-        </NextIntlClientProvider>
+
+        <Providers messages={messages} locale={locale}>
+          <MyAccountNavbar />
+          <div className='w-full'>
+            <main className='mt-6 flex w-full flex-col items-center'>
+              <div className='w-full max-w-[1440px] px-4 lg:px-8'>
+                {children}
+              </div>
+            </main>
+          </div>
+        </Providers>
       </body>
     </html>
   )

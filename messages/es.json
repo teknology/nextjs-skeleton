@@ -1,0 +1,150 @@
+{
+    "HomePage": {
+        "title": "¡Hola mundo!"
+    },
+    "breadcrumbs": {
+        "home": "Inicio",
+        "account": "Cuenta",
+        "settings": "Configuraciones"
+    },
+    "my_account": {
+        "main_navigation": {
+            "signed_in_as": "Conectado como",
+            "log_out": "Cerrar sesión",
+            "account": "Mi cuenta",
+            "settings": "Configuraciones",
+            "billing": "Facturación",
+            "help_and_feedback": "Ayuda y comentarios"
+        },
+        "page_title": "Inicio de cuenta",
+        "page_subtitle": "Administra tu cuenta y sitios web",
+        "new_deployment_button": "Nueva implementación",
+        "settings": {
+            "page_title": "Configuraciones de cuenta",
+            "page_subtitle": "Administra las configuraciones de tu cuenta",
+            "profile": {
+                "title": "Perfil",
+                "description": "Actualiza la información de tu perfil. El correo electrónico y número de teléfono no se mostrarán públicamente.",
+                "first_name": "Nombre",
+                "last_name": "Apellido",
+                "email": "Correo electrónico",
+                "phone_number": "Número de teléfono",
+                "country_code": "Código de país",
+                "timezone": "Zona horaria",
+                "biography": "Biografía",
+                "update_profile": "Actualizar perfil",
+                "user_widget": {
+                    "email_verified": "Correo verificado",
+                    "email_not_verified": "Correo no verificado",
+                    "modal": {
+                        "title": "Sube tu imagen de perfil",
+                        "description": "Arrastra y suelta imágenes aquí, o haz clic para seleccionar archivos",
+                        "save": "Guardar",
+                        "close": "Cerrar",
+                        "upload_errors": {
+                            "file_size": "El tamaño del archivo es demasiado grande. Por favor sube un archivo de menos de 2MB.",
+                            "file_type": "El tipo de archivo no es compatible. Por favor sube un archivo JPG, PNG o GIF.",
+                            "file_upload": "Ocurrió un error durante la carga del archivo. Inténtalo de nuevo.",
+                            "file_remove": "Ocurrió un error al eliminar el archivo. Inténtalo de nuevo."
+                        }
+                    }
+                }
+            },
+            "account": {
+                "title": "Cuenta",
+                "description": "Actualiza las configuraciones de tu cuenta",
+                "mailing_address": {
+                    "title": "Dirección postal",
+                    "description": "Por favor añade una dirección para la correspondencia relacionada con la comunicación.",
+                    "address": {
+                        "title": "Dirección",
+                        "placeholder": "Actualiza tu dirección postal"
+                    },
+                    "address2": {
+                        "title": "Dirección 2",
+                        "placeholder": "Suite, ATP, etc."
+                    },
+                    "city": {
+                        "title": "Ciudad",
+                        "placeholder": "Actualiza tu ciudad"
+                    },
+                    "state": {
+                        "title": "Estado",
+                        "placeholder": "Selecciona un estado"
+                    },
+                    "zip_code": {
+                        "title": "Código postal",
+                        "placeholder": "Actualiza tu código postal"
+                    },
+                    "country": {
+                        "title": "País",
+                        "placeholder": "Selecciona un país"
+                    },
+                    "address_type": {
+                        "title": "Tipo de dirección",
+                        "placeholder": "Selecciona un tipo de dirección"
+                    }
+                },
+                "billing_address": {
+                    "title": "Dirección de facturación",
+                    "description": "Actualiza tu dirección de facturación",
+                    "address": {
+                        "title": "Dirección",
+                        "placeholder": "Actualiza tu dirección de facturación"
+                    },
+                    "address2": {
+                        "title": "Dirección 2",
+                        "placeholder": "Suite, ATP, etc."
+                    },
+                    "city": {
+                        "title": "Ciudad",
+                        "placeholder": "Actualiza tu ciudad"
+                    },
+                    "state": {
+                        "title": "Estado"
+                    },
+                    "zip_code": {
+                        "title": "Código postal",
+                        "placeholder": "Actualiza tu código postal"
+                    },
+                    "country": {
+                        "title": "País",
+                        "placeholder": "Selecciona un país"
+                    },
+                    "address_type": {
+                        "title": "Tipo de dirección",
+                        "placeholder": "Selecciona un tipo de dirección"
+                    }
+                },
+                "locale": {
+                    "title": "Localización",
+                    "description": "Actualiza las configuraciones de localización",
+                    "language": {
+                        "title": "Idioma",
+                        "placeholder": "Selecciona un idioma"
+                    }
+                },
+                "update_account": "Actualizar cuenta"
+            },
+            "appearance": {
+                "title": "Apariencia",
+                "description": "Actualiza las configuraciones de apariencia",
+                "dark_mode": "Modo oscuro",
+                "light_mode": "Modo claro",
+                "language": "Idioma"
+            }
+        },
+        "navigation_tabs": {
+            "home": "Inicio",
+            "latest_news": "Últimas noticias",
+            "websites": "Sitios web",
+            "team": "Equipo"
+        }
+    },
+    "alerts": {
+        "payment_alert": {
+            "payment_alert_title": "Alerta de pago",
+            "payment_alert_description": "Crea hermosos sitios web sin importar tu experiencia en diseño."
+        }
+    }
+}

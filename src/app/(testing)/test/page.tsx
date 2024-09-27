@@ -7,6 +7,10 @@ import { Button, Input } from '@nextui-org/react';
 import FormButton from '@/app/components/common/form-button';
 import { useSession } from 'next-auth/react';
 import { useTheme } from 'next-themes'
+import { getTranslations } from 'next-intl/server';
+import LanguageSwitcher from '@/app/components/common/language-switcher';
+import { useTranslations } from 'next-intl';
+
 
 
 
@@ -18,7 +22,7 @@ export default function Test() {
   const { theme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [appearance, setAppearance] = useState<{ id: number; theme: string | null; userId: string; } | null>(null);
-
+  const t = useTranslations('my_account');
 
 
   useEffect(() => {
@@ -53,7 +57,7 @@ export default function Test() {
   }
   return (
     <div className="container mx-auto space-y-1">
-
+      <LanguageSwitcher />
 
       <Button>Update image</Button>
       <Button onClick={() => update()}>Edit name</Button>
@@ -61,6 +65,7 @@ export default function Test() {
       <pre>{loading ? 'Loading...' : JSON.stringify(result)}</pre> {/* Pretty-print the result */}
 
       <div>
+        <h1>{t('main_navigation.signed_in_as')}</h1>
         <p>The user image is {session?.user?.image}</p>
       </div>
       <pre>
