@@ -66,3 +66,6 @@ export const profileSchema = z.object({
   timezoneId: timezoneIdSchema
 });
 
+export const inviteSchema = z.object({
+  email: emailSchema
+});

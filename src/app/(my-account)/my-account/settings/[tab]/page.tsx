@@ -7,7 +7,7 @@ import ProfileSetting from '@/app/components/myaccount/settings/profile/profile-
 import AppearanceSetting from '@/app/components/myaccount/settings/appearance/appearance-setting';
 import AccountSetting from '@/app/components/myaccount/settings/account/account-setting';
 import BillingSetting from '@/app/components/myaccount/settings/billing/billing-setting';
-import TeamSetting from '@/app/components/myaccount/settings/team-setting';
+import TeamSetting from '@/app/components/myaccount/settings/team/team-setting';
 import MyAccountHeader from '@/app/components/myaccount/common/my-account-header';
 import * as actions from '@/actions';
 import { useTranslations } from 'next-intl';

@@ -77,6 +77,10 @@ model Website {
     shippings Shipping[] // Shipping information for eCommerce orders
 
     ProductCategory ProductCategory[]
+
+    UserRole UserRole[]
+
+    Invitation Invitation[]
 }
 
 // Template Group model to define industry-specific template sets
@@ -138,6 +142,10 @@ model Tenant {
     websites  Website[] // Websites created under this tenant
     createdAt DateTime  @default(now())
     updatedAt DateTime  @updatedAt
+
+    UserRole UserRole[]
+
+    Invitation Invitation[]
 }
 
 // User model tied to tenant
@@ -156,6 +164,8 @@ model User {
     updatedAt       DateTime          @updatedAt
     provideraccount ProviderAccount[]
     profile         Profile?
+
+    Invitation Invitation[]
 }
 
 // Account model tied to tenant
@@ -169,6 +179,10 @@ model Account {
     addresses    AccountAddress[] // Relation to AccountAddress
     localeId     Int? // Foreign key for Locale
     locale       Locale?          @relation(fields: [localeId], references: [id])
+
+    UserRole UserRole[]
+
+    Invitation Invitation[]
 }
 
 // eCommerce product model (linked to Website)
@@ -389,14 +403,49 @@ model Role {
     users UserRole[]
 }
 
+// UserRole model (Updated)
 model UserRole {
     id     String @id @default(cuid())
     userId String
     roleId String
-    user   User   @relation(fields: [userId], references: [id])
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
     role   Role   @relation(fields: [roleId], references: [id])
 
-    @@unique([userId, roleId])
+    // Add these fields to allow role assignment at the account, tenant, or website level
+    accountId String? // Optional foreign key for Account level role
+    account   Account? @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+    tenantId String? // Optional foreign key for Tenant level role
+    tenant   Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+    websiteId String? // Optional foreign key for Website level role
+    website   Website? @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+
+    @@unique([userId, roleId, accountId, tenantId, websiteId]) // Unique combination to prevent duplicate roles for the same scope
+}
+
+// New Invitation model for team invites
+model Invitation {
+    id        String @id @default(cuid())
+    email     String // Email of the person being invited
+    roleId    String // The role that is being assigned (Admin, Editor, Viewer, etc.)
+    inviterId String // The user who sends the invite
+    inviter   User   @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+    // Optional foreign keys to specify the level (account, tenant, website)
+    accountId String? // If the invite is to manage an Account
+    account   Account? @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+    tenantId String? // If the invite is to manage a Tenant
+    tenant   Tenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+    websiteId String? // If the invite is to manage a Website
+    website   Website? @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+
+    token     String   @unique // Unique token to track the invitation (used in the email invite link)
+    status    String   @default("PENDING") // Status of the invitation (PENDING, ACCEPTED, DECLINED)
+    createdAt DateTime @default(now())
+    expiresAt DateTime // Expiry date of the invitation
 }
 
 model Session {

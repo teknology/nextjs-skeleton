@@ -12,9 +12,10 @@ import {
   Spacer,
 } from "@nextui-org/react";
 import { Icon } from "@iconify/react";
+import { roleOptions } from "@/utils/data/roles";
 
 import { cn } from "@/utils/cn";
-import TeamManageTable from "@/app/components/myaccount/settings/team-manage-table";
+import TeamManageTable from "@/app/components/myaccount/settings/team/team-manage-table";
 
 interface TeamSettingCardProps {
   className?: string;
@@ -22,11 +23,7 @@ interface TeamSettingCardProps {
   data?: any;
 }
 
-const roleOptions = [
-  { label: "Member", value: "member", description: "team member" },
-  { label: "Admin", value: "admin", description: "team admin" },
-  { label: "Owner", value: "owner", description: "team owner" },
-];
+
 
 const TeamSetting = React.forwardRef<HTMLDivElement, TeamSettingCardProps>(
   ({ data, className, loading = false, ...rest }, ref) => (
