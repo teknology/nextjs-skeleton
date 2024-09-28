@@ -22,16 +22,18 @@ export async function getLocaleByUserId(userId: string = '') {
     }
 
     try {
-        const userProfile = await db.profile.findFirst({
+        const userAccount = await db.account.findFirst({
             where: { userId },
 
         });
 
 
 
-        const userLocale = await db.locale.findUnique({
-            where: { id: userProfile?.localeId ?? undefined },
+        const userLocaleID = await db.locale.findUnique({
+            where: { id: userAccount?.localeId ?? undefined },
         });
+
+        const userLocale = userLocaleID?.code;
 
         return userLocale || null;
     } catch (error) {
