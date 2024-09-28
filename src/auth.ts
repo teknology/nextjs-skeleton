@@ -9,6 +9,7 @@ import { comparePasswords } from "./utils/auth"
 import { getUserByEmail } from "./db/queries/user"
 import { getThemeInDb } from "./db/queries/appearance"
 import { CustomProviderAccountAdapter } from "./lib/custom-auth-adapter"
+import { getLocaleByUser } from "./actions/locale"
 
 
 interface UserCredentials {
@@ -104,6 +105,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           if (!token.theme) {
             const userTheme = await getThemeInDb(user.id as string)
             token.theme = userTheme
+          }
+          if (!token.locale) {
+            const userLocale = await getLocaleByUser()
+            token.locale = userLocale
           }
 
         }

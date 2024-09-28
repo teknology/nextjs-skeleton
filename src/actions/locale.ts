@@ -1,5 +1,25 @@
 'use server'
 import { getLocaleList, getLocaleByUserId, saveUserLocale } from "@/db/queries/locale";
+import { readdirSync } from 'fs';
+import { revalidatePath } from "next/cache";
+import { join } from 'path';
+
+
+
+/*
+export async function getAvailableLocales() {
+    // Adjust the path to point to the messages folder outside of src
+    const messagesDir = join(process.cwd(), 'messages'); // `messages` folder outside of `src`
+
+    // Read the directory and get the list of files
+    const files = readdirSync(messagesDir);
+
+    // Extract locale codes (e.g., from `en.json`, `de.json`)
+    const locales = files.map(file => file.replace('.json', ''));
+
+    return locales; // Return the list of locales
+}
+*/
 
 export async function getLocales() {
     try {

@@ -1,12 +1,41 @@
+import { headers } from 'next/headers';
+import { notFound } from 'next/navigation';
 import { getRequestConfig } from 'next-intl/server';
+import { locales } from './config';
+//import {getUserLocale} from '../db';
 
-export default getRequestConfig(async () => {
-    // Provide a static locale, fetch a user setting,
-    // read from `cookies()`, `headers()`, etc.
-    const locale = 'en';
+
+async function getUserLocale() {
+    return 'en';
+}
+
+async function getConfig(locale: string) {
+    // Validate that the incoming `locale` parameter is valid
+
+    console.log(locale)
+    // if (!locales.includes(locale as any)) notFound();
 
     return {
-        locale,
         messages: (await import(`../../messages/${locale}.json`)).default
     };
+}
+
+export default getRequestConfig(async (params) => {
+    // Read a hint that was set in the middleware
+    const isAppRoute = headers().get('x-admin-route') === 'true';
+
+    if (isAppRoute) {
+        const locale = await getUserLocale();
+
+        return {
+            // Return a locale to `next-intl` in case we've read
+            // it from user settings instead of the pathname
+            locale,
+            ...(await getConfig(locale))
+        };
+    } else {
+        // Be careful to only read from params if the route is public
+        const locale = params.locale;
+        return getConfig(locale);
+    }
 });

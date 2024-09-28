@@ -1,17 +1,24 @@
-import { auth } from "@/auth"
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-export const config = {
-    matcher: [
-        '/my-account/:path*',
-    ]
+// /app/middleware.ts
+
+'use server';
+import { NextRequest } from 'next/server';
+import { adminIntlMiddleware } from './middleware/adminIntlMiddleware'; // Import the combined middleware
+import { authMiddleware } from './middleware/authMiddleware'; // Import authMiddleware
+import { composeMiddleware } from './middleware/composeMiddleware'; // Import composeMiddleware
+
+// Main middleware function that chains the middlewares
+export default async function middleware(request: NextRequest) {
+    // Compose and apply the middlewares
+    return composeMiddleware([authMiddleware, adminIntlMiddleware])(request);
 }
 
-
-
-export default auth((req) => {
-    if (!req.auth) {
-        const newUrl = new URL("/login", req.nextUrl.origin)
-        return Response.redirect(newUrl)
-    }
-})
+export const config = {
+    matcher: [
+        '/',
+        '/(de|en)/:path*',
+        '/my-account/:path*',
+        '/dashboard/:path*',
+        '/test/:path*',
+        '/admin/:path*',
+    ],
+};

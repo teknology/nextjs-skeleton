@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { Button, Input, Spacer, Card, Text } from '@nextui-org/react';
+import { Button, Input, Spacer, Card } from '@nextui-org/react';
 import { handleInviteForm } from './action';
 
 export default function AcceptInvite({ params }: { params: { token: string } }) {
@@ -30,12 +30,12 @@ export default function AcceptInvite({ params }: { params: { token: string } }) 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
       <Card className="max-w-md w-full p-6 bg-white shadow-md rounded-md">
-        <Text h1 size={24} className="text-center">
+        <h1 className="text-2xl text-center">
           You're invited to join the team!
-        </Text>
+        </h1>
 
         {error && (
-          <Text className="text-red-500 text-center mt-2">{error}</Text>
+          <p className="text-red-500 text-center mt-2">{error}</p>
         )}
 
         {!session ? (
@@ -116,9 +116,9 @@ export default function AcceptInvite({ params }: { params: { token: string } }) 
             )}
           </div>
         ) : (
-          <Text className="text-center mt-4">
+          <p className="text-center mt-4">
             You are logged in and the invitation is being processed...
-          </Text>
+          </p>
         )}
       </Card>
     </div>
