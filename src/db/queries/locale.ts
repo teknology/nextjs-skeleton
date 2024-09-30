@@ -2,6 +2,31 @@ import { auth } from "@/auth";
 import { db } from "@/db";
 import { user } from "@nextui-org/react";
 
+// Accepting locales as a parameter
+// Accepting locales as a parameter and spreading it into a new mutable array
+export async function getActiveLocales(locales: readonly string[]) {
+    try {
+        const activeLocales = await db.locale.findMany({
+            where: {
+                code: {
+                    in: [...locales], // Spread the readonly array into a new mutable array
+                },
+            },
+            select: {
+                id: true,
+                code: true,
+                country: true,
+                language: true,
+                flag: true,
+            },
+        });
+
+        return activeLocales;
+    } catch (error) {
+        console.error('Error fetching active locales:', error);
+        throw error;
+    }
+}
 export async function getLocaleList() {
 
     return db.locale.findMany({
@@ -27,13 +52,11 @@ export async function getLocaleByUserId(userId: string = '') {
 
         });
 
-
-
         const userLocaleID = await db.locale.findUnique({
             where: { id: userAccount?.localeId ?? undefined },
         });
 
-        const userLocale = userLocaleID?.code;
+        const userLocale = userLocaleID?.id;
 
         return userLocale || null;
     } catch (error) {

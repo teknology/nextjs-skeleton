@@ -9,4 +9,4 @@ export { getCountries, getTimezones, getStateProvince } from './internationaliza
 export { findUserByEmail, getUpdatedUserData } from './user';
 export { getThemefromDBAction, setThemeinDBAction } from './theme';
 export { getMailingAddress } from './address';
-export { getLocales, getLocaleByUser } from './locale';
+export { getLocales, getLocaleByUser, getEnabledLocales } from './locale';

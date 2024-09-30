@@ -1,8 +1,9 @@
 'use server'
-import { getLocaleList, getLocaleByUserId, saveUserLocale } from "@/db/queries/locale";
+import { getLocaleList, getLocaleByUserId, saveUserLocale, getActiveLocales } from "@/db/queries/locale";
 import { readdirSync } from 'fs';
 import { revalidatePath } from "next/cache";
 import { join } from 'path';
+import { locales } from "@/i18n/config"
 
 
 
@@ -20,6 +21,20 @@ export async function getAvailableLocales() {
     return locales; // Return the list of locales
 }
 */
+export async function getEnabledLocales() {
+
+    try {
+        const enabledLocales = getActiveLocales(locales)
+
+        return enabledLocales
+    }
+    catch (error) {
+        console.error('Failed to fetch enabled locales:', error);
+        throw new Error('Failed to fetch enabled locales.');
+    }
+
+}
+// Adjust the path to point to the messages folder outside of src}
 
 export async function getLocales() {
     try {

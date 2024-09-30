@@ -122,6 +122,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.user.id = token.id;
       session.user.emailVerified = token.emailVerified;
       session.user.theme = token.theme;
+      session.user.locale = token.locale;
 
 
       return session;

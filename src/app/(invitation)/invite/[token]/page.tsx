@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button, Input, Spacer, Card } from '@nextui-org/react';
-import { handleInviteForm } from './action';
+import { handleInviteForm } from '@/actions';
 
 export default function AcceptInvite({ params }: { params: { token: string } }) {
   const { token } = params;

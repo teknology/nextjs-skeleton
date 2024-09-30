@@ -4,41 +4,24 @@ import { useEffect, useState } from 'react';
 import { Select, SelectItem, Image, SharedSelection } from '@nextui-org/react';
 import { Locale } from '@/utils/types/types';
 import * as actions from '@/actions';
+import { useSession } from 'next-auth/react';
+import { auth } from '@/auth';
 
 
-const languageOptions = [
-    {
-        id: 38,
-        code: 'en',
-        country: 'United States',
-        language: 'English',
-        flag: 'https://flagcdn.com/w320/us.png',
-    },
-    {
-        id: 39,
-        code: 'es',
-        country: 'Spain',
-        language: 'Spanish',
-        flag: 'https://flagcdn.com/w320/es.png',
-    },
-    {
-        id: 40,
-        code: 'fr',
-        country: 'France',
-        language: 'French',
-        flag: 'https://flagcdn.com/w320/fr.png',
-    },
-];
 
 export default function MiniLanguageSwitcher() {
     const [selectedLocale, setSelectedLocale] = useState<string | null>(null);
     const [localeCodes, setLocaleCodes] = useState<Locale[]>([]);
 
+    const { data: session } = useSession()
+
+    console.log("switchercomponent:", session?.user)
+
     // Fetch countries on mount
     useEffect(() => {
-        async function fetchLocales() {
+        async function fetchEnabledLocales() {
             try {
-                const result = await actions.getLocales();
+                const result = await actions.getEnabledLocales();
 
                 console.log('Locales:ClientFile', result);
 
@@ -47,14 +30,33 @@ export default function MiniLanguageSwitcher() {
                 } else {
                     console.error('Error fetching countries:');
                 }
+
+
             } catch (error) {
                 console.error('Error fetching countries:', error);
             }
+
         }
-        console.log(fetchLocales());
+
+        console.log("switcher", selectedLocale)
+
+        fetchEnabledLocales()
 
 
     }, []);
+
+    useEffect(() => {
+        async function fetchUserLocale() {
+            const userLocale = await actions.getLocaleByUser();
+            if (localeCodes.length > 0 && userLocale) {
+                setSelectedLocale(String(userLocale));
+            }
+        }
+
+        fetchUserLocale();
+    }, [localeCodes]);
+
+
 
     const handleLanguageChange = (keys: SharedSelection) => {
         const selectedId = parseInt(keys.currentKey || '', 10);
@@ -73,7 +75,10 @@ export default function MiniLanguageSwitcher() {
                 className="bg-transparent border-none text-inherit p-0 min-w-[120px] focus:ring-0"  // Transparent select
             >
                 {localeCodes.map((locale) => (
-                    <SelectItem key={locale.id} value={locale.code}>
+                    <SelectItem
+                        key={locale.id}
+                        value={locale.code}
+                    >
                         {locale.language}
                     </SelectItem>
                 ))}
