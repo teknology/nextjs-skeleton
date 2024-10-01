@@ -15,9 +15,11 @@ export const authMiddleware = async (
     const session = await auth();
 
     // If no session exists, redirect to the login page
+   /*
     if (!session) {
         return NextResponse.redirect(new URL('/login', request.url));
     }
+        */
 
     // If authenticated, proceed to the next middleware or route
     return next();
