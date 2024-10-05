@@ -19,7 +19,7 @@ export default function Providers({ children, session, messages, locale }: Provi
   return (
     <NextIntlClientProvider messages={messages} locale={locale}>
       <SessionProvider session={session}>
-        <ThemeProvider>
+        <ThemeProvider attribute="class">
           <NextUIProvider navigate={router.push}>
             {children}
           </NextUIProvider>

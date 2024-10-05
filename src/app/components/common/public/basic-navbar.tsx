@@ -1,6 +1,6 @@
 "use client";
 
-import type {NavbarProps} from "@nextui-org/react";
+import type { NavbarProps } from "@nextui-org/react";
 
 import React from "react";
 import {
@@ -16,9 +16,9 @@ import {
   Divider,
   cn,
 } from "@nextui-org/react";
-import {Icon} from "@iconify/react";
+import { Icon } from "@iconify/react";
 
-import {AcmeIcon} from "@/app/components/icons";
+import { AcmeIcon } from "@/app/components/icons";
 
 const menuItems = [
   "About",
@@ -32,7 +32,7 @@ const menuItems = [
 ];
 
 const BasicNavbar = React.forwardRef<HTMLElement, NavbarProps>(
-  ({classNames = {}, ...props}, ref) => {
+  ({ classNames = {}, ...props }, ref) => {
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
     return (
@@ -43,7 +43,7 @@ const BasicNavbar = React.forwardRef<HTMLElement, NavbarProps>(
           base: cn("border-default-100 bg-transparent", {
             "bg-default-200/50 dark:bg-default-100/50": isMenuOpen,
           }),
-          wrapper: "w-full justify-center",
+          wrapper: "w-full max-w-[1440px] mx-auto justify-center", // Set max-width to 1440px and center
           item: "hidden md:flex",
           ...classNames,
         }}
@@ -111,9 +111,9 @@ const BasicNavbar = React.forwardRef<HTMLElement, NavbarProps>(
         <NavbarMenu
           className="top-[calc(var(--navbar-height)_-_1px)] max-h-fit bg-default-200/50 pb-6 pt-6 shadow-medium backdrop-blur-md backdrop-saturate-150 dark:bg-default-100/50"
           motionProps={{
-            initial: {opacity: 0, y: -20},
-            animate: {opacity: 1, y: 0},
-            exit: {opacity: 0, y: -20},
+            initial: { opacity: 0, y: -20 },
+            animate: { opacity: 1, y: 0 },
+            exit: { opacity: 0, y: -20 },
             transition: {
               ease: "easeInOut",
               duration: 0.2,
@@ -140,6 +140,7 @@ const BasicNavbar = React.forwardRef<HTMLElement, NavbarProps>(
           ))}
         </NavbarMenu>
       </Navbar>
+
     );
   },
 );

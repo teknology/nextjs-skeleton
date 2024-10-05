@@ -1,14 +1,14 @@
 'use client'
 
 import React, { useEffect } from "react";
-import {Button} from "@nextui-org/react";
-import {Icon} from "@iconify/react";
-import {AnimatePresence, LazyMotion, domAnimation, m} from "framer-motion";
+import { Button } from "@nextui-org/react";
+import { Icon } from "@iconify/react";
+import { AnimatePresence, LazyMotion, domAnimation, m } from "framer-motion";
 
-import BasicNavbar from "@/app/components/common/basic-navbar";
+import BasicNavbar from "@/app/components/common/public/basic-navbar";
 import FadeInImage from "@/app/components/common/fade-in-image";
 import AppScreenshotSkewed from "@/app/components/common/app-screenshot-skewed";
-import {useTranslations} from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { useTheme as useNextTheme } from 'next-themes';
 
 
@@ -22,7 +22,7 @@ export default function HomeHero() {
   return (
     <div className="relative flex h-screen min-h-dvh w-full flex-col overflow-hidden bg-background">
       <BasicNavbar />
-      <main className="container mx-auto mt-[80px] flex max-w-[1024px] flex-col items-start px-8">
+      <main className="container mx-auto mt-[80px] flex max-w-[1440px] flex-col items-start px-8">
         <section className="z-20 flex flex-col items-start justify-center gap-[18px] sm:gap-6">
           <Button
             className="h-9 overflow-hidden border-1 border-default-100 bg-default-50 px-[18px] py-2 text-small font-normal leading-5 text-default-500"
@@ -49,15 +49,15 @@ export default function HomeHero() {
                 ease: "easeInOut",
               }}
               variants={{
-                auto: {width: "auto"},
-                kick: {width: "auto"},
+                auto: { width: "auto" },
+                kick: { width: "auto" },
               }}
             >
               <AnimatePresence mode="wait">
                 <m.div
-                  animate={{filter: "blur(0px)", opacity: 1, x: 0}}
+                  animate={{ filter: "blur(0px)", opacity: 1, x: 0 }}
                   className="text-start text-[clamp(40px,10vw,44px)] font-bold leading-[1.2] tracking-tighter sm:text-[64px]"
-                  initial={{filter: "blur(16px)", opacity: 0, x: 15 + 1 * 2}}
+                  initial={{ filter: "blur(16px)", opacity: 0, x: 15 + 1 * 2 }}
                   transition={{
                     bounce: 0,
                     delay: 0.01 * 10,
@@ -65,15 +65,15 @@ export default function HomeHero() {
                     type: "spring",
                   }}
                 >
-                  <div className="bg-hero-section-title bg-clip-text text-transparent dark:from-[#FFFFFF] dark:to-[#FFFFFF66]">
+                  <h1 className="bg-gradient-to-r from-[#ff8a00] via-[#e52e71] to-[#9b00ff] bg-clip-text text-transparent">
                     Easiest way to <br /> power global teams.
-                  </div>
+                  </h1>
                 </m.div>
 
-                <m.div
-                  animate={{filter: "blur(0px)", opacity: 1, x: 0}}
+                <m.p
+                  animate={{ filter: "blur(0px)", opacity: 1, x: 0 }}
                   className="text-start font-normal leading-7 text-default-500 sm:w-[466px] sm:text-[18px]"
-                  initial={{filter: "blur(16px)", opacity: 0, x: 15 + 1 * 3}}
+                  initial={{ filter: "blur(16px)", opacity: 0, x: 15 + 1 * 3 }}
                   transition={{
                     bounce: 0,
                     delay: 0.01 * 30,
@@ -83,12 +83,12 @@ export default function HomeHero() {
                 >
                   Acme makes running global teams simple. HR, Payroll, International Employment,
                   contractor management and more.
-                </m.div>
+                </m.p>
 
                 <m.div
-                  animate={{filter: "blur(0px)", opacity: 1, x: 0}}
+                  animate={{ filter: "blur(0px)", opacity: 1, x: 0 }}
                   className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-6"
-                  initial={{filter: "blur(16px)", opacity: 0, x: 15 + 1 * 4}}
+                  initial={{ filter: "blur(16px)", opacity: 0, x: 15 + 1 * 4 }}
                   transition={{
                     bounce: 0,
                     delay: 0.01 * 50,
@@ -127,9 +127,9 @@ export default function HomeHero() {
       <LazyMotion features={domAnimation}>
         <AnimatePresence mode="wait">
           <m.div
-            animate={{filter: "blur(0px)", opacity: 1, y: 0}}
+            animate={{ filter: "blur(0px)", opacity: 1, y: 0 }}
             className="absolute top-[40%] w-full"
-            initial={{filter: "blur(16px)", opacity: 0, y: 300}}
+            initial={{ filter: "blur(16px)", opacity: 0, y: 300 }}
             transition={{
               bounce: 0,
               delay: 0.01 * 10,
