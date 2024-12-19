@@ -1,75 +1,82 @@
-import { Adapter, AdapterUser, AdapterSession, AdapterAccount, VerificationToken } from 'next-auth/adapters'
-import { PrismaClient, User } from '@prisma/client'
+/*
+ * Copyright © Mage H.D. Inc. 2024. All Rights Reserved.
+ *
+ * This source code, its associated files, and any related documentation ("Code") are proprietary intellectual property owned by Mage H.D. Inc. The Code is protected under applicable copyright laws, intellectual property rights, and international treaties.
+ *
+ * Unauthorized use, reproduction, modification, distribution, transmission, storage, or disclosure of this Code, in whole or in part, without the explicit prior written consent of Mage H.D. Inc., is strictly prohibited. Any such unauthorized actions may result in civil and criminal penalties under applicable laws.
+ *
+ * This Code is licensed solely for the authorized use by Mage H.D. Inc. or its expressly authorized partners, clients, or customers. Any use of this Code shall be governed by the terms and conditions of applicable agreements, such as licensing agreements or development contracts.
+ *
+ * Mage H.D. Inc. disclaims any and all liability for misuse or unintended use of this Code. This Code is provided "as is" without any warranties, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, or non-infringement.
+ *
+ * For inquiries, licensing requests, or permissions related to this Code, please contact:
+ *
+ * Gary Pettigrew
+ * Mage H.D. Inc.
+ * Email: hello@magehd.com
+ */
 
-const prisma = new PrismaClient()
+import { Adapter } from "next-auth/adapters";
+import { PrismaClient } from "@prisma/client";
+import type { AdapterUser } from "@/utils/types/types";
+import { AdapterAccount, AdapterSession, PrismaUserWithProfile, VerificationToken } from "@/utils/types/types";
 
-type PrismaUserWithProfile = User & {
-    profile: {
-        id: string;
-        firstName: string | null;
-        lastName: string | null;
-        title: string | null;
-        biography: string | null;
-        phoneNumber: number | null;
-        userId: string;
-        timezoneId: number | null;
-        countryCodeId: number | null;
-        email: string;
-        emailVerifiedDate: Date | null;
-        emailVerified: boolean;
-    } | null;
-};
+const prisma = new PrismaClient();
 
-// Helper function to transform PrismaUser into AdapterUser, considering the expanded profile structure
 function mapPrismaUserToAdapterUser(prismaUser: PrismaUserWithProfile): AdapterUser {
     return {
         id: prismaUser.id,
-        email: prismaUser.profile?.email ?? '', // Provide a default value if email is undefined
-        emailVerified: prismaUser.profile?.emailVerifiedDate || null, // Handle case when profile is null
-        name: prismaUser.username || null, // Default to null if username is missing
-        image: prismaUser.image || null, // Default to null if image is missing
+        email: prismaUser.profile?.email ?? "",
+        emailVerified: prismaUser.profile?.emailVerifiedDate || null,
+        username: prismaUser.username || undefined,
+        image: prismaUser.image || undefined,
+        name: prismaUser.username || undefined,
+
     };
 }
 
+
 export function CustomProviderAccountAdapter(): Adapter {
     return {
-        async createUser(user): Promise<AdapterUser> {
+        createUser: async function (user: AdapterUser): Promise<AdapterUser> {
             const prismaUser = await prisma.user.create({
                 data: {
-                    username: user.name,
-                    image: user.image || null, // Use the image from the provider if available
+                    username: user.name || "",
+                    image: user.image || null,
                     profile: {
                         create: {
-                            email: user.email,
+                            email: user.email || "",
                             emailVerifiedDate: user.emailVerified ? new Date() : null,
-                            emailVerified: !!user.emailVerified, // Cast emailVerified to boolean
+                            // localeId: 'en', // Removed localeId as it is not a known property
+                            isEmailVerified: !!user.emailVerified,
                         },
                     },
                 },
-                include: { profile: true }, // Ensure Profile is included in the result
-            })
-            return mapPrismaUserToAdapterUser(prismaUser)
-        },
+                include: { profile: true },
+            });
 
-        async getUser(id): Promise<AdapterUser | null> {
+            return mapPrismaUserToAdapterUser(prismaUser);
+        }
+        ,
+
+        async getUser(id: string): Promise<AdapterUser | null> {
             const prismaUser = await prisma.user.findUnique({
                 where: { id },
-                include: { profile: true }, // Ensure Profile is included in the result
-            }) as PrismaUserWithProfile;
-            return prismaUser ? mapPrismaUserToAdapterUser(prismaUser) : null
+                include: { profile: true },
+            });
+            return prismaUser ? mapPrismaUserToAdapterUser(prismaUser as PrismaUserWithProfile) : null;
         },
 
-        async getUserByEmail(email): Promise<AdapterUser | null> {
-            const prismaProfile = await prisma.profile.findUnique({
-                where: { email },
-                include: { user: true }, // Ensure the user relation is included
-            })
+        async getUserByEmail(email: string): Promise<AdapterUser | null> {
+            const prismaUser = await prisma.user.findFirst({
+                where: { profile: { email } },
+                include: { profile: true }, // Include the profile data to ensure it's populated
+            });
 
-            const prismaUser = prismaProfile ? prismaProfile.user as PrismaUserWithProfile : null;
-            return prismaUser ? mapPrismaUserToAdapterUser(prismaUser) : null;
+            return prismaUser ? mapPrismaUserToAdapterUser(prismaUser as PrismaUserWithProfile) : null;
         },
 
-        async getUserByAccount({ provider, providerAccountId }): Promise<AdapterUser | null> {
+        async getUserByAccount({ provider, providerAccountId }: { provider: string; providerAccountId: string }): Promise<AdapterUser | null> {
             const account = await prisma.providerAccount.findUnique({
                 where: {
                     provider_providerAccountId: {
@@ -77,42 +84,40 @@ export function CustomProviderAccountAdapter(): Adapter {
                         providerAccountId,
                     },
                 },
-            })
-            if (!account) return null
+            });
+            if (!account) return null;
 
             const prismaUser = await prisma.user.findUnique({
                 where: { id: account.userId },
-                include: { profile: true }, // Ensure Profile is included in the result
-            }) as PrismaUserWithProfile;
-            return prismaUser ? mapPrismaUserToAdapterUser(prismaUser) : null
+                include: { profile: true },
+            });
+            return prismaUser ? mapPrismaUserToAdapterUser(prismaUser as PrismaUserWithProfile) : null;
         },
 
-        async updateUser(user): Promise<AdapterUser> {
-            const existingUser = await prisma.user.findUnique({
-                where: { id: user.id },
-            });
-
+        async updateUser(user: Partial<AdapterUser> & Pick<AdapterUser, 'id'>): Promise<AdapterUser> {
             const updatedUser = await prisma.user.update({
                 where: { id: user.id },
                 data: {
-                    username: user.name,
-                    image: existingUser?.image || user.image, // If the image in the database is null, use the provider image
+                    username: user.username || undefined,
+                    image: user.image || undefined,
                     profile: {
                         update: {
-                            email: user.email,
-                            emailVerifiedDate: user.emailVerified ? new Date() : null,
+                            email: user.email || undefined,
+                            emailVerifiedDate: user.emailVerified ?? undefined,
+                            isEmailVerified: user.emailVerified ? true : undefined,
                         },
                     },
                 },
-                include: { profile: true }, // Ensure Profile is included in the result
-            })
-            return mapPrismaUserToAdapterUser(updatedUser)
+                include: { profile: true },
+            });
+
+            return mapPrismaUserToAdapterUser(updatedUser);
         },
 
-        async deleteUser(userId): Promise<void> {
+        async deleteUser(userId: string): Promise<void> {
             await prisma.user.delete({
                 where: { id: userId },
-            })
+            });
         },
 
         async linkAccount(account: AdapterAccount): Promise<void> {
@@ -121,18 +126,17 @@ export function CustomProviderAccountAdapter(): Adapter {
                     userId: account.userId,
                     provider: account.provider,
                     providerAccountId: account.providerAccountId,
-                    accessToken: account.accessToken as string | undefined,
-                    refreshToken: account.refreshToken as string | null | undefined,
-                    expiresAt: account.expires_at ? Math.floor(account.expires_at / 1000) : null,
+                    accessToken: account.access_token,
+                    refreshToken: account.refresh_token,
+                    tokenType: account.token_type,
                     idToken: account.id_token,
                     scope: account.scope,
-                    tokenType: account.token_type,
-                    sessionState: account.session_state as string | undefined,
+                    expiresAt: account.expires_at,
                 },
-            })
+            });
         },
 
-        async unlinkAccount({ provider, providerAccountId }): Promise<void> {
+        async unlinkAccount({ provider, providerAccountId }: { provider: string; providerAccountId: string }): Promise<void> {
             await prisma.providerAccount.delete({
                 where: {
                     provider_providerAccountId: {
@@ -140,50 +144,68 @@ export function CustomProviderAccountAdapter(): Adapter {
                         providerAccountId,
                     },
                 },
-            })
+            });
         },
 
         async createSession(session: AdapterSession): Promise<AdapterSession> {
-            return prisma.session.create({
+            if (!session.userId) {
+                throw new Error("Session cannot be created without a valid userId.");
+            }
+
+            const createdSession = await prisma.session.create({
                 data: {
                     sessionToken: session.sessionToken,
                     userId: session.userId,
                     expires: session.expires,
                 },
-            })
+            });
+
+            return {
+                ...createdSession,
+                userId: createdSession.userId as string, // Assert userId as non-nullable
+            };
         },
 
-        async getSessionAndUser(sessionToken): Promise<{ session: AdapterSession; user: AdapterUser } | null> {
+
+        async getSessionAndUser(sessionToken: string): Promise<{ session: AdapterSession; user: AdapterUser } | null> {
             const session = await prisma.session.findUnique({
                 where: { sessionToken },
-                include: { user: { include: { profile: true } } }, // Ensure Profile is included
-            })
+                include: { user: { include: { profile: true } } },
+            });
+            console.log("getSessionAndUser called with token:", sessionToken);
 
-            if (!session || !session.user) return null
+            // Return null if session or user is not found, or if userId is null
+            if (!session || !session.user || !session.userId) return null;
 
             return {
                 session: {
                     sessionToken: session.sessionToken,
-                    userId: session.userId,
+                    userId: session.userId, // Now guaranteed to be non-null
                     expires: session.expires,
                 },
                 user: mapPrismaUserToAdapterUser(session.user),
-            }
-        },
+            };
+        }
+        ,
 
         async updateSession(session: AdapterSession): Promise<AdapterSession> {
-            return prisma.session.update({
+            const updatedSession = await prisma.session.update({
                 where: { sessionToken: session.sessionToken },
-                data: {
-                    expires: session.expires,
-                },
-            })
+                data: { expires: session.expires },
+            });
+
+            return {
+                ...updatedSession,
+                userId: updatedSession.userId!, // Non-null assertion for userId
+            };
         },
 
-        async deleteSession(sessionToken): Promise<void> {
+
+
+        async deleteSession(sessionToken: string): Promise<void> {
             await prisma.session.delete({
                 where: { sessionToken },
-            })
+            });
         },
 
         async createVerificationToken(verificationToken: VerificationToken): Promise<VerificationToken> {
@@ -193,10 +215,10 @@ export function CustomProviderAccountAdapter(): Adapter {
                     token: verificationToken.token,
                     expires: verificationToken.expires,
                 },
-            })
+            });
         },
 
-        async useVerificationToken({ identifier, token }): Promise<VerificationToken | null> {
+        async useVerificationToken({ identifier, token }: { identifier: string; token: string }): Promise<VerificationToken | null> {
             try {
                 const verificationToken = await prisma.verificationToken.findUnique({
                     where: {
@@ -205,8 +227,8 @@ export function CustomProviderAccountAdapter(): Adapter {
                             token,
                         },
                     },
-                })
-                if (!verificationToken) return null
+                });
+                if (!verificationToken) return null;
 
                 await prisma.verificationToken.delete({
                     where: {
@@ -215,11 +237,11 @@ export function CustomProviderAccountAdapter(): Adapter {
                             token,
                         },
                     },
-                })
-                return verificationToken
-            } catch (error) {
-                return null
+                });
+                return verificationToken;
+            } catch {
+                return null;
             }
         },
-    }
+    };
 }

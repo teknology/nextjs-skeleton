@@ -370,23 +370,24 @@ model Profile {
     countryCodeId     Int? // Optional country code relation field
     countryCode       CountryCode? @relation(fields: [countryCodeId], references: [id])
     email             String       @unique
+    isEmailVerified   Boolean      @default(false)
     emailVerifiedDate DateTime?
-    emailVerified     Boolean      @default(false)
+      localeId          Int?         // Added localeId
+
 }
 
+model Locale {
+  id       Int       @id @default(autoincrement())
+  code     String    @unique
+  country  String
+  language String
+  flag     String
+  accounts Account[]
+}
 model AccountType {
     id       String    @id @default(cuid())
     name     String    @unique
     accounts Account[] @relation("AccountAccountTypes")
-}
-
-model Locale {
-    id       Int       @id @default(autoincrement())
-    code     String    @unique // Language code (e.g., 'en', 'fr')
-    country  String // Country name (e.g., 'United States', 'France')
-    language String // Language (e.g., 'English', 'Français')
-    flag     String // URL of the flag image
-    accounts Account[] // Relation to Account, moved from Profile
 }
 
 model Appearance {
