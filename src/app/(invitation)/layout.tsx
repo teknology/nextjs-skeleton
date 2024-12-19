@@ -2,8 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import '@/app/globals.css'
 import Providers from '@/app/providers'
-import { NextIntlClientProvider } from 'next-intl';
-import { getLocale, getMessages } from 'next-intl/server';
+
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -21,17 +20,14 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
 
-  const locale = await getLocale();
-
   // Providing all messages to the client
   // side is the easiest way to get started
-  const messages = await getMessages();
+
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang='en' suppressHydrationWarning>
       <body className={inter.className}>
-        <NextIntlClientProvider messages={messages}>
-          <Providers>{children}</Providers>
-        </NextIntlClientProvider>
+
+        <Providers>{children}</Providers>
       </body>
     </html>
   )

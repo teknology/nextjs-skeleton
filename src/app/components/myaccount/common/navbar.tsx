@@ -27,13 +27,11 @@ import { AcmeIcon } from '@/app/components/icons';
 import NotificationsCard from '@/app/components/myaccount/notification-card';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { useTranslations } from 'next-intl';
 import ThemeSwitch from '../../common/theme-switcher';
 import MiniLanguageSelector from '@/app/components/common/mini-language-switcher'; // Import the MiniLanguageSelector
 
 export default function MyAccountNavbar(): JSX.Element {
   const session = useSession();
-  const t = useTranslations('my_account.main_navigation');
   const router = useRouter();
 
   const handleAction = (key: string) => {
@@ -119,13 +117,13 @@ export default function MyAccountNavbar(): JSX.Element {
             </DropdownTrigger>
             <DropdownMenu onAction={(key) => handleAction(key as string)} aria-label="Profile Actions" variant="flat">
               <DropdownItem key="profile" className="h-14 gap-2">
-                <p className="font-semibold">{t('signed_in_as')}</p>
+                <p className="font-semibold">{'signed_in_as'}</p>
                 <p className="font-semibold">{session.data?.user?.email}</p>
               </DropdownItem>
-              <DropdownItem key="account">{t('account')}</DropdownItem>
-              <DropdownItem key="settings">{t('settings')}</DropdownItem>
-              <DropdownItem key="billing">{t('billing')}</DropdownItem>
-              <DropdownItem key="help_and_feedback">{t('help_and_feedback')}</DropdownItem>
+              <DropdownItem key="account">{'account'}</DropdownItem>
+              <DropdownItem key="settings">{'settings'}</DropdownItem>
+              <DropdownItem key="billing">{'billing'}</DropdownItem>
+              <DropdownItem key="help_and_feedback">{'help_and_feedback'}</DropdownItem>
               <DropdownItem key="logout" color="danger">
                 Log Out
               </DropdownItem>

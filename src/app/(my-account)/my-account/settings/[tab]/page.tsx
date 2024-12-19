@@ -10,12 +10,10 @@ import BillingSetting from '@/app/components/myaccount/settings/billing/billing-
 import TeamSetting from '@/app/components/myaccount/settings/team/team-setting';
 import MyAccountHeader from '@/app/components/myaccount/common/my-account-header';
 import * as actions from '@/actions';
-import { useTranslations } from 'next-intl';
 import { useRouter, useParams } from 'next/navigation';
 
 export default function Settings() {
     const { isOpen, onOpenChange } = useDisclosure();
-    const t = useTranslations('my_account.settings');
     const router = useRouter();
     const params = useParams();
 
@@ -38,8 +36,8 @@ export default function Settings() {
     const [teamLoading, setTeamLoading] = useState(false);
     const [teamData, setTeamData] = useState<any | null>(null);
 
-    const pageTitle = t('page_title');
-    const pageSubtitle = t('page_subtitle');
+    const pageTitle = 'page_title';
+    const pageSubtitle = 'page_subtitle';
     const pageIcon = 'fluent:settings-32-light';
 
     useEffect(() => {
@@ -135,13 +133,13 @@ export default function Settings() {
                         selectedKey={selected}
                         onSelectionChange={(key) => handleTabChange(key.toString())}
                     >
-                        <Tab key="profile" title={t('profile.title')}>
+                        <Tab key="profile" title='profile.title'>
                             {renderTabContent()}
                         </Tab>
-                        <Tab key="appearance" title={t('appearance.title')}>
+                        <Tab key="appearance" title='appearance.title'>
                             {renderTabContent()}
                         </Tab>
-                        <Tab key="account" title={t('account.title')}>
+                        <Tab key="account" title='account.title'>
                             {renderTabContent()}
                         </Tab>
                         <Tab key="billing" title="Billing">

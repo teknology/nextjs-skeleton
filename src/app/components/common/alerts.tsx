@@ -4,12 +4,10 @@ import { Icon } from '@iconify/react/dist/iconify.js';
 import { Avatar, Card, CardBody, Button } from '@nextui-org/react';
 import { motion } from 'framer-motion';
 import { CameraIcon } from '../icons';
-import { useTranslations } from 'next-intl';
 
 export default function AlertComponent() {
     const [isVisible, setIsVisible] = useState(true);
     const [isAnimating, setIsAnimating] = useState(false);
-    const t = useTranslations('my_account');
     const handleClose = () => {
         setIsAnimating(true);
     };

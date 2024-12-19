@@ -9,12 +9,14 @@ import { comparePasswords } from "./utils/auth"
 import { getUserByEmail } from "./db/queries/user"
 import { getThemeInDb } from "./db/queries/appearance"
 import { CustomProviderAccountAdapter } from "./lib/custom-auth-adapter"
-import { getLocaleByUser } from "./actions/locale"
 
 
 interface UserCredentials {
+  id: string;
   email: string;
   password: string | null;
+  emailVerified: string | null;
+  theme?: string;
 }
 declare module 'next-auth' {
 
@@ -37,45 +39,32 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
     Facebook,
     Credentials({
-      // You can specify which fields should be submitted, by adding keys to the `credentials` object.
-      // e.g. domain, username, password, 2FA token, etc.
       credentials: {
-        email: {},
-        password: {},
-
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
       },
-      authorize: async (credentials): Promise<UserCredentials | null> => {
-        // let user = null
-
-        if (!credentials.email) {
-
-          throw new Error("Email missing")
-        }
-        if (!credentials.password) {
-          throw new Error("Password missing")
+      async authorize(credentials: Partial<Record<"email" | "password", unknown>>): Promise<UserCredentials | null> {
+        if (!credentials.email || !credentials.password) {
+          throw new Error("Email and password are required.");
         }
 
-        if (credentials.email && credentials.password) {
-          const email = credentials.email as string;
-          const password = credentials.password as string;
-          const user = await getUserByEmail(email);
+        const user = await getUserByEmail(credentials.email as string);
 
-          // Add code to check if Password is null. If it is, then redirect to the password reset page
-          try {
-            const passwordsMatch = await comparePasswords(password as string, user?.password as string);
-
-            if (passwordsMatch) return user;
-            // return user;
-
-          }
-          catch (error) {
-            console.error('Failed to compare passwords:', error);
-            //  throw new Error('Failed to compare passwords.');
-
-            return null; // Fix: Return null instead of error
-          }
+        if (!user?.password) {
+          return null;
         }
-        return null;
+
+        if (!(await comparePasswords(credentials.password as string, user.password))) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          email: user.profile?.email ?? "",
+          password: null,
+          emailVerified: user.profile?.emailVerified ? String(user.profile.emailVerified) : null,
+          theme: user.profile?.theme ?? "light",
+        };
       },
     }),
   ],

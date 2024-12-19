@@ -8,13 +8,11 @@ import { AnimatePresence, LazyMotion, domAnimation, m } from "framer-motion";
 import BasicNavbar from "@/app/components/common/public/basic-navbar";
 import FadeInImage from "@/app/components/common/fade-in-image";
 import AppScreenshotSkewed from "@/app/components/common/app-screenshot-skewed";
-import { useTranslations } from 'next-intl';
 import { useTheme as useNextTheme } from 'next-themes';
 
 
 
 export default function HomeHero() {
-  const t = useTranslations('index');
   const { setTheme } = useNextTheme();
   useEffect(() => {
     setTheme('dark');  // Forces dark mode on this page

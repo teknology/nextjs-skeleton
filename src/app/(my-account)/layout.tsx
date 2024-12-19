@@ -4,8 +4,7 @@ import '@/app/globals.css'
 import Providers from '@/app/providers'
 import MyAccountNavbar from '@/app/components/myaccount/common/navbar'
 import { getSession } from 'next-auth/react'
-import { NextIntlClientProvider } from 'next-intl';
-import { getLocale, getMessages } from 'next-intl/server';
+
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,16 +18,15 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const locale = await getLocale();
-  const messages = await getMessages();
+
 
 
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang='en' suppressHydrationWarning>
       <body className={inter.className}>
 
-        <Providers messages={messages} locale={locale}>
+        <Providers >
           <MyAccountNavbar />
           <div className='w-full'>
             <main className='mt-6 flex w-full flex-col items-center'>

@@ -15,7 +15,6 @@ import AlertComponent from '@/app/components/common/alerts'
 import AccountTabs from '@/app/components/myaccount/account-tabs'
 import { useTheme } from 'next-themes'
 import { getInitialTheme, setThemeCookie } from '@/utils/theme-utils'
-import { getTranslations } from 'next-intl/server';
 import { set } from 'zod'
 import { cookies } from 'next/headers'
 
@@ -31,11 +30,10 @@ export default async function myAccount() {
   }
 
 
-  const t = await getTranslations('my_account');
 
   // Translation hook
-  const pageTitle = t('page_title');
-  const pageSubtitle = t('page_subtitle');
+  const pageTitle = 'page_title';
+  const pageSubtitle = 'page_subtitle';
   const pageIcon = 'bx:bx-home';
 
 

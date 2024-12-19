@@ -3,7 +3,7 @@ import { getLocaleList, getLocaleByUserId, saveUserLocale, getActiveLocales } fr
 import { readdirSync } from 'fs';
 import { revalidatePath } from "next/cache";
 import { join } from 'path';
-import { locales } from "@/i18n/config"
+//import { locales } from "@/i18n/config"
 
 
 
@@ -24,9 +24,9 @@ export async function getAvailableLocales() {
 export async function getEnabledLocales() {
 
     try {
-        const enabledLocales = getActiveLocales(locales)
+        //  const enabledLocales = getActiveLocales(locales)
 
-        return enabledLocales
+        return 'en'
     }
     catch (error) {
         console.error('Failed to fetch enabled locales:', error);

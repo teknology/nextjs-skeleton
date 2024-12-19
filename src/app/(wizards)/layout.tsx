@@ -3,8 +3,6 @@ import { Inter } from 'next/font/google'
 import '@/app/globals.css'
 import Providers from '../providers'
 import { getSession } from 'next-auth/react'
-import { NextIntlClientProvider } from 'next-intl';
-import { getLocale, getMessages } from 'next-intl/server';
 import React from 'react'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -19,25 +17,22 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const locale = await getLocale();
 
   // Providing all messages to the client
   // side is the easiest way to get started
-  const messages = await getMessages();
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang='en' suppressHydrationWarning>
       <body className={inter.className}>
-        <NextIntlClientProvider messages={messages}>
-          <Providers>
-            <div className='w-full'>
-              <main className='mt-6 flex w-full flex-col items-center'>
-                <div className='w-full max-w-[1024px] px-4 lg:px-8'>
-                  {children}
-                </div>
-              </main>
-            </div>
-          </Providers>
-        </NextIntlClientProvider>
+
+        <Providers>
+          <div className='w-full'>
+            <main className='mt-6 flex w-full flex-col items-center'>
+              <div className='w-full max-w-[1024px] px-4 lg:px-8'>
+                {children}
+              </div>
+            </main>
+          </div>
+        </Providers>
       </body>
     </html>
   )
